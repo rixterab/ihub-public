@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://ec2.amazonaws.com/doc/2016-11-15/"
+            xmlns="http://ec2.amazonaws.com/doc/2016-11-15/"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+  <!-- Root element -->
+  <xsd:element name="DescribeInstancesResponse" type="DescribeInstancesResponseType"/>
+
+  <!-- ===== Common simple types ===== -->
+  <xsd:simpleType name="StringMax1024">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value="1024"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Bool">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="true"/>
+      <xsd:enumeration value="false"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="InstanceStateName">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="pending"/>
+      <xsd:enumeration value="running"/>
+      <xsd:enumeration value="shutting-down"/>
+      <xsd:enumeration value="terminated"/>
+      <xsd:enumeration value="stopping"/>
+      <xsd:enumeration value="stopped"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- ===== Root response ===== -->
+  <xsd:complexType name="DescribeInstancesResponseType">
+    <xsd:sequence>
+      <xsd:element name="requestId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="reservationSet" type="ReservationSetType" minOccurs="0"/>
+      <xsd:element name="nextToken" type="xsd:string" minOccurs="0"/>
+      <!-- Allow for forward-compat elements AWS may add -->
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== ReservationSet ===== -->
+  <xsd:complexType name="ReservationSetType">
+    <xsd:sequence>
+      <xsd:element name="item" type="ReservationItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ReservationItemType">
+    <xsd:sequence>
+      <xsd:element name="reservationId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="ownerId" type="xsd:string" minOccurs="0"/>
+      <!-- Classic EC2 group set (may be empty for VPC-only accounts) -->
+      <xsd:element name="groupSet" type="GroupSetType" minOccurs="0"/>
+      <xsd:element name="instancesSet" type="InstanceSetType"/>
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== Group / Security groups ===== -->
+  <xsd:complexType name="GroupSetType">
+    <xsd:sequence>
+      <xsd:element name="item" type="GroupItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="GroupItemType">
+    <xsd:sequence>
+      <xsd:element name="groupId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="groupName" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== InstancesSet ===== -->
+  <xsd:complexType name="InstanceSetType">
+    <xsd:sequence>
+      <xsd:element name="item" type="InstanceItemType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== Instance item ===== -->
+  <xsd:complexType name="InstanceItemType">
+    <xsd:sequence>
+      <xsd:element name="instanceId" type="xsd:string"/>
+      <xsd:element name="imageId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="instanceState" type="InstanceStateType" minOccurs="0"/>
+      <xsd:element name="privateDnsName" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="dnsName" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="reason" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="keyName" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="amiLaunchIndex" type="xsd:integer" minOccurs="0"/>
+      <xsd:element name="productCodes" type="ProductCodesSetType" minOccurs="0"/>
+      <xsd:element name="instanceType" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="launchTime" type="xsd:dateTime" minOccurs="0"/>
+      <xsd:element name="placement" type="PlacementResponseType" minOccurs="0"/>
+      <xsd:element name="kernelId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="ramdiskId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="platform" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="monitoring" type="MonitoringStateType" minOccurs="0"/>
+      <xsd:element name="subnetId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="vpcId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="privateIpAddress" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="ipAddress" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="sourceDestCheck" type="Bool" minOccurs="0"/>
+      <!-- Security groups when using VPC -->
+      <xsd:element name="groupSet" type="GroupSetType" minOccurs="0"/>
+      <xsd:element name="architecture" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="rootDeviceType" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="rootDeviceName" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="blockDeviceMapping" type="InstanceBlockDeviceMappingType" minOccurs="0"/>
+      <xsd:element name="virtualizationType" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="hypervisor" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="iamInstanceProfile" type="IamInstanceProfileType" minOccurs="0"/>
+      <xsd:element name="ebsOptimized" type="Bool" minOccurs="0"/>
+      <xsd:element name="networkInterfaceSet" type="NetworkInterfaceSetType" minOccurs="0"/>
+      <xsd:element name="cpuOptions" type="CpuOptionsType" minOccurs="0"/>
+      <xsd:element name="hibernationOptions" type="HibernationOptionsType" minOccurs="0"/>
+      <xsd:element name="enclaveOptions" type="EnclaveOptionsType" minOccurs="0"/>
+      <xsd:element name="metadataOptions" type="InstanceMetadataOptionsType" minOccurs="0"/>
+      <xsd:element name="capacityReservationSpecification" type="CapacityReservationSpecificationResponseType" minOccurs="0"/>
+      <xsd:element name="tagSet" type="TagSetType" minOccurs="0"/>
+      <!-- Forward-compat -->
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== Supporting complex types ===== -->
+  <xsd:complexType name="InstanceStateType">
+    <xsd:sequence>
+      <xsd:element name="code" type="xsd:int" minOccurs="0"/>
+      <xsd:element name="name" type="InstanceStateName" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProductCodesSetType">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="productCode" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="type" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PlacementResponseType">
+    <xsd:sequence>
+      <xsd:element name="availabilityZone" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="groupName" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="tenancy" type="xsd:string" minOccurs="0"/>
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MonitoringStateType">
+    <xsd:sequence>
+      <xsd:element name="state" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="InstanceBlockDeviceMappingType">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="deviceName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="ebs" minOccurs="0">
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="volumeId" type="xsd:string" minOccurs="0"/>
+                  <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+                  <xsd:element name="attachTime" type="xsd:dateTime" minOccurs="0"/>
+                  <xsd:element name="deleteOnTermination" type="Bool" minOccurs="0"/>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="IamInstanceProfileType">
+    <xsd:sequence>
+      <xsd:element name="arn" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="TagSetType">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="key" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="CpuOptionsType">
+    <xsd:sequence>
+      <xsd:element name="coreCount" type="xsd:int" minOccurs="0"/>
+      <xsd:element name="threadsPerCore" type="xsd:int" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="HibernationOptionsType">
+    <xsd:sequence>
+      <xsd:element name="configured" type="Bool" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EnclaveOptionsType">
+    <xsd:sequence>
+      <xsd:element name="enabled" type="Bool" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="InstanceMetadataOptionsType">
+    <xsd:sequence>
+      <xsd:element name="state" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="HttpTokens" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="HttpPutResponseHopLimit" type="xsd:int" minOccurs="0"/>
+      <xsd:element name="HttpEndpoint" type="xsd:string" minOccurs="0"/>
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== Network interfaces ===== -->
+  <xsd:complexType name="NetworkInterfaceSetType">
+    <xsd:sequence>
+      <xsd:element name="item" type="NetworkInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="NetworkInterfaceType">
+    <xsd:sequence>
+      <xsd:element name="networkInterfaceId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="subnetId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="vpcId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="ownerId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="macAddress" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="privateIpAddress" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="sourceDestCheck" type="Bool" minOccurs="0"/>
+      <xsd:element name="groupSet" type="GroupSetType" minOccurs="0"/>
+      <xsd:element name="attachment" type="NetworkInterfaceAttachmentType" minOccurs="0"/>
+      <xsd:element name="association" type="NetworkInterfaceAssociationType" minOccurs="0"/>
+      <xsd:element name="privateIpAddressesSet" type="PrivateIpAddressesSetType" minOccurs="0"/>
+      <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="NetworkInterfaceAttachmentType">
+    <xsd:sequence>
+      <xsd:element name="attachmentId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="deviceIndex" type="xsd:int" minOccurs="0"/>
+      <xsd:element name="status" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="attachTime" type="xsd:dateTime" minOccurs="0"/>
+      <xsd:element name="deleteOnTermination" type="Bool" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="NetworkInterfaceAssociationType">
+    <xsd:sequence>
+      <xsd:element name="publicIp" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="ipOwnerId" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="publicDnsName" type="xsd:string" minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="PrivateIpAddressesSetType">
+    <xsd:sequence>
+      <xsd:element name="item" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="privateIpAddress" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="privateDnsName" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="primary" type="Bool" minOccurs="0"/>
+            <xsd:element name="association" type="NetworkInterfaceAssociationType" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!-- ===== Capacity Reservation Specification ===== -->
+  <xsd:complexType name="CapacityReservationSpecificationResponseType">
+    <xsd:sequence>
+      <xsd:element name="capacityReservationPreference" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="capacityReservationTarget" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="capacityReservationId" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="capacityReservationResourceGroupArn" type="xsd:string" minOccurs="0"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>
