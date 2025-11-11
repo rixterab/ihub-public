@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="https://iam.amazonaws.com/doc/2010-05-08/"
+  xmlns="https://iam.amazonaws.com/doc/2010-05-08/"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <!-- ===== Root element ===== -->
+  <xs:element name="ListUsersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ListUsersResult" type="ListUsersResultType"/>
+        <xs:element name="ResponseMetadata" type="ResponseMetadataType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ===== Result ===== -->
+  <xs:complexType name="ListUsersResultType">
+    <xs:sequence>
+      <xs:element name="Users" type="UsersListType"/>
+      <xs:element name="IsTruncated" type="xs:boolean"/>
+      <!-- Present when IsTruncated is true -->
+      <xs:element name="Marker" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Metadata ===== -->
+  <xs:complexType name="ResponseMetadataType">
+    <xs:sequence>
+      <xs:element name="RequestId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Collections ===== -->
+  <xs:complexType name="UsersListType">
+    <xs:sequence>
+      <xs:element name="member" type="UserType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Core Types ===== -->
+  <xs:complexType name="UserType">
+    <xs:sequence>
+      <xs:element name="UserId" type="xs:string"/>
+      <xs:element name="Path" type="xs:string"/>
+      <xs:element name="UserName" type="xs:string"/>
+      <xs:element name="Arn" type="xs:string"/>
+      <xs:element name="CreateDate" type="xs:dateTime"/>
+      <xs:element name="PasswordLastUsed" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
