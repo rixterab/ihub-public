@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/"
+  xmlns="http://elasticloadbalancing.amazonaws.com/doc/2012-06-01/"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <!-- ===== Root element ===== -->
+  <xs:element name="DescribeLoadBalancersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="DescribeLoadBalancersResult" type="DescribeLoadBalancersResultType"/>
+        <xs:element name="ResponseMetadata" type="ResponseMetadataType" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ===== Result ===== -->
+  <xs:complexType name="DescribeLoadBalancersResultType">
+    <xs:sequence>
+      <xs:element name="LoadBalancerDescriptions" type="LoadBalancerDescriptionsListType"/>
+      <!-- Optional for pagination -->
+      <xs:element name="NextMarker" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Metadata ===== -->
+  <xs:complexType name="ResponseMetadataType">
+    <xs:sequence>
+      <xs:element name="RequestId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Collections ===== -->
+  <xs:complexType name="LoadBalancerDescriptionsListType">
+    <xs:sequence>
+      <xs:element name="member" type="LoadBalancerDescriptionType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ListenerDescriptionsListType">
+    <xs:sequence>
+      <xs:element name="member" type="ListenerDescriptionType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PoliciesType">
+    <xs:sequence>
+      <xs:element name="AppCookieStickinessPolicies" type="AppCookieStickinessPoliciesListType" minOccurs="0"/>
+      <xs:element name="LBCookieStickinessPolicies" type="LBCookieStickinessPoliciesListType" minOccurs="0"/>
+      <xs:element name="OtherPolicies" type="StringListType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AppCookieStickinessPoliciesListType">
+    <xs:sequence>
+      <xs:element name="member" type="AppCookieStickinessPolicyType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LBCookieStickinessPoliciesListType">
+    <xs:sequence>
+      <xs:element name="member" type="LBCookieStickinessPolicyType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BackendServerDescriptionsListType">
+    <xs:sequence>
+      <xs:element name="member" type="BackendServerDescriptionType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="InstancesListType">
+    <xs:sequence>
+      <xs:element name="member" type="InstanceType" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SubnetsListType">
+    <xs:sequence>
+      <xs:element name="member" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SecurityGroupsListType">
+    <xs:sequence>
+      <xs:element name="member" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="AvailabilityZonesListType">
+    <xs:sequence>
+      <xs:element name="member" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ListenerDescriptionsPolicyNamesListType">
+    <xs:sequence>
+      <xs:element name="member" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StringListType">
+    <xs:sequence>
+      <xs:element name="member" type="xs:string" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- ===== Core Types ===== -->
+  <xs:complexType name="LoadBalancerDescriptionType">
+    <xs:sequence>
+      <xs:element name="LoadBalancerName" type="xs:string"/>
+      <xs:element name="DNSName" type="xs:string"/>
+      <xs:element name="CanonicalHostedZoneName" type="xs:string" minOccurs="0"/>
+      <xs:element name="CanonicalHostedZoneNameID" type="xs:string" minOccurs="0"/>
+      <xs:element name="ListenerDescriptions" type="ListenerDescriptionsListType" minOccurs="0"/>
+      <xs:element name="Policies" type="PoliciesType" minOccurs="0"/>
+      <xs:element name="BackendServerDescriptions" type="BackendServerDescriptionsListType" minOccurs="0"/>
+      <xs:element name="AvailabilityZones" type="AvailabilityZonesListType" minOccurs="0"/>
+      <xs:element name="Subnets" type="SubnetsListType" minOccurs="0"/>
+      <xs:element name="VPCId" type="xs:string" minOccurs="0"/>
+      <xs:element name="Instances" type="InstancesListType" minOccurs="0"/>
+      <xs:element name="HealthCheck" type="HealthCheckType" minOccurs="0"/>
+      <xs:element name="SourceSecurityGroup" type="SourceSecurityGroupType" minOccurs="0"/>
+      <xs:element name="SecurityGroups" type="SecurityGroupsListType" minOccurs="0"/>
+      <xs:element name="CreatedTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="Scheme" type="SchemeEnum" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="SchemeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="internet-facing"/>
+      <xs:enumeration value="internal"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Listener description includes the Listener object and its policy names -->
+  <xs:complexType name="ListenerDescriptionType">
+    <xs:sequence>
+      <xs:element name="Listener" type="ListenerType"/>
+      <xs:element name="PolicyNames" type="ListenerDescriptionsPolicyNamesListType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ListenerType">
+    <xs:sequence>
+      <xs:element name="Protocol" type="xs:string"/>
+      <xs:element name="LoadBalancerPort" type="xs:int"/>
+      <xs:element name="InstanceProtocol" type="xs:string" minOccurs="0"/>
+      <xs:element name="InstancePort" type="xs:int"/>
+      <xs:element name="SSLCertificateId" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HealthCheckType">
+    <xs:sequence>
+      <xs:element name="Target" type="xs:string"/>
+      <xs:element name="Interval" type="xs:int"/>
+      <xs:element name="Timeout" type="xs:int"/>
+      <xs:element name="UnhealthyThreshold" type="xs:int"/>
+      <xs:element name="HealthyThreshold" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SourceSecurityGroupType">
+    <xs:sequence>
+      <xs:element name="OwnerAlias" type="xs:string" minOccurs="0"/>
+      <xs:element name="GroupName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="InstanceType">
+    <xs:sequence>
+      <xs:element name="InstanceId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BackendServerDescriptionType">
+    <xs:sequence>
+      <xs:element name="InstancePort" type="xs:int"/>
+      <xs:element name="PolicyNames" type="StringListType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Stickiness policies -->
+  <xs:complexType name="AppCookieStickinessPolicyType">
+    <xs:sequence>
+      <xs:element name="PolicyName" type="xs:string"/>
+      <xs:element name="CookieName" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="LBCookieStickinessPolicyType">
+    <xs:sequence>
+      <xs:element name="PolicyName" type="xs:string"/>
+      <xs:element name="CookieExpirationPeriod" type="xs:long" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
