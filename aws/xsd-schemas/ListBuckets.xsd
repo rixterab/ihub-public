@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+    <!-- Root element -->
+    <xs:element name="ListAllMyBucketsResult">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- Buckets container -->
+                <xs:element name="Buckets">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Bucket" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <!-- These two are shown in the current response syntax -->
+                                        <xs:element name="BucketArn" type="xs:string" minOccurs="0"/>
+                                        <xs:element name="BucketRegion" type="xs:string" minOccurs="0"/>
+
+                                        <xs:element name="CreationDate" type="xs:dateTime"/>
+                                        <xs:element name="Name" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Owner block -->
+                <xs:element name="Owner" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <!-- DisplayName is being removed in future, so mark as optional -->
+                            <xs:element name="DisplayName" type="xs:string" minOccurs="0"/>
+                            <xs:element name="ID" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <!-- Pagination token (optional) -->
+                <xs:element name="ContinuationToken" type="xs:string" minOccurs="0"/>
+
+                <!-- Prefix echoed back (optional) -->
+                <xs:element name="Prefix" type="xs:string" minOccurs="0"/>
+
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
