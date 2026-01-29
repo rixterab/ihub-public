@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://iam.amazonaws.com/doc/2010-05-08/"
+           xmlns="https://iam.amazonaws.com/doc/2010-05-08/"
+           elementFormDefault="qualified">
+
+    <xs:element name="ListRolesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="ListRolesResult"/>
+                <xs:element ref="ResponseMetadata"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ListRolesResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="IsTruncated" type="xs:boolean"/>
+                <xs:element name="Marker" type="xs:string" minOccurs="0"/>
+                <xs:element ref="Roles"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="Roles">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="RoleType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="RoleType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string"/>
+            <xs:element name="AssumeRolePolicyDocument" type="xs:string"/>
+            <xs:element name="MaxSessionDuration" type="xs:integer"/>
+            <xs:element name="RoleId" type="xs:string"/>
+            <xs:element name="RoleName" type="xs:string"/>
+            <xs:element name="Description" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="ResponseMetadata">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="RequestId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

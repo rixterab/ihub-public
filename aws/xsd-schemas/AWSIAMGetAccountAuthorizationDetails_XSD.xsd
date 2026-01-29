@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="https://iam.amazonaws.com/doc/2010-05-08/"
+           xmlns="https://iam.amazonaws.com/doc/2010-05-08/"
+           elementFormDefault="qualified">
+
+    <xs:element name="GetAccountAuthorizationDetailsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="GetAccountAuthorizationDetailsResult"/>
+                <xs:element ref="ResponseMetadata"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAccountAuthorizationDetailsResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="UserAuthorizationDetailsList" minOccurs="0"/>
+                <xs:element ref="GroupAuthorizationDetailsList" minOccurs="0"/>
+                <xs:element ref="RoleAuthorizationDetailsList" minOccurs="0"/>
+                <xs:element ref="PolicyAuthorizationDetailsList" minOccurs="0"/>
+                <xs:element name="IsTruncated" type="xs:boolean"/>
+                <xs:element name="Marker" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UserAuthorizationDetailsList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="UserDetailType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GroupAuthorizationDetailsList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="GroupDetailType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="RoleAuthorizationDetailsList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="RoleDetailType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PolicyAuthorizationDetailsList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="PolicyDetailType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="UserDetailType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string"/>
+            <xs:element name="UserName" type="xs:string"/>
+            <xs:element name="UserId" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+            <xs:element ref="UserPolicyList" minOccurs="0"/>
+            <xs:element ref="GroupList" minOccurs="0"/>
+            <xs:element ref="AttachedManagedPolicies" minOccurs="0"/>
+            <xs:element ref="PermissionsBoundary" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GroupDetailType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string"/>
+            <xs:element name="GroupName" type="xs:string"/>
+            <xs:element name="GroupId" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+            <xs:element ref="GroupPolicyList" minOccurs="0"/>
+            <xs:element ref="AttachedManagedPolicies" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="RoleDetailType">
+        <xs:sequence>
+            <xs:element name="Path" type="xs:string"/>
+            <xs:element name="RoleName" type="xs:string"/>
+            <xs:element name="RoleId" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+            <xs:element name="AssumeRolePolicyDocument" type="xs:string"/>
+            <xs:element name="MaxSessionDuration" type="xs:integer"/>
+            <xs:element ref="InstanceProfileList" minOccurs="0"/>
+            <xs:element ref="RolePolicyList" minOccurs="0"/>
+            <xs:element ref="AttachedManagedPolicies" minOccurs="0"/>
+            <xs:element ref="PermissionsBoundary" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PolicyDetailType">
+        <xs:sequence>
+            <xs:element name="PolicyName" type="xs:string"/>
+            <xs:element name="PolicyId" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="Path" type="xs:string"/>
+            <xs:element name="DefaultVersionId" type="xs:string"/>
+            <xs:element name="AttachmentCount" type="xs:integer"/>
+            <xs:element name="IsAttachable" type="xs:boolean"/>
+            <xs:element name="Description" type="xs:string" minOccurs="0"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+            <xs:element name="UpdateDate" type="xs:dateTime"/>
+            <xs:element ref="PolicyVersionList" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="UserPolicyList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="PolicyType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GroupPolicyList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="PolicyType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="RolePolicyList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="PolicyType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="GroupList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="GroupNameType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AttachedManagedPolicies">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="AttachedPolicyType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PermissionsBoundary">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="PermissionsBoundaryType" type="xs:string"/>
+                <xs:element name="PermissionsBoundaryArn" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PolicyVersionList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="PolicyVersionType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="InstanceProfileList">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="member" type="InstanceProfileType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="PolicyType">
+        <xs:sequence>
+            <xs:element name="PolicyName" type="xs:string"/>
+            <xs:element name="PolicyDocument" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="GroupNameType">
+        <xs:sequence>
+            <xs:element name="GroupName" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AttachedPolicyType">
+        <xs:sequence>
+            <xs:element name="PolicyName" type="xs:string"/>
+            <xs:element name="PolicyArn" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PolicyVersionType">
+        <xs:sequence>
+            <xs:element name="Document" type="xs:string"/>
+            <xs:element name="VersionId" type="xs:string"/>
+            <xs:element name="IsDefaultVersion" type="xs:boolean"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InstanceProfileType">
+        <xs:sequence>
+            <xs:element name="InstanceProfileId" type="xs:string"/>
+            <xs:element name="Arn" type="xs:string"/>
+            <xs:element name="CreateDate" type="xs:dateTime"/>
+            <xs:element name="InstanceProfileName" type="xs:string"/>
+            <xs:element name="Path" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="ResponseMetadata">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="RequestId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

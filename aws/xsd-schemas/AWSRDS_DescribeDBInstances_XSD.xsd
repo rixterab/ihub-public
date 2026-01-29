@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://rds.amazonaws.com/doc/2014-10-31/"
+           xmlns="http://rds.amazonaws.com/doc/2014-10-31/"
+           elementFormDefault="qualified">
+
+    <xs:element name="DescribeDBInstancesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="DescribeDBInstancesResult"/>
+                <xs:element ref="ResponseMetadata"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DescribeDBInstancesResult">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="DBInstances"/>
+                <xs:element name="Marker" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DBInstances">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="DBInstance" type="DBInstanceType" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="DBInstanceType">
+        <xs:sequence>
+            <xs:element name="DBInstanceIdentifier" type="xs:string"/>
+            <xs:element name="DBInstanceClass" type="xs:string"/>
+            <xs:element name="Engine" type="xs:string"/>
+            <xs:element name="DBInstanceStatus" type="xs:string"/>
+            <xs:element name="MasterUsername" type="xs:string"/>
+            <xs:element name="DBName" type="xs:string" minOccurs="0"/>
+            <xs:element name="Endpoint" type="EndpointType" minOccurs="0"/>
+            <xs:element name="AllocatedStorage" type="xs:integer"/>
+            <xs:element name="InstanceCreateTime" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="PreferredBackupWindow" type="xs:string" minOccurs="0"/>
+            <xs:element name="BackupRetentionPeriod" type="xs:integer"/>
+            <xs:element name="DBSecurityGroups" type="DBSecurityGroupMembershipList" minOccurs="0"/>
+            <xs:element name="VpcSecurityGroups" type="VpcSecurityGroupMembershipList" minOccurs="0"/>
+            <xs:element name="DBParameterGroups" type="DBParameterGroupStatusList" minOccurs="0"/>
+            <xs:element name="AvailabilityZone" type="xs:string" minOccurs="0"/>
+            <xs:element name="DBSubnetGroup" type="DBSubnetGroupType" minOccurs="0"/>
+            <xs:element name="PreferredMaintenanceWindow" type="xs:string" minOccurs="0"/>
+            <xs:element name="LatestRestorableTime" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="MultiAz" type="xs:boolean"/>
+            <xs:element name="EngineVersion" type="xs:string"/>
+            <xs:element name="AutoMinorVersionUpgrade" type="xs:boolean"/>
