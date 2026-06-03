@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "key": "ticket-sync",
+  "name": "Salesforce Ticket Sync",
+  "version": "1.0.0",
+  "icon": "icon.svg",
+  "description": "Sync Salesforce cases into Jira Service Management tickets.",
+  "exportFile": "export.json",
+  "defaultFlow": {
+    "enabled": false,
+    "groupName": "Salesforce"
+  },
+  "credentials": [
+    {
+      "id": "salesforce",
+      "title": "Salesforce OAuth2",
+      "type": "OAUTH2",
+      "description": "Used for Salesforce API calls.",
+      "targetPaths": [
+        "$.actions[0].credentialsReference"
+      ],
+      "defaults": {
+        "name": "Salesforce OAuth2",
+        "data": {
+          "config": {
+            "url": {
+              "authorizeUrl": "https://login.salesforce.com/services/oauth2/authorize",
+              "accessTokenUrl": "https://login.salesforce.com/services/oauth2/token"
+            },
+            "grantType": "code",
+            "headerPrefix": "Bearer"
+          }
+        }
+      }
+    }
+  ],
+  "wizard": [
+    {
+      "id": "scope",
+      "title": "What do you want to sync?",
+      "fields": [
+        {
+          "type": "toggle",
+          "id": "syncTickets",
+          "label": "Tickets",
+          "path": "$.flowVariables[0].value",
+          "default": true
+        },
+        {
+          "type": "toggle",
+          "id": "syncComments",
+          "label": "Comments",
+          "path": "$.flowVariables[1].value",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "instance",
+      "title": "Connect to Salesforce",
+      "fields": [
+        {
+          "type": "text",
+          "id": "baseUrl",
+          "label": "Salesforce instance URL",
+          "path": "$.actions[0].url",
+          "placeholder": "https://example.my.salesforce.com",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "trigger": {
+    "allowedTypes": [
+      "ATLASSIAN_WEBHOOK_TRIGGER_TYPE",
+      "SCHEDULED_TRIGGER_TYPE",
+      "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+      "JWT_WEBHOOK_TRIGGER_TYPE",
+      "LOG_TRIGGER_TYPE"
+    ],
+    "defaultType": "SCHEDULED_TRIGGER_TYPE"
+  }
+}
