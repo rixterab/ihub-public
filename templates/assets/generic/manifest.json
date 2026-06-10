@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "key": "ticket-sync",
-  "name": "Salesforce Ticket Sync",
+  "key": "generic-asset-import",
+  "name": "Jira Asset Import: API Import",
   "version": "1.0.0",
   "icon": "icon.svg",
-  "description": "Sync Salesforce cases into Jira Service Management tickets.",
+  "description": "Importing from any REST API to Jira Assetsicon",
   "exportFile": "export.json",
   "defaultFlow": {
-    "enabled": false,
-    "groupName": "Salesforce"
+    "enabled": true,
+    "groupName": "Jira Assets Import"
   },
   "credentials": [
     {
@@ -16,9 +16,7 @@
       "title": "Salesforce OAuth2",
       "type": "OAUTH2",
       "description": "Used for Salesforce API calls.",
-      "targetPaths": [
-        "$.actions[0].credentialsReference"
-      ],
+      "targetPaths": ["$.actions[0].credentialsReference"],
       "defaults": {
         "name": "Salesforce OAuth2",
         "data": {

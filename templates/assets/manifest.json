@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "key": "assets",
+  "name": "JSM Asset Import(s)",
+  "description": "Import Assets to JSM Assets",
+  "icon": "icon.svg",
+  "order": 1
+}

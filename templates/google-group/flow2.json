@@ -1,0 +1,246 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/x-www-form-urlencoded",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "8108ca8f-0ed5-488f-807f-b7743814324e"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion={{{JWT}}}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://oauth2.googleapis.com/token",
+      "flowVariables": [
+        {
+          "name": "token_type",
+          "behavior": "SET",
+          "value": "$.token_type",
+          "instruction": ""
+        },
+        {
+          "name": "access_token",
+          "behavior": "SET",
+          "value": "$.access_token",
+          "instruction": ""
+        }
+      ],
+      "name": "Exchange JWT to Bearer",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10010.requestType.id",
+              "type": "DATA_CONDITION",
+              "value": "300",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "{{token_type}} {{access_token}}",
+          "key": "Authorization"
+        }
+      ],
+      "method": "POST",
+      "name": "Create group",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": null,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"email\": \"{{issue.fields.summary}}@rixter.se\",\n  \"name\": \"{{issue.fields.summary}}\",\n  \"description\": \"{{issue.fields.description}}\"\n}\n",
+      "parentId": "8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
+      "enabled": true,
+      "url": "https://admin.googleapis.com/admin/directory/v1/groups",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "scriptedVariables": [],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "a7eebeab-9acf-4b70-80ac-bf0e32bbed27"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "8d53bba3-8508-4c85-8948-900126c4ec99",
+      "enabled": true,
+      "url": "{{{self}}}",
+      "iterator": "$.issue.fields.customfield_11022",
+      "name": "Get email for accountId",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "{{token_type}} {{access_token}}",
+          "key": "Authorization"
+        }
+      ],
+      "iterator": "",
+      "method": "POST",
+      "name": "Add users to group",
+      "uiRenderer": "WEB_ACTION",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"email\": \"{{emailAddress}}\",\n  \"role\": \"MEMBER\"\n}\n",
+      "parentId": "36796a15-a55e-4c08-be43-74d119d57db5",
+      "enabled": true,
+      "url": "https://admin.googleapis.com/admin/directory/v1/groups/{{{email}}}/members",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Close ticket",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "a7eebeab-9acf-4b70-80ac-bf0e32bbed27"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"761\"\n  },\n  \"update\": {\n    \"comment\": [\n      {\n        \"add\": {\n          \"body\": {\n            \"type\": \"doc\",\n            \"version\": 1,\n            \"content\": [\n              {\n                \"type\": \"paragraph\",\n                \"content\": [\n                  {\n                    \"type\": \"text\",\n                    \"text\": \"The group has been created and the users is assigned.\"\n                  }\n                ]\n              }\n            ]\n          },\n          \"properties\": [\n            {\n              \"key\": \"sd.public.comment\",\n              \"value\": {\n                \"internal\": false\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/transitions",
+      "order": 500
+    }
+  ],
+  "description": "Creates a group in Google",
+  "enabled": false,
+  "flowVariables": [],
+  "groupName": "Google",
+  "logLevel": "OFF",
+  "logRetention": 30,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Create Google Group",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "jqlFilter": "issuetype=\"[System] Service request\"",
+      "events": [
+        "jira:issue_created"
+      ],
+      "projectIds": [
+        "10326"
+      ]
+    },
+    "value": 12548
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,207 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "iterator": "$.issue.fields.customfield_11022",
+      "method": "GET",
+      "name": "Get users email",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "a7eebeab-9acf-4b70-80ac-bf0e32bbed27"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
+      "enabled": true,
+      "url": "{{{self}}}",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "{{token_type}} {{access_token}}",
+          "key": "Authorization"
+        }
+      ],
+      "method": "DELETE",
+      "name": "remove user from group",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": null,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "682b1037-4b32-4dc7-9d76-d5d287a0d490",
+      "enabled": true,
+      "url": "https://admin.googleapis.com/admin/directory/v1/groups/{{_flow.groupName}}@rixter.se/members/{{emailAddress}}",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/x-www-form-urlencoded",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "8108ca8f-0ed5-488f-807f-b7743814324e"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion={{{JWT}}}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://oauth2.googleapis.com/token",
+      "flowVariables": [
+        {
+          "name": "token_type",
+          "behavior": "SET",
+          "value": "$.token_type",
+          "instruction": ""
+        },
+        {
+          "name": "access_token",
+          "behavior": "SET",
+          "value": "$.access_token",
+          "instruction": ""
+        },
+        {
+          "name": "groupName",
+          "behavior": "SET",
+          "value": "$.issue.fields.summary",
+          "instruction": ""
+        }
+      ],
+      "name": "Exchange JWT to Bearer",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10010.requestType.id",
+              "type": "DATA_CONDITION",
+              "value": "333",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Close ticket",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "a7eebeab-9acf-4b70-80ac-bf0e32bbed27"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"761\"\n  },\n  \"update\": {\n    \"comment\": [\n      {\n        \"add\": {\n          \"body\": {\n            \"type\": \"doc\",\n            \"version\": 1,\n            \"content\": [\n              {\n                \"type\": \"paragraph\",\n                \"content\": [\n                  {\n                    \"type\": \"text\",\n                    \"text\": \"User(s) has been removed from group.\"\n                  }\n                ]\n              }\n            ]\n          },\n          \"properties\": [\n            {\n              \"key\": \"sd.public.comment\",\n              \"value\": {\n                \"internal\": false\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/transitions",
+      "order": 400
+    }
+  ],
+  "description": "Remove a User in Google",
+  "enabled": false,
+  "flowVariables": [],
+  "groupName": "Google",
+  "logLevel": "OFF",
+  "logRetention": 30,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Remove User in Google",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "jqlFilter": "issuetype=\"[System] Service request\"",
+      "events": [
+        "jira:issue_created"
+      ],
+      "projectIds": [
+        "10326"
+      ]
+    },
+    "value": 12561
+  },
+  "useStaticIP": false
+}

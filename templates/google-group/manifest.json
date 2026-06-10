@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "key": "google-group",
+  "name": "Google Group",
+  "description": "Creating and removing user from a Google group",
+  "category": "Google",
+  "flows": [
+    "flow1.json",
+    "flow2.json"
+  ],
+  "icon": "google.png"
+}
