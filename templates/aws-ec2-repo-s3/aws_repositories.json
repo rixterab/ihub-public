@@ -1,0 +1,88 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/x-amz-json-1.1",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "AmazonEC2ContainerRegistry_V20150921.DescribeRepositories",
+          "key": "X-Amz-Target"
+        }
+      ],
+      "responseFileConfig": {
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "pagination": {
+        "variable": {
+          "name": "RepositoriesBody",
+          "script": "// Extract nextToken safely if it exists\nconst nextToken = response?.data?.nextToken;\n\n// Define the base request body\nconst requestBody = {\n  maxResults: 1\n};\n\n// Conditionally add nextToken if it exists\nif (nextToken) {\n  requestBody.nextToken = nextToken;\n}\n\nreturn requestBody;"
+        },
+        "breakJsonPath": "$.repositories",
+        "type": "CUSTOM",
+        "enabled": true
+      },
+      "method": "POST",
+      "scriptedVariables": [],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "NONE"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{{{toJSON RepositoriesBody}}}\n",
+      "responseOpt": {
+        "xsdSchemaUrl": "https://doc.s3.amazonaws.com/2006-03-01/AmazonS3.xsd",
+        "convertXmlToJson": true
+      },
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.ecr.eu-west-1.amazonaws.com",
+      "convertXmlToJson": true,
+      "name": "List Repositories",
+      "id": "8888a184-f2c7-48d9-8f19-7b4d4524f3a0",
+      "order": 100
+    }
+  ],
+  "description": "",
+  "enabled": false,
+  "flowVariables": [],
+  "groupName": "AWS",
+  "logLevel": "OFF",
+  "logRetention": 30,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "AWS Repositories",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "config": {
+      "jqlFilter": "",
+      "events": [],
+      "projectIds": []
+    }
+  },
+  "useStaticIP": false
+}

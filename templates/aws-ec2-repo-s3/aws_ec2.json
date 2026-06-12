@@ -42,18 +42,10 @@
         "enabled": true
       },
       "method": "GET",
-      "scriptedVariables": [
-        {
-          "name": "MyVar_0",
-          "isGlobal": "true",
-          "uuid": "1780921241447",
-          "script": "/*\n * Available variables:\n * - response: The response from the previous action.\n * - jsonResponse: The response parsed as JSON.\n * - scope: Input data (aliases: context, jsonContext).\n *   - scope.payload: Payload from previous action or trigger.\n *   - scope._flow: Flow-level variables shared across all actions.\n * - path(scope, '$.field'): Extract a value using JSONPath.\n */\nreturn scope?._flow?.name;"
-        }
-      ],
+      "scriptedVariables": [],
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "160077d0-dee4-4a43-8ec7-e216e91165b2"
+        "type": "NONE"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{{}}",
@@ -71,11 +63,12 @@
       },
       "convertXmlToJson": true,
       "name": "List EC2",
+      "id": "8888a184-f2c7-48d9-8f19-7b4d4524f3a0",
       "conditions": [],
       "order": 100
     }
   ],
-  "description": "test",
+  "description": "Gets a paginated list of EC2",
   "enabled": false,
   "flowVariables": [],
   "groupName": "AWS",
@@ -85,20 +78,14 @@
     "createdBy": "5ee9eea44784510aca6df3d0",
     "updatedBy": "5ee9eea44784510aca6df3d0"
   },
-  "name": "AWS Ec2",
+  "name": "AWS EC2",
   "trigger": {
-    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE",
+    "type": "SCHEDULED_TRIGGER_TYPE",
     "config": {
       "jqlFilter": "",
-      "events": [
-        "jira:issue_created",
-        "comment_created"
-      ],
-      "projectIds": [
-        "10194"
-      ]
-    },
-    "value": null
+      "events": [],
+      "projectIds": []
+    }
   },
   "useStaticIP": false
 }
