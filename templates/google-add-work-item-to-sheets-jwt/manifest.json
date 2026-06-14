@@ -1,12 +1,10 @@
 {
   "schemaVersion": 1,
-  "key": "google-add-to-sheet-jwt",
+  "key": "google-add-work-item-to-sheets-jwt",
   "name": "Google - Add to Sheet (JWT)",
   "description": "Adds work items to a Google sheet on work item events",
   "category": "Google",
-  "flows": [
-    "google_add_to_sheet_jwt.json"
-  ],
+  "flows": ["google_add_to_sheet_jwt.json"],
   "icon": "google.png",
   "author": "Rixter AB",
   "createdAt": "2026-06-14",
