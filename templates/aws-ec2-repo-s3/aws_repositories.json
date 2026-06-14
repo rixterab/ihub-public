@@ -48,7 +48,8 @@
       "scriptedVariables": [],
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "type": "NONE"
+        "type": "DATABASE_REF",
+        "value": "template:aws-signature-aws-sigv4-eu-west-1"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{{{toJSON RepositoriesBody}}}\n",

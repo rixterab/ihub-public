@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "key": "aws-ec2-repo-s3",
   "name": "AWS EC2 Repo S3",
-  "description": "Three flows that shows how to paginated get EC2, Repo and S3 from AWS",
+  "description": "Creating and removing user from a Google group",
   "category": "AWS",
   "flows": [
     "aws_ec2.json",
@@ -11,5 +11,25 @@
   ],
   "icon": "social.png",
   "author": "Rixter AB",
-  "createdAt": "2026-06-12"
+  "createdAt": "2026-06-14",
+  "credentialDefinitions": [
+    {
+      "key": "aws-signature-aws-sigv4-eu-west-1",
+      "name": "AWS SIGv4 EU-WEST-1",
+      "type": "AWS_SIGNATURE",
+      "data": {
+        "region": "",
+        "service": ""
+      }
+    },
+    {
+      "key": "aws-signature-aws-sigv4-us-east-1",
+      "name": "AWS SIGv4 US-EAST-1",
+      "type": "AWS_SIGNATURE",
+      "data": {
+        "region": "us-east-1",
+        "service": ""
+      }
+    }
+  ]
 }

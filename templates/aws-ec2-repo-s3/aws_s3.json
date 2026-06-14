@@ -44,7 +44,8 @@
       "scriptedVariables": [],
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "type": "NONE"
+        "type": "DATABASE_REF",
+        "value": "template:aws-signature-aws-sigv4-us-east-1"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",

@@ -45,10 +45,11 @@
       "scriptedVariables": [],
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "type": "NONE"
+        "type": "DATABASE_REF",
+        "value": "template:aws-signature-aws-sigv4-eu-west-1"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{{}}",
+      "body": "",
       "responseOpt": {
         "xsdSchemaUrl": "https://raw.githubusercontent.com/rixterab/ihub-public/refs/heads/main/aws/xsd-schemas/DescribeInstances-2016-11-15.xsd",
         "convertXmlToJson": true
