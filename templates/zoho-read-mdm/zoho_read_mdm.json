@@ -1,0 +1,169 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGING_NEXT",
+          "script": "const _jsonResponsePath=\"$.paging.next\";\n          const _defaultValue=\"https://mdm.manageengine.com/api/v1/mdm/users\";\n          const _nextCursor = path(jsonResponse, _jsonResponsePath);\n          return _nextCursor !== undefined ? _nextCursor : _defaultValue;\n          "
+        },
+        "breakJsonPath": "$.users",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get MDM Users",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-zoho-mdm"
+      },
+      "id": "4da49629-0cbc-4751-af3c-93095ade8df9",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "enabled": true,
+      "url": "{{PAGING_NEXT}}",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGING_NEXT",
+          "script": "const _jsonResponsePath=\"$.paging.next\";\n          const _defaultValue=\"https://mdm.manageengine.com/api/v1/mdm/groups\";\n          const _nextCursor = path(jsonResponse, _jsonResponsePath);\n          return _nextCursor !== undefined ? _nextCursor : _defaultValue;\n          "
+        },
+        "breakJsonPath": "$.groups",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get MDM Groups",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-zoho-mdm"
+      },
+      "id": "477f29d7-ca41-412b-8eca-f45433631bc6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "enabled": true,
+      "url": "{{PAGING_NEXT}}",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGING_NEXT",
+          "script": "const _jsonResponsePath=\"$.paging.next\";\n          const _defaultValue=\"https://mdm.manageengine.com/api/v1/mdm/devices\";\n          const _nextCursor = path(jsonResponse, _jsonResponsePath);\n          return _nextCursor !== undefined ? _nextCursor : _defaultValue;\n          "
+        },
+        "breakJsonPath": "$.devices",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get MDM Devices",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-zoho-mdm"
+      },
+      "id": "9741cb69-a504-4fa7-b585-639a63b239e2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "enabled": true,
+      "url": "{{PAGING_NEXT}}",
+      "order": 300
+    }
+  ],
+  "description": "",
+  "enabled": false,
+  "flowVariables": [],
+  "groupName": "",
+  "logLevel": "OFF",
+  "logRetention": 30,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5f9d70a071ab9e006afeb3be"
+  },
+  "name": "Zoho Read MDM",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

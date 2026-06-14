@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "key": "zoho-read-mdm",
+  "name": "Zoho Read MDM",
+  "description": "Fetch user, groups and devices from Zoho",
+  "category": "Zoho",
+  "flows": [
+    "zoho_read_mdm.json"
+  ],
+  "icon": "zoho.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-14",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-zoho-mdm",
+      "name": "Zoho MDM",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://accounts.zoho.com/oauth/v2/auth?access_type=offline&prompt=consent",
+            "accessTokenUrl": "https://accounts.zoho.com/oauth/v2/token"
+          },
+          "grantType": "code",
+          "scope": "MDMOnDemand.MDMDeviceMgmt.CREATE MDMOnDemand.MDMDeviceMgmt.ALL MDMOnDemand.MDMUser.READ",
+          "headerPrefix": "Zoho-oauthtoken",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}
