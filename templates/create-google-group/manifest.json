@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "create-google-group",
+  "name": "Create Google Group",
+  "description": "Creates a Google group based on the Jira work item",
+  "category": "Google",
+  "flows": [
+    "create_google_group.json"
+  ],
+  "icon": "google.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-14",
+  "credentialDefinitions": [
+    {
+      "key": "jwt-google-groups-users",
+      "name": "Google Groups & Users",
+      "type": "JWT",
+      "data": {
+        "claims": "",
+        "headerPrefix": "",
+        "algorithm": "RS256",
+        "useAsVariable": true,
+        "secret": {
+          "isBase64": false
+        }
+      }
+    }
+  ]
+}

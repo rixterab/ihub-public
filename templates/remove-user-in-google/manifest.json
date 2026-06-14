@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "remove-user-in-google",
+  "name": "Remove User in Google",
+  "description": "Removes users in a customfield from a Google group",
+  "category": "Google",
+  "flows": [
+    "remove_user_in_google.json"
+  ],
+  "icon": "google.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-14",
+  "credentialDefinitions": [
+    {
+      "key": "jwt-google-groups-users",
+      "name": "Google Groups & Users",
+      "type": "JWT",
+      "data": {
+        "claims": "",
+        "headerPrefix": "",
+        "algorithm": "RS256",
+        "useAsVariable": true,
+        "secret": {
+          "isBase64": false
+        }
+      }
+    }
+  ]
+}

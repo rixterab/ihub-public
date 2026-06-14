@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "google-add-work-item-to-sheets",
+  "name": "Google - Add Work Item to Sheets",
+  "description": "Adds work items to a Google sheet on work item events",
+  "category": "Google",
+  "flows": [
+    "google_add_work_item_to_sheets.json"
+  ],
+  "icon": "google.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-14",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-googlei",
+      "name": "Googlei",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "client": {
+            "id": "231593508887-pokhrnbjo9gg0tpuu6nuaco1s9d45nui.apps.googleusercontent.com"
+          },
+          "url": {
+            "authorizeUrl": "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent&include_granted_scopes=true",
+            "accessTokenUrl": "https://oauth2.googleapis.com/token"
+          },
+          "grantType": "code",
+          "scope": "https://www.googleapis.com/auth/spreadsheets",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

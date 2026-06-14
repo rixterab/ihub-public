@@ -1,0 +1,78 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add issue to sheet",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-googlei"
+      },
+      "id": "ecf85095-e300-4c2a-bfed-27d130da3529",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n\t\"values\": [\n\t\t[\n\t\t\t\"{{issue.key}}\",\n\t\t\t\"{{issue.summary}}\"\n\t\t]\n\t]\n}",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.data",
+              "type": "DATA_CONDITION",
+              "value": "Test",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "url": "https://sheets.googleapis.com/v4/spreadsheets/{{_flow.spreadSheetId}}/values/A1:append?valueInputOption=RAW",
+      "parentId": "",
+      "order": 100
+    }
+  ],
+  "description": "Adding work item data to Google Sheet",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "behavior": "SET",
+      "name": "spreadSheetId",
+      "value": "1-mj-YyMlgx1Dq-JrlaxXSESF4Q8gB8teD7gwATN1L5o",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Google",
+  "logLevel": "VERBOSE",
+  "logRetention": 1,
+  "metadata": {
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Google - Add Work Item to Sheets",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
