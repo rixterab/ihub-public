@@ -58,8 +58,8 @@
   "enabled": false,
   "flowVariables": [
     {
-      "behavior": "SET",
       "name": "spreadSheetId",
+      "behavior": "SET",
       "value": "1-mj-YyMlgx1Dq-JrlaxXSESF4Q8gB8teD7gwATN1L5o",
       "instruction": ""
     }
@@ -70,7 +70,7 @@
   "metadata": {
     "updatedBy": "5ee9eea44784510aca6df3d0"
   },
-  "name": "Google - Add Work Item to Sheets",
+  "name": "Google - Add Work Item to Sheets (OAuth)",
   "trigger": {
     "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
   },

@@ -1,21 +1,21 @@
 {
   "schemaVersion": 1,
-  "key": "remove-user-in-google",
-  "name": "Remove User in Google",
-  "description": "Removes users in a customfield from a Google group",
+  "key": "google-add-to-sheet-jwt",
+  "name": "Google - Add to Sheet (JWT)",
+  "description": "Adds work items to a Google sheet on work item events",
   "category": "Google",
   "flows": [
-    "remove_user_in_google.json"
+    "google_add_to_sheet_jwt.json"
   ],
   "icon": "google.png",
   "author": "Rixter AB",
   "createdAt": "2026-06-14",
   "credentialDefinitions": [
     {
-      "key": "jwt-google-groups-users",
-      "name": "Google Groups & Users",
+      "key": "jwt-google-jwt-sheets",
+      "name": "Google JWT Sheets",
       "type": "JWT",
-      "description": "Google",
+      "description": "test",
       "data": {
         "claims": "",
         "headerPrefix": "",

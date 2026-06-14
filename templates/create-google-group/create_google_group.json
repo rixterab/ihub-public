@@ -124,8 +124,8 @@
       "scriptedVariables": [],
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "value": "ATLASSIAN_AUTH_TOKEN",
-        "type": "ATLASSIAN_TOKEN"
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
@@ -168,21 +168,21 @@
           "key": "Authorization"
         }
       ],
-      "iterator": "",
       "method": "POST",
-      "name": "Add users to group",
       "uiRenderer": "WEB_ACTION",
-      "id": "46ea8f57-b286-45c8-95c7-0f344a6004d9",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:jwt-google-groups-users"
+      },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"email\": \"{{emailAddress}}\",\n  \"role\": \"MEMBER\"\n}\n",
       "parentId": "36796a15-a55e-4c08-be43-74d119d57db5",
       "enabled": true,
       "url": "https://admin.googleapis.com/admin/directory/v1/groups/{{{email}}}/members",
-      "order": 400,
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:jwt-google-groups-users"
-      }
+      "iterator": "",
+      "name": "Add users to group",
+      "id": "46ea8f57-b286-45c8-95c7-0f344a6004d9",
+      "order": 400
     },
     {
       "headers": [
@@ -215,8 +215,8 @@
       "name": "Close ticket",
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
-        "value": "ATLASSIAN_AUTH_TOKEN",
-        "type": "ATLASSIAN_TOKEN"
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "id": "a420adc1-007f-43c1-960a-8914bdf88737",
       "type": "WEB_REQUEST_ACTION_TYPE",
