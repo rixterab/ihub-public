@@ -2,13 +2,9 @@
   "schemaVersion": 1,
   "key": "aws-ec2-repo-s3",
   "name": "AWS EC2 Repo S3",
-  "description": "Creating and removing user from a Google group",
+  "description": "Get EC2, Repos and S3 buckets",
   "category": "AWS",
-  "flows": [
-    "aws_ec2.json",
-    "aws_s3.json",
-    "aws_repositories.json"
-  ],
+  "flows": ["aws_ec2.json", "aws_s3.json", "aws_repositories.json"],
   "icon": "social.png",
   "author": "Rixter AB",
   "createdAt": "2026-06-14",
