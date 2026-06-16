@@ -1,12 +1,10 @@
 {
   "schemaVersion": 1,
-  "key": "airtable",
+  "key": "airtable-records",
   "name": "Airtable",
   "description": "Get records",
   "category": "Airtable",
-  "flows": [
-    "airtable.json"
-  ],
+  "flows": ["airtable.json"],
   "icon": "airtable.png",
   "author": "Rixter AB",
   "createdAt": "2026-06-16",
