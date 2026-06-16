@@ -1,0 +1,74 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "name": "Get airtable rows",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-air-table-pat"
+      },
+      "id": "ad682413-7626-464b-ab33-d1941d9aba07",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.airtable.com/v0/{{_flow.BASE_ID}}/{{_flow.TABLE_NAME}}",
+      "order": 100
+    }
+  ],
+  "description": "",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "BASE_ID",
+      "behavior": "SET",
+      "value": "appLgdA6wCsXu7iiT",
+      "instruction": ""
+    },
+    {
+      "name": "TABLE_NAME",
+      "behavior": "SET",
+      "value": "tblxbVEAoFzjyGnnN",
+      "instruction": ""
+    }
+  ],
+  "groupName": "",
+  "logLevel": "OFF",
+  "logRetention": 30,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Airtable",
+  "trigger": {
+    "type": "JWT_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

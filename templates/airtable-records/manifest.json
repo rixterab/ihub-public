@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "airtable",
+  "name": "Airtable",
+  "description": "Get records",
+  "category": "Airtable",
+  "flows": [
+    "airtable.json"
+  ],
+  "icon": "airtable.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-16",
+  "credentialDefinitions": [
+    {
+      "key": "token-air-table-pat",
+      "name": "Air Table PAT",
+      "type": "TOKEN"
+    }
+  ]
+}
