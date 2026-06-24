@@ -1,0 +1,357 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.stg.atlassian.com/jsm/assets/imports/external/schema/versions/2021_09_15\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"Data imported from External API\",\n      \"objectTypes\": [\n        {\n          \"name\": \"API Import\",\n          \"description\": \"...\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true\n            },\n            {\n              \"name\": \"ExternalId\",\n              \"description\": \"\",\n              \"type\": \"text\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"API Import\",\n        \"selector\": \"api_response\",\n        \"description\": \"Mapping for API Response\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"ExternalId\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "15e75b79-9a07-4a15-bc5a-6a19efb36ff9",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "b97cd242-0941-4abe-a60b-a5a9e953c038",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "parentId": "b97cd242-0941-4abe-a60b-a5a9e953c038",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "08daf3d3-349d-4d6f-b238-262f41abc724",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get API Import",
+      "uiRenderer": "WEB_ACTION",
+      "id": "a956023e-56e1-4a36-b22c-782ece8fb726",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "enabled": true,
+      "url": "https://pokeapi.co/api/v2/pokemon",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n    \"data\":{\n        \"api_response\":{{{toJSON payload}}}\n    }\n}",
+      "parentId": "a956023e-56e1-4a36-b22c-782ece8fb726",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "8562bbb0-a24f-45f9-9c94-1d9f5c843c98",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "f7ad587b-9594-47b2-959f-7512faaf27a7",
+      "order": 700
+    }
+  ],
+  "description": "This flow is a template to import any data from a REST API to assets.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "HRw",
+      "instruction": ""
+    },
+    {
+      "behavior": "SET",
+      "name": "importSourceId",
+      "value": "",
+      "instruction": ""
+    }
+  ],
+  "groupName": "",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Jira Asset Import: API Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-asset-import-api-import",
+  "name": "Jira Asset Import: API Import",
+  "description": "Generic Asset Import template to import data from any rest api into Jira Assets",
+  "category": "Jira Assets",
+  "flows": [
+    "jira_asset_import_api_import.json"
+  ],
+  "icon": "assets.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-23",
+  "credentialDefinitions": [
+    {
+      "key": "token-api-import-asset-import-token",
+      "name": "API Import: Asset Import Token",
+      "type": "TOKEN"
+    }
+  ]
+}
