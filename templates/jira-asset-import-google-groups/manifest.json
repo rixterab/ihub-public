@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-asset-import-google-groups",
+  "name": "Jira Asset Import: Google Groups",
+  "description": "Import Google groups into Jira Assets",
+  "category": "Jira Assets",
+  "flows": [
+    "jira_asset_import_google_groups.json"
+  ],
+  "icon": "google.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-24",
+  "credentialDefinitions": [
+    {
+      "key": "jwt-google-groups-users",
+      "name": "Google Groups & Users",
+      "type": "JWT",
+      "description": "Google",
+      "data": {
+        "claims": "",
+        "headerPrefix": "",
+        "algorithm": "RS256",
+        "useAsVariable": true,
+        "secret": {
+          "isBase64": false
+        }
+      }
+    },
+    {
+      "key": "token-api-import-asset-import-token",
+      "name": "API Import: Asset Import Token",
+      "type": "TOKEN"
+    }
+  ]
+}

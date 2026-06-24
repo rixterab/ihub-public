@@ -1,0 +1,460 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "{{token_type}} {{access_token}}",
+          "key": "Authorization"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "pageToken",
+          "script": "const _jsonResponsePath=\"$.data.nextPageToken\";\nconst _defaultValue=\"\";\nconst _nextCursor = path(jsonResponse, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$.nextPageToken",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get Google Groups",
+      "uiRenderer": "WEB_ACTION",
+      "id": "bd859f67-f499-4227-9649-66c6b019c836",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "6d57fdf3-7090-4694-8ffc-b83928ad97a8",
+      "enabled": true,
+      "url": "https://admin.googleapis.com/admin/directory/v1/groups?domain={{_flow.domain}}&maxResults=4&pageToken={{pageToken}}",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/x-www-form-urlencoded",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Exchange JWT to Bearer",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:jwt-google-groups-users"
+      },
+      "id": "6d57fdf3-7090-4694-8ffc-b83928ad97a8",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion={{{JWT}}}",
+      "parentId": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "enabled": true,
+      "url": "https://oauth2.googleapis.com/token",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "workspaceId",
+          "uuid": "bd779e72-5bf6-4170-b1ef-4f8badd9339f",
+          "script": "return \"44143b0f-24fc-4c64-889c-57267f7c40d6\";"
+        },
+        {
+          "name": "importSourceId",
+          "uuid": "48ba0aee-d34a-4d9e-89b4-9f2b72637069",
+          "script": "return \"f67e12c4-92eb-4638-b8d8-a70ac7879fcd\";"
+        },
+        {
+          "name": "_version",
+          "uuid": "3a9f33f3-d629-41f9-b8a7-c275060b2482",
+          "script": "return \"1\";"
+        }
+      ],
+      "description": "Run this action one time to setup the import structure",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.stg.atlassian.com/jsm/assets/imports/external/schema/versions/2021_09_15\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchemaName}}\",\n      \"description\": \"Data imported from External API\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Google Groups\",\n          \"description\": \"...\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true\n            },\n            {\n              \"name\": \"ExternalId\",\n              \"description\": \"\",\n              \"type\": \"text\"\n            },\n            {\n              \"name\": \"etag\",\n              \"description\": \"\",\n              \"type\": \"text\"\n            },\n            {\n              \"name\": \"email\",\n              \"description\": \"\",\n              \"type\": \"email\"\n            },\n            {\n              \"name\": \"directMembersCount\",\n              \"description\": \"\",\n              \"type\": \"integer\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Google Groups\",\n        \"selector\": \"api_response\",\n        \"description\": \"Mapping for API Response\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"ExternalId\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"etag\",\n            \"attributeLocators\": [\n              \"etag\"\n            ]\n          },\n          {\n            \"attributeName\": \"email\",\n            \"attributeLocators\": [\n              \"email\"\n            ]\n          },\n          {\n            \"attributeName\": \"directMembersCount\",\n            \"attributeLocators\": [\n              \"directMembersCount\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "250140da-d174-460b-833e-5b0ca9e94e4b",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "workspaceId",
+          "uuid": "25248f68-bcbf-4aac-961d-5e03d0d710f8",
+          "script": "return \"44143b0f-24fc-4c64-889c-57267f7c40d6\";"
+        },
+        {
+          "name": "importSourceId",
+          "uuid": "729b6d56-748e-41fb-98f3-b322e7298e0a",
+          "script": "return \"f67e12c4-92eb-4638-b8d8-a70ac7879fcd\";"
+        },
+        {
+          "name": "_version",
+          "uuid": "98442979-0e6f-48f7-81ac-e4cbb3523199",
+          "script": "return \"1\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "eb9abe1f-5777-44ae-93cb-312cef91578f",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "parentId": "eb9abe1f-5777-44ae-93cb-312cef91578f",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "75977d06-3452-4ffe-aa80-6f5d0947edff",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "workspaceId",
+          "uuid": "25b8188c-6bdb-4459-92d8-4a979cb30fc9",
+          "script": "return \"44143b0f-24fc-4c64-889c-57267f7c40d6\";"
+        },
+        {
+          "name": "importSourceId",
+          "uuid": "7debf837-a4c7-4a5a-8afc-f79a2f532c92",
+          "script": "return \"f67e12c4-92eb-4638-b8d8-a70ac7879fcd\";"
+        },
+        {
+          "name": "_version",
+          "uuid": "fba524f0-ffd8-4676-aa4a-cc5236520ae0",
+          "script": "return \"1\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n    \"data\":{\n        \"api_response\":{{{toJSON groups}}}\n    }\n}",
+      "parentId": "bd859f67-f499-4227-9649-66c6b019c836",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "890d928e-683e-4c75-9860-1c895178d59f",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-api-import-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "4fadd217-9425-4cc2-b91c-165978bb7591",
+      "order": 800
+    }
+  ],
+  "description": "This integration imports from API into Jira Assets and place them in the Asset Schema: IT (IT) in the Object Type: Google Groups\nThe Import Source is called Google Groups",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "domain",
+      "behavior": "SET",
+      "value": "rixter.se",
+      "instruction": ""
+    },
+    {
+      "name": "assetSchemaName",
+      "behavior": "SET",
+      "value": "IT",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Google",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Jira Asset Import: Google Groups",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}
