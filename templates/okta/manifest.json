@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "key": "okta",
+  "name": "Okta",
+  "description": "Import Okta resources into Jira Assets",
+  "category": "Jira Assets",
+  "flows": [
+    "okta.json"
+  ],
+  "icon": "okta.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-06-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-okta-read-token",
+      "name": "Okta Read Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

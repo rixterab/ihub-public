@@ -1,0 +1,717 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "nextLink",
+          "script": "var defaultLink = \"https://dev-67170803-admin.okta.com/api/v1/apps?limit=2\";\n\nif(response && response.headers && response.headers.link){\n    // Use regular expression to extract the URL with rel=\"next\"\n    const match = /<([^>]+)>;\\s*rel=\"next\"/.exec(response.headers.link);\n    const nextUrl = match && match[1];   \n    return nextUrl;\n}\nreturn defaultLink;"
+        },
+        "breakJsonPath": "$",
+        "type": "CUSTOM",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get Okta apps",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:d68247ca-c0a8-42f2-8425-0f785debf1df",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "{{{nextLink}}}",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "nextLink",
+          "script": "return \"?limit=2\";"
+        },
+        "breakJsonPath": "$",
+        "type": "CUSTOM",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Get Okta apps (copy)",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:47f12239-576b-4a65-9d11-d2336649258b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/apps{{nextLink}}",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "nextLink",
+          "script": "var defaultLink = \"https://dev-67170803-admin.okta.com/api/v1/apps?limit=2\";\n\nif(response && response.headers && response.headers.link){\n    // Use regular expression to extract the URL with rel=\"next\"\n    const match = /<([^>]+)>;\\s*rel=\"next\"/.exec(response.headers.link);\n    const nextUrl = match && match[1];   \n    return nextUrl;\n}\nreturn defaultLink;"
+        },
+        "breakJsonPath": "$",
+        "type": "CUSTOM",
+        "enabled": false
+      },
+      "method": "GET",
+      "name": "Get Users in App",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:95083e84-9936-4f0d-99a0-5f07a66c8f1f",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803.okta.com/api/v1/apps/0oabmoe6ktqajNcaj5d7/users",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get films",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:a3401dc7-7ddf-45b8-a421-534839ca06fd",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://swapi.dev/api/films",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "iterator": "$.results",
+      "method": "POST",
+      "name": "Add Okta app",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:7fe1000d-a3f4-4506-bff2-3ca8632baf62",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"name\": \"bookmark\",\n  \"label\": \"{{title}} App\",\n  \"signOnMode\": \"BOOKMARK\",\n  \"settings\": {\n    \"app\": {\n      \"requestIntegration\": false,\n      \"url\": \"{{url}}\"\n    }\n  }\n}",
+      "parentId": "template:action:a3401dc7-7ddf-45b8-a421-534839ca06fd",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/apps",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get roles",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:3fcf9579-2abe-4936-8480-7ee1424d5379",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/iam/roles",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Policies",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:db897c08-aeae-4743-b675-1d2f58a9fa29",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/policies?type=OKTA_SIGN_ON",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Users",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:63ba1bf6-5713-440c-b6e5-80dd106cdd7a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/users",
+      "order": 800
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Policies PASSWORD",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:f10836f9-04dd-482d-b9f9-e7a0bab15865",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/policies?type=PASSWORD",
+      "order": 900
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Policies MFA_ENROLL",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:49ab1458-99fb-4a5f-9a38-70afbe65855a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/policies?type=MFA_ENROLL",
+      "order": 1000
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Policies IDP_DISCOVERY",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:8b705c37-5323-4f1c-b816-0c0fbc4e658b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/policies?type=IDP_DISCOVERY",
+      "order": 1100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Groups",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-okta-read-token"
+      },
+      "id": "template:action:e49179bd-dc63-4f7b-a02f-06b03c3aca7e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/groups",
+      "order": 1200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Groups for app",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:edbabfcd-57e8-450e-b248-01f9d1bad689",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803.okta.com/api/v1/apps/0oacabd74zzsS7O2x5d7/groups",
+      "order": 1300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Types",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:c508a495-d1a5-4be6-a352-08aec667e07e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803-admin.okta.com/api/v1/meta/types/user",
+      "order": 1400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        },
+        {
+          "value": "SSWS 00iZ30C_6mZIoiOU9Tk4vCFzKSipgoBNzOMJ8npSv2",
+          "key": "Authorization"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Policies PASSWORD (copy)",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-okta-read-token"
+      },
+      "id": "template:action:669f3f9c-4fea-4534-818a-566d847c4be6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803.okta.com/api/v1/policies?type&#x3D;MFA_ENROLL?limit&#x3D;200",
+      "order": 1500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "name": "Web Action",
+      "uiRenderer": "WEB_ACTION",
+      "id": "template:action:bc400939-5ab4-4edd-b037-656f055d608e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "order": 1600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Users in Group",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-okta-read-token"
+      },
+      "id": "template:action:189ab081-e883-4148-9a80-f54ef8991159",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "parentId": "",
+      "url": "https://dev-67170803.okta.com/api/v1/groups/00gbms1al0OOKFwsW5d7/users",
+      "order": 1700
+    }
+  ],
+  "description": "",
+  "enabled": false,
+  "groupName": "",
+  "logLevel": "VERBOSE",
+  "logRetention": 30,
+  "name": "Okta",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
