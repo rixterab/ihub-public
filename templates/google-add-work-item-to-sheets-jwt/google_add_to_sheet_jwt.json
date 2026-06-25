@@ -34,7 +34,7 @@
         "type": "DATABASE_REF",
         "value": "template:jwt-google-jwt-sheets"
       },
-      "id": "1938bcfd-b549-49e2-92d0-b77118cc87e7",
+      "id": "template:action:1938bcfd-b549-49e2-92d0-b77118cc87e7",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n    \"grant_type\":\"urn:ietf:params:oauth:grant-type:jwt-bearer\",\n    \"assertion\":\"{{JWT}}\"\n}",
       "parentId": "",
@@ -77,7 +77,7 @@
       "credentialsReference": {
         "value": ""
       },
-      "id": "ecf85095-e300-4c2a-bfed-27d130da3529",
+      "id": "template:action:ecf85095-e300-4c2a-bfed-27d130da3529",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n\t\"values\": [\n\t\t[\n\t\t\t\"{{issue.key}}\",\n\t\t\t\"{{issue.summary}}\"\n\t\t]\n\t]\n}",
       "conditions": [
@@ -92,7 +92,7 @@
         }
       ],
       "url": "https://sheets.googleapis.com/v4/spreadsheets/1-mj-YyMlgx1Dq-JrlaxXSESF4Q8gB8teD7gwATN1L5o/values/A1:append?valueInputOption=RAW",
-      "parentId": "1938bcfd-b549-49e2-92d0-b77118cc87e7",
+      "parentId": "template:action:1938bcfd-b549-49e2-92d0-b77118cc87e7",
       "order": 200
     }
   ],

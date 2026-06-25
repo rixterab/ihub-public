@@ -43,7 +43,7 @@
         "type": "DATABASE_REF",
         "value": "template:oauth2-zoho-mdm"
       },
-      "id": "4da49629-0cbc-4751-af3c-93095ade8df9",
+      "id": "template:action:4da49629-0cbc-4751-af3c-93095ade8df9",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "parentId": "",
       "enabled": true,
@@ -93,7 +93,7 @@
         "type": "DATABASE_REF",
         "value": "template:oauth2-zoho-mdm"
       },
-      "id": "477f29d7-ca41-412b-8eca-f45433631bc6",
+      "id": "template:action:477f29d7-ca41-412b-8eca-f45433631bc6",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "parentId": "",
       "enabled": true,
@@ -143,7 +143,7 @@
         "type": "DATABASE_REF",
         "value": "template:oauth2-zoho-mdm"
       },
-      "id": "9741cb69-a504-4fa7-b585-639a63b239e2",
+      "id": "template:action:9741cb69-a504-4fa7-b585-639a63b239e2",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "parentId": "",
       "enabled": true,

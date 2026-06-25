@@ -35,9 +35,9 @@
         "type": "ATLASSIAN_TOKEN",
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
-      "id": "682b1037-4b32-4dc7-9d76-d5d287a0d490",
+      "id": "template:action:682b1037-4b32-4dc7-9d76-d5d287a0d490",
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "parentId": "8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
+      "parentId": "template:action:8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
       "enabled": true,
       "url": "{{{self}}}",
       "order": 100
@@ -77,10 +77,10 @@
       "name": "remove user from group",
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": null,
-      "id": "8d53bba3-8508-4c85-8948-900126c4ec99",
+      "id": "template:action:8d53bba3-8508-4c85-8948-900126c4ec99",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
-      "parentId": "682b1037-4b32-4dc7-9d76-d5d287a0d490",
+      "parentId": "template:action:682b1037-4b32-4dc7-9d76-d5d287a0d490",
       "enabled": true,
       "url": "https://admin.googleapis.com/admin/directory/v1/groups/{{_flow.groupName}}{{_flow.domain}}/members/{{emailAddress}}",
       "order": 200
@@ -124,7 +124,7 @@
         }
       ],
       "name": "Exchange JWT to Bearer",
-      "id": "8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
+      "id": "template:action:8c2e1eeb-f0d2-4152-afb3-41e4a0eb9ea8",
       "conditions": [
         {
           "type": "COMBINED_CONDITION",
@@ -174,7 +174,7 @@
         "type": "ATLASSIAN_TOKEN",
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
-      "id": "91d3b31d-759d-43fa-8397-64953174de1c",
+      "id": "template:action:91d3b31d-759d-43fa-8397-64953174de1c",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"transition\": {\n    \"id\": \"761\"\n  },\n  \"update\": {\n    \"comment\": [\n      {\n        \"add\": {\n          \"body\": {\n            \"type\": \"doc\",\n            \"version\": 1,\n            \"content\": [\n              {\n                \"type\": \"paragraph\",\n                \"content\": [\n                  {\n                    \"type\": \"text\",\n                    \"text\": \"User(s) has been removed from group.\"\n                  }\n                ]\n              }\n            ]\n          },\n          \"properties\": [\n            {\n              \"key\": \"sd.public.comment\",\n              \"value\": {\n                \"internal\": false\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
       "parentId": "",

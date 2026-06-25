@@ -35,7 +35,7 @@
         "type": "DATABASE_REF",
         "value": "template:token-air-table-pat"
       },
-      "id": "ad682413-7626-464b-ab33-d1941d9aba07",
+      "id": "template:action:ad682413-7626-464b-ab33-d1941d9aba07",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "parentId": "",
       "enabled": true,

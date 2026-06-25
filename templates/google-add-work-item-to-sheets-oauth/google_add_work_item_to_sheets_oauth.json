@@ -33,7 +33,7 @@
         "type": "DATABASE_REF",
         "value": "template:oauth2-googlei"
       },
-      "id": "ecf85095-e300-4c2a-bfed-27d130da3529",
+      "id": "template:action:ecf85095-e300-4c2a-bfed-27d130da3529",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n\t\"values\": [\n\t\t[\n\t\t\t\"{{issue.key}}\",\n\t\t\t\"{{issue.summary}}\"\n\t\t]\n\t]\n}",
       "conditions": [

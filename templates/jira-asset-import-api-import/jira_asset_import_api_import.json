@@ -40,7 +40,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/mapping",
       "name": "Update Import Mapping",
-      "id": "15e75b79-9a07-4a15-bc5a-6a19efb36ff9",
+      "id": "template:action:15e75b79-9a07-4a15-bc5a-6a19efb36ff9",
       "order": 100
     },
     {
@@ -83,7 +83,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/configstatus",
       "name": "Check Import Status",
-      "id": "b97cd242-0941-4abe-a60b-a5a9e953c038",
+      "id": "template:action:b97cd242-0941-4abe-a60b-a5a9e953c038",
       "order": 200
     },
     {
@@ -127,11 +127,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{}",
-      "parentId": "b97cd242-0941-4abe-a60b-a5a9e953c038",
+      "parentId": "template:action:b97cd242-0941-4abe-a60b-a5a9e953c038",
       "enabled": true,
       "url": "{{cancelUrl}}",
       "name": "Cancel import if it has stuck.",
-      "id": "08daf3d3-349d-4d6f-b238-262f41abc724",
+      "id": "template:action:08daf3d3-349d-4d6f-b238-262f41abc724",
       "conditions": [
         {
           "type": "COMBINED_CONDITION",
@@ -187,7 +187,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/executions",
       "name": "Start Import",
-      "id": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "id": "template:action:91f43f62-835b-4822-afcb-f5a9376d6d5c",
       "order": 400
     },
     {
@@ -220,10 +220,10 @@
       "method": "GET",
       "name": "Get API Import",
       "uiRenderer": "WEB_ACTION",
-      "id": "a956023e-56e1-4a36-b22c-782ece8fb726",
+      "id": "template:action:a956023e-56e1-4a36-b22c-782ece8fb726",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
-      "parentId": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "parentId": "template:action:91f43f62-835b-4822-afcb-f5a9376d6d5c",
       "enabled": true,
       "url": "https://pokeapi.co/api/v2/pokemon",
       "order": 500
@@ -269,11 +269,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n    \"data\":{\n        \"api_response\":{{{toJSON payload}}}\n    }\n}",
-      "parentId": "a956023e-56e1-4a36-b22c-782ece8fb726",
+      "parentId": "template:action:a956023e-56e1-4a36-b22c-782ece8fb726",
       "enabled": true,
       "url": "{{submitResultsUrl}}",
       "name": "Submit Data",
-      "id": "8562bbb0-a24f-45f9-9c94-1d9f5c843c98",
+      "id": "template:action:8562bbb0-a24f-45f9-9c94-1d9f5c843c98",
       "order": 600
     },
     {
@@ -317,11 +317,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"completed\": true\n}",
-      "parentId": "91f43f62-835b-4822-afcb-f5a9376d6d5c",
+      "parentId": "template:action:91f43f62-835b-4822-afcb-f5a9376d6d5c",
       "enabled": true,
       "url": "{{submitResultsUrl}}",
       "name": "Complete Import",
-      "id": "f7ad587b-9594-47b2-959f-7512faaf27a7",
+      "id": "template:action:f7ad587b-9594-47b2-959f-7512faaf27a7",
       "order": 700
     }
   ],

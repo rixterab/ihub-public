@@ -64,7 +64,7 @@
       },
       "convertXmlToJson": true,
       "name": "List EC2",
-      "id": "8888a184-f2c7-48d9-8f19-7b4d4524f3a0",
+      "id": "template:action:8888a184-f2c7-48d9-8f19-7b4d4524f3a0",
       "conditions": [],
       "order": 100
     }
