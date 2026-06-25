@@ -43,9 +43,9 @@
       "method": "GET",
       "name": "Get Google Groups",
       "uiRenderer": "WEB_ACTION",
-      "id": "bd859f67-f499-4227-9649-66c6b019c836",
+      "id": "template:action:bd859f67-f499-4227-9649-66c6b019c836",
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "parentId": "6d57fdf3-7090-4694-8ffc-b83928ad97a8",
+      "parentId": "template:action:6d57fdf3-7090-4694-8ffc-b83928ad97a8",
       "enabled": true,
       "url": "https://admin.googleapis.com/admin/directory/v1/groups?domain={{_flow.domain}}&maxResults=4&pageToken={{pageToken}}",
       "order": 100
@@ -84,10 +84,10 @@
         "type": "DATABASE_REF",
         "value": "template:jwt-google-groups-users"
       },
-      "id": "6d57fdf3-7090-4694-8ffc-b83928ad97a8",
+      "id": "template:action:6d57fdf3-7090-4694-8ffc-b83928ad97a8",
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion={{{JWT}}}",
-      "parentId": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "parentId": "template:action:703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
       "enabled": true,
       "url": "https://oauth2.googleapis.com/token",
       "order": 200
@@ -149,7 +149,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
       "name": "Update Import Mapping",
-      "id": "250140da-d174-460b-833e-5b0ca9e94e4b",
+      "id": "template:action:250140da-d174-460b-833e-5b0ca9e94e4b",
       "order": 300
     },
     {
@@ -208,7 +208,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
       "name": "Check Import Status",
-      "id": "eb9abe1f-5777-44ae-93cb-312cef91578f",
+      "id": "template:action:eb9abe1f-5777-44ae-93cb-312cef91578f",
       "order": 400
     },
     {
@@ -252,11 +252,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{}",
-      "parentId": "eb9abe1f-5777-44ae-93cb-312cef91578f",
+      "parentId": "template:action:eb9abe1f-5777-44ae-93cb-312cef91578f",
       "enabled": true,
       "url": "{{cancelUrl}}",
       "name": "Cancel import if it has stuck.",
-      "id": "75977d06-3452-4ffe-aa80-6f5d0947edff",
+      "id": "template:action:75977d06-3452-4ffe-aa80-6f5d0947edff",
       "conditions": [
         {
           "type": "COMBINED_CONDITION",
@@ -328,7 +328,7 @@
       "enabled": true,
       "url": "https://api.atlassian.com/jsm/assets/workspace/{{workspaceId}}/v1/importsource/{{importSourceId}}/executions",
       "name": "Start Import",
-      "id": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "id": "template:action:703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
       "order": 600
     },
     {
@@ -372,11 +372,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n    \"data\":{\n        \"api_response\":{{{toJSON groups}}}\n    }\n}",
-      "parentId": "bd859f67-f499-4227-9649-66c6b019c836",
+      "parentId": "template:action:bd859f67-f499-4227-9649-66c6b019c836",
       "enabled": true,
       "url": "{{submitResultsUrl}}",
       "name": "Submit Data",
-      "id": "890d928e-683e-4c75-9860-1c895178d59f",
+      "id": "template:action:890d928e-683e-4c75-9860-1c895178d59f",
       "order": 700
     },
     {
@@ -420,11 +420,11 @@
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"completed\": true\n}",
-      "parentId": "703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
+      "parentId": "template:action:703f90ed-fe28-4f01-9f22-4c0f5bf3e504",
       "enabled": true,
       "url": "{{submitResultsUrl}}",
       "name": "Complete Import",
-      "id": "4fadd217-9425-4cc2-b91c-165978bb7591",
+      "id": "template:action:4fadd217-9425-4cc2-b91c-165978bb7591",
       "order": 800
     }
   ],
