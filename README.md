@@ -35,3 +35,6 @@ To contribute a template:
 5. Open a pull request with a short description of the template and its intended use case.
 
 Good templates should be easy for another iHub user to understand, import, configure, and adapt.
+
+Doc in Confluence
+https://rixter.atlassian.net/wiki/spaces/RIFJ/pages/2995617793/iHub+Use+Templates
