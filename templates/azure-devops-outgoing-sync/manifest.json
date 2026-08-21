@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-azure-devops-sync",
+  "name": "Jira <-> Azure Devops Sync",
+  "description": "Sync tickets between Jira and Azure Devops",
+  "category": "Azure Devops",
+  "flows": [
+    "azure_devops_incoming_sync.json",
+    "azure_devops_outgoing_sync.json"
+  ],
+  "icon": "azure-devops.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-21",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-azure-devops",
+      "name": "Azure DevOps",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "peter@rixter.se"
+      }
+    }
+  ]
+}

@@ -1,0 +1,535 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json-patch+json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-azure-devops"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/fields/System.Title\",\n    \"value\": \"{{{issue.summary}}}\"\n  },\n  {\n    \"op\": \"add\",\n    \"path\": \"/fields/System.Description\",\n    \"value\": \"{{{adfToHTML issue.description}}}\"\n  }\n]",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.AZURE_URL}}/{{_flow.PROJECT_NAME}}/_apis/wit/workitems/${{_flow.WORKITEM_TYPE}}?api-version=7.1",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "workItemId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Create WorkItem in Azure",
+      "id": "template:action:0bcb12eb-0ca0-4ec4-bc77-bc0ff402221a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "description": "Check if external id exists on current Jira issue",
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS"
+            },
+            {
+              "description": "ONLY CREATED EVENT",
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Comment Id",
+      "description": "Set a custom JSON property value on a Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ae335078-5935-4a93-ae0f-a39db37ddc66",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\"\n}",
+      "parentId": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{id}}",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Attachment Id",
+      "description": "Set a custom JSON property value on a Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ac1084e5-0dcd-4ce1-95ee-b6dfc13e0fee",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{attachmentId}}\",\n  \"status\": \"synced\"\n}",
+      "parentId": "template:action:38f00e43-141a-4fe4-a880-d5efca1f20f1",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{attachmentId}}",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-azure-devops"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"text\": \"<p>Synced from <strong>Jira</strong></p><p>Status: {{issue.fields.status.name}}</p><p>Issue: {{issue.key}}</p><p>{{{adfToHTML payload.comment.body}}}</p>\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.AZURE_URL}}/{{_flow.PROJECT_NAME}}/_apis/wit/workitems/{{issue.fields.customfield_10153}}/comments?api-version=7.1-preview.4",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "workItemId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Comment Work Item",
+      "id": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "DATA_CONDITION",
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "operator": "NOT_EQUALS",
+              "value": "",
+              "description": ""
+            },
+            {
+              "type": "DATA_CONDITION",
+              "jsonPath": "$.eventType",
+              "operator": "EQUALS",
+              "value": "avi:jira:commented:issue",
+              "description": ""
+            },
+            {
+              "type": "DATA_CONDITION",
+              "jsonPath": "$.comment.author.accountId",
+              "operator": "NOT_EQUALS",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json-patch+json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-azure-devops"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "[\n  {\n    \"op\": \"replace\",\n    \"path\": \"/fields/System.Description\",\n    \"value\": \"{{adfToHTML issue.fields.description}}\"\n  }\n]",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.AZURE_URL}}/{{_flow.PROJECT_NAME}}/_apis/wit/workitems/{{issue.fields.customfield_10153}}?api-version=7.1",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "workItemId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Description on Work Item",
+      "id": "template:action:5e110f20-e411-47c5-a08f-fc0901d308ce",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/octet-stream",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-azure-devops"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{attachments.unsentFile}}\"  \n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.AZURE_URL}}/{{_flow.PROJECT_NAME}}/_apis/wit/attachments?fileName={{filename}}&api-version=7.1",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [],
+      "name": "Upload the attachment",
+      "id": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "description": "BLOCK iHub User added attachments",
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Update workitem id on an existing Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.workItemId}}\"   \n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Edit Issue on Create",
+      "id": "template:action:3129051f-0f93-4281-a933-7d84580dafa2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "description": "ONLY CREATED EVENT",
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json-patch+json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.payload.id",
+          "key": "attachmentId"
+        }
+      ],
+      "method": "PATCH",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-azure-devops"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "[\n  {\n    \"op\": \"add\",\n    \"path\": \"/relations/-\",\n    \"value\": {\n      \"rel\": \"AttachedFile\",\n      \"url\": \"{{{url}}}\",\n      \"attributes\": {\n        \"comment\": \"File {{filename}} has been attached\"\n      }\n    }\n  }\n]",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "enabled": true,
+      "url": "{{_flow.AZURE_URL}}/{{_flow.PROJECT_NAME}}/_apis/wit/workitems/{{_flow.workItemId}}?api-version=7.1",
+      "flowVariables": [],
+      "name": "Attach it to the Risk work item",
+      "id": "template:action:38f00e43-141a-4fe4-a880-d5efca1f20f1",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "description": "attachment URL exists",
+              "jsonPath": "$.url",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 800
+    }
+  ],
+  "description": "Sync Work Items to Azure DevOps",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "PROJECT_NAME",
+      "behavior": "SET",
+      "value": "Risk%20Management",
+      "instruction": ""
+    },
+    {
+      "name": "WORKITEM_TYPE",
+      "behavior": "SET",
+      "value": "Risk",
+      "instruction": ""
+    },
+    {
+      "name": "AZURE_URL",
+      "behavior": "SET",
+      "value": "https://dev.azure.com/rixterdev",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Azure Devops",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Azure Devops Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
