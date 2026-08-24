@@ -1,0 +1,954 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "mondayEventType",
+          "uuid": "1787643521001",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = read('type', 'eventType', 'event_type', 'Type');\nconst normalize = (value) => {\n  const v = String(value).toLowerCase();\n  if (v === 'create_pulse' || v === 'create_item' || v === 'create_subitem') return 'create_item';\n  if (v === 'update_column_value' || v === 'change_column_value' || v === 'update_specific_column_value' || v === 'change_specific_column_value' || v === 'change_status_column_value' || v === 'change_subitem_column_value') return 'change_column_value';\n  if (v === 'update_name' || v === 'change_name' || v === 'change_subitem_name') return 'change_name';\n  if (v === 'create_update' || v === 'edit_update' || v === 'create_subitem_update') return 'create_update';\n  return value;\n};\nif (raw) return normalize(raw);\nif (read('updateId', 'update_id')) return 'create_update';\nif (read('columnId', 'column_id')) return 'change_column_value';\nif (read('pulseId', 'pulse_id', 'itemId', 'item_id')) return 'create_item';\nreturn '';"
+        },
+        {
+          "name": "mondayItemId",
+          "uuid": "1787643521002",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('pulseId', 'pulse_id', 'itemId', 'item_id', 'value.pulseId', 'id');"
+        },
+        {
+          "name": "mondayItemName",
+          "uuid": "1787643521003",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst name = read('pulseName', 'pulse_name', 'itemName', 'item_name', 'value.name', 'name');\nif (name) return name;\nconst id = read('pulseId', 'pulse_id', 'itemId', 'item_id');\nreturn id ? 'Monday item ' + id : 'Monday item';"
+        },
+        {
+          "name": "mondayBoardId",
+          "uuid": "1787643521004",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('boardId', 'board_id');"
+        },
+        {
+          "name": "mondayColumnId",
+          "uuid": "1787643521005",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('columnId', 'column_id', 'columnid');"
+        },
+        {
+          "name": "mondayColumnValue",
+          "uuid": "1787643521006",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst value = read('value.value', 'value.text', 'value.label.text', 'value.label', 'value.name', 'textBody', 'value');\nif (value === '') return '';\nreturn typeof value === 'object' ? JSON.stringify(value) : String(value);"
+        },
+        {
+          "name": "mondayUserId",
+          "uuid": "1787643521007",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('userId', 'user_id', 'user.id', 'triggeredByUserId');"
+        },
+        {
+          "name": "mondayUpdateId",
+          "uuid": "1787643521008",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('updateId', 'update_id', 'update.id');"
+        },
+        {
+          "name": "mondayUpdateBody",
+          "uuid": "1787643521009",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('textBody', 'body', 'update.body', 'update.text_body', 'value.textBody', 'value.body');"
+        },
+        {
+          "name": "mondayAssetId",
+          "uuid": "1787643521010",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('value.files.0.assetId', 'value.files.0.asset_id', 'assetId', 'asset_id', 'value.assetId');"
+        },
+        {
+          "name": "mondayAssetName",
+          "uuid": "1787643521011",
+          "script": "const outer = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst root = outer?.event && typeof outer.event === 'object' ? outer.event : outer;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('value.files.0.name', 'value.files.0.fileName', 'fileName', 'file_name', 'name') || 'monday-file';"
+        }
+      ],
+      "description": "Search for a Jira issue whose monday item ID custom field matches the incoming item (pulse).",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{mondayItemId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Monday Item ID",
+      "id": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayItemId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming monday payload must include a pulseId (item ID)"
+            },
+            {
+              "jsonPath": "$.mondayUserId",
+              "type": "DATA_CONDITION",
+              "value": "12345678",
+              "operator": "NOT_EQUALS",
+              "description": "Ignore every monday event authored by the iHub integration user, including the Jira key column write-back"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming monday create_item (create_pulse) event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{mondayItemName}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{mondayItemId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue",
+      "id": "template:action:b72f5a19-8c43-4e26-9d07-1f3b6e8a5c92",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayEventType",
+              "type": "DATA_CONDITION",
+              "value": "create_item",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Write the new Jira issue key into the monday text column so both systems hold the link.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation SetJiraKey($boardId: ID!, $itemId: ID!, $columnId: String!, $value: String!) {\\n  change_simple_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {\\n    id\\n  }\\n}\",\n  \"variables\": {\n    \"boardId\": \"{{_flow.MONDAY_BOARD_ID}}\",\n    \"itemId\": \"{{mondayItemId}}\",\n    \"columnId\": \"{{_flow.MONDAY_JIRA_KEY_COLUMN}}\",\n    \"value\": \"{{_flow.issueKey}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "template:action:b72f5a19-8c43-4e26-9d07-1f3b6e8a5c92",
+      "flowVariables": [],
+      "name": "Write Jira Key to Monday Item",
+      "id": "template:action:1e6a4c78-3d95-42b1-8a60-7c2f9b5e4d03",
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the linked Jira issue summary when the monday item is renamed.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{mondayItemName}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "flowVariables": [],
+      "name": "Update Jira Issue Summary",
+      "id": "template:action:9c3b7f24-6e18-4a53-b9d2-0a5c8e1f7b46",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayEventType",
+              "type": "DATA_CONDITION",
+              "value": "change_name",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the linked Jira issue description when the monday description long text column changes.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"description\": {{{htmlToADF mondayColumnValue}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "flowVariables": [],
+      "name": "Update Jira Issue Description",
+      "id": "template:action:6a1d8e57-4b93-40c2-8e75-3f9a2c6d5b81",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayEventType",
+              "type": "DATA_CONDITION",
+              "value": "change_column_value",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.mondayColumnId",
+              "type": "DATA_CONDITION",
+              "value": "long_text__1",
+              "operator": "EQUALS",
+              "description": "Only the configured monday description column maps to the Jira description"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 350
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the monday update ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{mondayUpdateId}}",
+      "parentId": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "name": "Get Monday Update ID Property",
+      "id": "template:action:e58c3b06-1f74-49d8-a3b2-8d6e4a9c7052",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayEventType",
+              "type": "DATA_CONDITION",
+              "value": "create_update",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.mondayUpdateId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming monday update payload must include an update ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add the monday update to the matching Jira issue as a comment. monday update bodies are HTML.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF mondayUpdateBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:e58c3b06-1f74-49d8-a3b2-8d6e4a9c7052",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add Monday Update to Jira",
+      "id": "template:action:3f07d2b9-5c61-4e84-9a13-2b8f6d4e1c75",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.mondayUpdateBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming monday update payload must include body text"
+            }
+          ]
+        }
+      ],
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Monday Update ID",
+      "description": "Store the monday update ID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:8b4e6a13-7d29-4f05-b862-5c1a9e3f7d40",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{mondayUpdateId}}\",\n  \"status\": \"synced\",\n  \"source\": \"monday\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{mondayUpdateId}}",
+      "parentId": "template:action:3f07d2b9-5c61-4e84-9a13-2b8f6d4e1c75",
+      "order": 500
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Query the monday asset for a public_url. The URL is signed and expires after about an hour, so it is downloaded in the same flow run.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"query GetAssetPublicUrl($assetIds: [ID!]!) {\\n  assets(ids: $assetIds) {\\n    id\\n    name\\n    public_url\\n  }\\n}\",\n  \"variables\": {\n    \"assetIds\": [\"{{mondayAssetId}}\"]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "template:action:4d9c1e83-2a67-4b50-8f31-6e5a9d2c7b14",
+      "flowVariables": [
+        {
+          "name": "mondayAssetUrl",
+          "behavior": "SET",
+          "value": "$.response.data.data.assets[0].public_url",
+          "instruction": ""
+        }
+      ],
+      "name": "Get Monday Asset Public URL",
+      "id": "template:action:c19f7d54-2b86-4a30-9e51-4d7c3b8a6e29",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.mondayEventType",
+              "type": "DATA_CONDITION",
+              "value": "change_column_value",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.mondayColumnId",
+              "type": "DATA_CONDITION",
+              "value": "files__1",
+              "operator": "EQUALS",
+              "description": "Only the configured monday files column carries attachments"
+            },
+            {
+              "jsonPath": "$.mondayAssetId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the monday asset ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{mondayAssetId}}",
+      "parentId": "template:action:c19f7d54-2b86-4a30-9e51-4d7c3b8a6e29",
+      "name": "Get Monday Asset ID Property",
+      "id": "template:action:57a2e8c1-9f40-4d63-b71e-6a3d5c2f8b94",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "monday returns HTTP 200 even on failure; only continue when the GraphQL errors array is absent"
+            }
+          ]
+        }
+      ],
+      "order": 650
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{mondayAssetName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the monday asset from its signed public_url. No credential is sent; the URL is pre-signed.",
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.mondayAssetUrl}}",
+      "parentId": "template:action:57a2e8c1-9f40-4d63-b71e-6a3d5c2f8b94",
+      "name": "Download Monday Asset",
+      "id": "template:action:2d6b9f38-4e17-45ca-8036-9f5e7a1c4b62",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded monday asset to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:2d6b9f38-4e17-45ca-8036-9f5e7a1c4b62",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add Monday Asset to Jira",
+      "id": "template:action:f83c5a70-6d21-4b97-9e48-1c7b2f6a3d05",
+      "order": 750
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Monday Asset ID",
+      "description": "Store the monday asset ID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:75e1c469-3a58-4f02-bd63-8e4a7c9b2f51",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{mondayAssetId}}\",\n  \"status\": \"synced\",\n  \"source\": \"monday\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{mondayAssetId}}",
+      "parentId": "template:action:f83c5a70-6d21-4b97-9e48-1c7b2f6a3d05",
+      "order": 800
+    }
+  ],
+  "description": "Sync monday.com webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "MON",
+      "instruction": "Jira project key used for monday.com created items"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new monday.com items"
+    },
+    {
+      "name": "MONDAY_API_VERSION",
+      "behavior": "SET",
+      "value": "2026-07",
+      "instruction": "monday.com API version sent in the API-Version header. 2026-07 is the current stable version; see developer.monday.com/api-reference/docs/api-versioning"
+    },
+    {
+      "name": "MONDAY_BOARD_ID",
+      "behavior": "SET",
+      "value": "1234567890",
+      "instruction": "Numeric ID of the single monday.com board that mirrors the Jira project"
+    },
+    {
+      "name": "MONDAY_JIRA_KEY_COLUMN",
+      "behavior": "SET",
+      "value": "text__1",
+      "instruction": "ID of the monday text column holding the linked Jira issue key"
+    },
+    {
+      "name": "MONDAY_DESCRIPTION_COLUMN",
+      "behavior": "SET",
+      "value": "long_text__1",
+      "instruction": "ID of the monday long text column holding the Jira description. Must also be replaced in the Update Jira Issue Description condition, which compares a literal column ID."
+    },
+    {
+      "name": "MONDAY_FILES_COLUMN",
+      "behavior": "SET",
+      "value": "files__1",
+      "instruction": "ID of the monday files column carrying attachments. Must also be replaced in the Get Monday Asset Public URL condition, which compares a literal column ID."
+    },
+    {
+      "name": "MONDAY_IHUB_USER_ID",
+      "behavior": "SET",
+      "value": "12345678",
+      "instruction": "monday.com user ID of the integration user whose token iHub uses. Must also be replaced in the Find Jira Issue by Monday Item ID condition, which compares a literal user ID."
+    }
+  ],
+  "groupName": "Monday",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Monday Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "mode": "custom",
+        "customHeaders": [
+          {
+            "value": "application/json",
+            "key": "Content-Type"
+          }
+        ],
+        "customTemplate": "{{#challenge}}\n{\"challenge\":\"{{.}}\"}\n{{/challenge}}"
+      }
+    }
+  },
+  "useStaticIP": false
+}
