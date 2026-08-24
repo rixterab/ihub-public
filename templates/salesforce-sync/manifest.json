@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "key": "salesforce-sync",
   "name": "Salesforce Sync",
-  "description": "Two way sync for Salesforce and Jira",
+  "description": "Two way sync for Salesforce Cases and Jira issues",
   "category": "Salesforce",
   "flows": [
     "salesforce_incoming_sync.json",
@@ -14,7 +14,7 @@
   "credentialDefinitions": [
     {
       "key": "oauth2-salesforce",
-      "name": "SalesForce",
+      "name": "Salesforce",
       "type": "OAUTH2",
       "data": {
         "config": {
@@ -23,21 +23,13 @@
             "accessTokenUrl": "https://login.salesforce.com/services/oauth2/token"
           },
           "grantType": "code",
-          "scope": "",
+          "scope": "api refresh_token",
           "headerPrefix": "Bearer",
           "includeState": true,
           "includeScopeInAccessTokenReq": false,
           "sendParamsAs": "query_params",
           "urlEncode": false
         }
-      }
-    },
-    {
-      "key": "basic-auth-azure-devops",
-      "name": "Azure DevOps",
-      "type": "BASIC_AUTH",
-      "data": {
-        "username": "peter@rixter.se"
       }
     }
   ]
