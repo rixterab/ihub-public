@@ -1,0 +1,656 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ticket\": {\n    \"subject\": \"{{{issue.fields.summary}}}\",\n    \"comment\": {\n      \"html_body\": \"<p>Synced from <strong>Jira</strong></p><p>Issue: {{issue.key}}</p>{{{adfToHTML issue.fields.description}}}\",\n      \"public\": {{_flow.ZENDESK_INITIAL_COMMENT_PUBLIC}}\n    },\n    \"requester\": {\n      \"name\": \"{{_flow.ZENDESK_REQUESTER_NAME}}\",\n      \"email\": \"{{_flow.ZENDESK_REQUESTER_EMAIL}}\"\n    },\n    \"priority\": \"{{_flow.ZENDESK_DEFAULT_PRIORITY}}\",\n    \"status\": \"{{_flow.ZENDESK_DEFAULT_STATUS}}\",\n    \"external_id\": \"{{issue.key}}\",\n    \"tags\": [\n      \"jira\",\n      \"ihub-sync\"\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ZENDESK_URL}}/api/v2/tickets",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "zendeskTicketId",
+          "behavior": "SET",
+          "value": "$.response.data.ticket.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Ticket in Zendesk",
+      "id": "template:action:80c8006c-b2cb-41dd-9cfd-425959ec08d3",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if Zendesk ticket ID exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create Zendesk tickets for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100,
+      "description": "Creates a Zendesk ticket when a Jira issue without a linked Zendesk ticket ID is created."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Zendesk Ticket ID on Jira Issue",
+      "description": "Stores the linked Zendesk ticket ID on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:c9ac18a3-b9dc-4587-b536-eef478acd866",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.zendeskTicketId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:80c8006c-b2cb-41dd-9cfd-425959ec08d3",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ticket\": {\n    \"comment\": {\n      \"html_body\": \"<p>Synced from <strong>Jira</strong></p><p>Issue: {{issue.key}}</p><p>Status: {{issue.fields.status.name}}</p>{{{adfToHTML payload.comment.body}}}\",\n      \"public\": {{_flow.ZENDESK_COMMENT_PUBLIC}}\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "zendeskCommentId",
+          "behavior": "SET",
+          "value": "$.response.data.audit.events[0].id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Comment to Zendesk Ticket",
+      "id": "template:action:5cac4e74-0479-431c-a2e9-3b396a608292",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block comments authored by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 300,
+      "description": "Adds the Jira comment to the linked Zendesk ticket."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Zendesk Comment ID",
+      "description": "Stores a synced Zendesk comment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5fc2b076-8be8-41ad-903f-87f030c9172e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.zendeskCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"zendesk\"\n}",
+      "parentId": "template:action:5cac4e74-0479-431c-a2e9-3b396a608292",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.zendeskCommentId}}",
+      "flowVariables": [],
+      "order": 400,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.zendeskCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Zendesk returned a comment ID"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ticket\": {\n    \"subject\": \"{{{issue.fields.summary}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "zendeskTicketId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Zendesk Ticket from Jira Issue",
+      "id": "template:action:4a133753-f107-4d68-b2a1-c2dae5c7cb58",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500,
+      "description": "Updates the linked Zendesk ticket subject when the Jira issue is updated."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/octet-stream",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ZENDESK_URL}}/api/v2/uploads?filename={{filename}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "zendeskUploadToken",
+          "behavior": "SET",
+          "value": "$.response.data.upload.token",
+          "instruction": ""
+        },
+        {
+          "name": "zendeskAttachmentId",
+          "behavior": "SET",
+          "value": "$.response.data.upload.attachment.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Upload Jira Attachment to Zendesk",
+      "id": "template:action:1e71b1d8-ccc3-4fa5-995e-11e290af6583",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a Zendesk ticket ID"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "description": "Uploads a Jira attachment to Zendesk and stores the temporary upload token."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ticket\": {\n    \"comment\": {\n      \"body\": \"Synced attachment from Jira issue {{issue.key}}: {{filename}}\",\n      \"public\": {{_flow.ZENDESK_COMMENT_PUBLIC}},\n      \"uploads\": [\n        \"{{_flow.zendeskUploadToken}}\"\n      ]\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}",
+      "parentId": "template:action:1e71b1d8-ccc3-4fa5-995e-11e290af6583",
+      "flowVariables": [
+        {
+          "name": "zendeskAttachmentCommentId",
+          "behavior": "SET",
+          "value": "$.response.data.audit.events[0].id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Attachment Comment to Zendesk Ticket",
+      "description": "Attaches the uploaded Jira file to a new Zendesk ticket comment.",
+      "id": "template:action:1622093e-df09-4322-8b17-d30c36791ff5",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.zendeskUploadToken",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only add the attachment comment when Zendesk returned an upload token"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Zendesk Attachment Comment ID",
+      "description": "Stores the Zendesk comment ID created for a Jira attachment upload.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:60f1ac86-1d93-4811-a5dc-5c44d971b570",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.zendeskAttachmentCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"zendesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.zendeskAttachmentCommentId}}",
+      "parentId": "template:action:1622093e-df09-4322-8b17-d30c36791ff5",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.zendeskAttachmentCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Zendesk returned an attachment comment ID"
+            }
+          ]
+        }
+      ],
+      "order": 800
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Zendesk Attachment ID",
+      "description": "Stores a synced Zendesk attachment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:b96a19a5-a1ac-4967-95fe-dd9ed7e0ed17",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.zendeskAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"zendesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.zendeskAttachmentId}}",
+      "parentId": "template:action:1622093e-df09-4322-8b17-d30c36791ff5",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.zendeskAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Zendesk returned an attachment ID"
+            }
+          ]
+        }
+      ],
+      "order": 900
+    }
+  ],
+  "description": "Sync Jira issues to Zendesk tickets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "ZENDESK_URL",
+      "behavior": "SET",
+      "value": "https://your-subdomain.zendesk.com",
+      "instruction": "Zendesk account URL, for example https://customer.zendesk.com"
+    },
+    {
+      "name": "ZENDESK_REQUESTER_NAME",
+      "behavior": "SET",
+      "value": "Jira Sync",
+      "instruction": "Requester name used when Jira creates Zendesk tickets"
+    },
+    {
+      "name": "ZENDESK_REQUESTER_EMAIL",
+      "behavior": "SET",
+      "value": "jira-sync@example.com",
+      "instruction": "Requester email used when Jira creates Zendesk tickets"
+    },
+    {
+      "name": "ZENDESK_DEFAULT_PRIORITY",
+      "behavior": "SET",
+      "value": "normal",
+      "instruction": "Zendesk default priority for Jira-created tickets. Common values are low, normal, high, urgent."
+    },
+    {
+      "name": "ZENDESK_DEFAULT_STATUS",
+      "behavior": "SET",
+      "value": "new",
+      "instruction": "Zendesk default status for Jira-created tickets. Common values are new, open, pending, hold, solved."
+    },
+    {
+      "name": "ZENDESK_INITIAL_COMMENT_PUBLIC",
+      "behavior": "SET",
+      "value": "true",
+      "instruction": "Whether the initial Jira description should be a public Zendesk comment."
+    },
+    {
+      "name": "ZENDESK_COMMENT_PUBLIC",
+      "behavior": "SET",
+      "value": "false",
+      "instruction": "Whether Jira comments and attachment comments should be public Zendesk comments."
+    }
+  ],
+  "groupName": "Zendesk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Zendesk Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
