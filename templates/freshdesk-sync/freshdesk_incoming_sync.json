@@ -1,0 +1,684 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Issue by Freshdesk Ticket ID",
+      "description": "Searches Jira for an issue linked to the incoming Freshdesk ticket ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{freshdeskTicketId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "order": 100,
+      "variables": [],
+      "scriptedVariables": [
+        {
+          "name": "freshdeskEventType",
+          "uuid": "1787143421872",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst eventType = read('eventType', 'EventType', 'type', 'Type', 'action', 'Action', 'webhook_event', 'event');\nif (eventType) return eventType;\nif (read('attachmentId', 'attachment.id', 'attachment.Id', 'attachments.0.id', 'ticket.attachments.0.id', 'conversation.attachments.0.id')) return 'ticket.attachment.created';\nif (read('commentId', 'conversationId', 'noteId', 'conversation.id', 'note.id') || read('commentBody', 'body', 'conversation.body', 'note.body', 'ticket.latest_public_comment', 'ticket.latest_private_comment')) return 'ticket.commented';\nif (read('ticketId', 'TicketId', 'ticket.id', 'id')) return 'ticket.updated';\nreturn '';"
+        },
+        {
+          "name": "freshdeskTicketId",
+          "uuid": "1787145100767",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nreturn read('ticketId', 'TicketId', 'freshdeskTicketId', 'FreshdeskTicketId', 'ticket.id', 'ticket.Id', 'id', 'Id', 'resource.id', 'resource.Id');"
+        },
+        {
+          "name": "freshdeskSubject",
+          "uuid": "1787145100768",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst ticketId = read('ticketId', 'TicketId', 'freshdeskTicketId', 'ticket.id', 'id', 'resource.id');\nreturn read('subject', 'Subject', 'ticket.subject', 'ticket.Subject', 'resource.subject', 'resource.Subject') || (ticketId ? 'Freshdesk Ticket ' + ticketId : 'Freshdesk Ticket');"
+        },
+        {
+          "name": "freshdeskDescription",
+          "uuid": "1787145100769",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst description = read('description', 'Description', 'description_html', 'ticket.description', 'ticket.Description', 'ticket.description_html', 'resource.description', 'resource.Description');\nconst descriptionText = read('description_text', 'DescriptionText', 'ticket.description_text', 'ticket.DescriptionText', 'resource.description_text');\nconst ticketId = read('ticketId', 'TicketId', 'freshdeskTicketId', 'ticket.id', 'id', 'resource.id');\nconst status = read('status', 'Status', 'ticket.status', 'ticket.Status');\nconst priority = read('priority', 'Priority', 'ticket.priority', 'ticket.Priority');\nlet html = description || (descriptionText ? '<p>' + descriptionText + '</p>' : '');\nconst metadata = [];\nif (ticketId) metadata.push('<p>Freshdesk ticket: ' + ticketId + '</p>');\nif (status) metadata.push('<p>Status: ' + status + '</p>');\nif (priority) metadata.push('<p>Priority: ' + priority + '</p>');\nreturn html || metadata.join('') || 'Synced from Freshdesk';"
+        },
+        {
+          "name": "freshdeskCommentBody",
+          "uuid": "1787293804974",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nreturn read('commentBody', 'CommentBody', 'body', 'Body', 'conversation.body', 'conversation.body_text', 'note.body', 'note.body_text', 'ticket.latest_public_comment', 'ticket.latest_private_comment', 'resource.commentBody', 'resource.body');"
+        },
+        {
+          "name": "freshdeskCommentId",
+          "uuid": "1787293804975",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst direct = read('commentId', 'CommentId', 'conversationId', 'ConversationId', 'noteId', 'NoteId', 'conversation.id', 'conversation.Id', 'note.id', 'note.Id', 'resource.commentId');\nif (direct) return direct;\nconst body = read('commentBody', 'CommentBody', 'body', 'conversation.body', 'conversation.body_text', 'note.body', 'ticket.latest_public_comment', 'ticket.latest_private_comment');\nif (!body) return '';\nconst ticketId = read('ticketId', 'TicketId', 'ticket.id', 'id');\nconst modified = read('modified_on', 'updated_at', 'ticket.modified_on', 'ticket.updated_at', 'conversation.created_at', 'note.created_at');\nlet hash = 0;\nfor (let i = 0; i < body.length; i++) hash = ((hash << 5) - hash + body.charCodeAt(i)) | 0;\nreturn [ticketId, modified || Math.abs(hash)].filter(Boolean).join('-');"
+        },
+        {
+          "name": "freshdeskAttachmentId",
+          "uuid": "1787251220522",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentId', 'AttachmentId', 'attachment.id', 'attachment.Id', 'attachments.0.id', 'ticket.attachments.0.id', 'conversation.attachments.0.id') || attachment.id || attachment.Id || '';"
+        },
+        {
+          "name": "freshdeskAttachmentUrl",
+          "uuid": "1787251220523",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentUrl', 'AttachmentUrl', 'attachment_url', 'attachment.attachment_url', 'attachment.url', 'attachments.0.attachment_url', 'ticket.attachments.0.attachment_url', 'conversation.attachments.0.attachment_url') || attachment.attachment_url || attachment.url || '';"
+        },
+        {
+          "name": "freshdeskFileName",
+          "uuid": "1787251220524",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.ticket?.attachments, root?.conversation?.attachments, root?.note?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return {};\n};\nconst attachment = firstAttachment();\nconst url = read('attachmentUrl', 'attachment_url', 'attachment.attachment_url', 'attachment.url', 'attachments.0.attachment_url') || attachment.attachment_url || attachment.url || '';\nconst fromUrl = url ? decodeURIComponent(String(url).split('/').pop().split('?')[0]) : '';\nreturn read('fileName', 'filename', 'FileName', 'attachment.name', 'attachment.file_name', 'attachments.0.name', 'ticket.attachments.0.name', 'conversation.attachments.0.name') || attachment.name || attachment.file_name || fromUrl || 'freshdesk-attachment';"
+        }
+      ],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.freshdeskTicketId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Freshdesk payload must include a ticket ID"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Issue from Freshdesk Ticket",
+      "description": "Creates a Jira issue when Freshdesk sends a new ticket event and no linked issue exists.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:b10ea291-cf26-44fa-868c-c788115ef9e6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{freshdeskSubject}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{freshdeskTicketId}}\",\n    \"description\": {{{htmlToADF freshdeskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 200,
+      "variables": [],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.freshdeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Update Jira Issue from Freshdesk Ticket",
+      "description": "Updates the linked Jira issue from a Freshdesk ticket update event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:af765155-d92b-4e98-a584-b46fb64043b2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{freshdeskSubject}}\",\n    \"description\": {{{htmlToADF freshdeskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 300,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.freshdeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.freshdeskSubject",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Freshdesk update payload must include a subject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Freshdesk Comment ID Property",
+      "description": "Checks whether this Freshdesk conversation has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:668417d0-0090-47db-89d5-ea5aef6ad8d9",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{freshdeskCommentId}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 400,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.freshdeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.freshdeskCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Freshdesk comment payload must include or derive a comment ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add Freshdesk Comment to Jira",
+      "description": "Adds the Freshdesk conversation body as a Jira comment.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:264be96c-b181-456a-a7b9-41e448f8918d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF freshdeskCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:668417d0-0090-47db-89d5-ea5aef6ad8d9",
+      "order": 500,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.freshdeskCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Freshdesk comment payload must include comment text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Freshdesk Comment ID",
+      "description": "Stores the incoming Freshdesk conversation ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:160e0eb9-4f3a-4462-9feb-21715dcb422d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{freshdeskCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"freshdesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{freshdeskCommentId}}",
+      "parentId": "template:action:264be96c-b181-456a-a7b9-41e448f8918d",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Freshdesk Attachment ID Property",
+      "description": "Checks whether this Freshdesk attachment has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:d9a7b9c8-126e-437f-a13a-4e60f12d2adf",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{freshdeskAttachmentId}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 700,
+      "variables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.freshdeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.freshdeskAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Freshdesk attachment payload must include an attachment ID"
+            },
+            {
+              "jsonPath": "$.freshdeskAttachmentUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Freshdesk attachment payload must include an attachment URL"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Download Freshdesk Attachment",
+      "description": "Downloads the incoming Freshdesk attachment for upload to Jira.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-freshdesk"
+      },
+      "id": "template:action:b4900e02-0fb2-4212-9c24-6f6ddf72eead",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{freshdeskAttachmentUrl}}",
+      "parentId": "template:action:d9a7b9c8-126e-437f-a13a-4e60f12d2adf",
+      "order": 800,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{freshdeskFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      }
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add Freshdesk Attachment to Jira",
+      "description": "Uploads the downloaded Freshdesk attachment to the linked Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:98284bd5-1a13-4050-94f4-fbc2694c3ba8",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:b4900e02-0fb2-4212-9c24-6f6ddf72eead",
+      "order": 900
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Freshdesk Attachment ID",
+      "description": "Stores the incoming Freshdesk attachment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:f332e9a4-e572-4fc4-963f-3bc45d165ca3",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{freshdeskAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"freshdesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{freshdeskAttachmentId}}",
+      "parentId": "template:action:98284bd5-1a13-4050-94f4-fbc2694c3ba8",
+      "order": 1000
+    }
+  ],
+  "description": "Sync Freshdesk webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "FD",
+      "instruction": "Jira project key used for Freshdesk-created tickets"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new Freshdesk tickets"
+    }
+  ],
+  "groupName": "Freshdesk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Freshdesk Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
