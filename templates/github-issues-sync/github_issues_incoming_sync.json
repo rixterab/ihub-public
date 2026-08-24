@@ -1,0 +1,721 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Issue by GitHub Issue Number",
+      "description": "Searches Jira for an issue linked to the incoming GitHub issue number.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{githubIssueNumber}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "order": 100,
+      "variables": [],
+      "scriptedVariables": [
+        {
+          "name": "githubEventType",
+          "uuid": "1787143421872",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst rawEventType = read('eventType', 'EventType', 'type', 'Type', 'webhook_event', 'event', 'headers.X-GitHub-Event', 'headers.x-github-event', 'headers.X-Github-Event');\nconst raw = String(rawEventType || '').toLowerCase();\nconst action = String(read('action', 'Action') || '').toLowerCase();\nif (read('issue.pull_request.url', 'issue.pull_request.html_url', 'pull_request.url')) return '';\nconst hasComment = read('comment.id', 'comment.body', 'issue_comment.id', 'issue_comment.body');\nif (raw.includes('issue_comment')) return hasComment ? 'issue.commented' : '';\nif (raw.includes('comment')) return 'issue.commented';\nif (raw.includes('attachment')) return 'issue.attachment.created';\nif (raw === 'issues' || raw === 'issue' || raw.includes('issue.')) {\n  if (action === 'opened' || raw.includes('opened') || raw.includes('created')) return 'issue.opened';\n  if (['edited', 'closed', 'reopened', 'updated', 'assigned', 'unassigned', 'labeled', 'unlabeled', 'milestoned', 'demilestoned', 'pinned', 'unpinned', 'transferred', 'typed', 'untyped'].includes(action) || raw.includes('updated') || raw.includes('edited')) return 'issue.updated';\n}\nif (rawEventType) return rawEventType;\nif (read('attachmentId', 'attachment.id', 'attachment.url', 'attachments.0.id', 'attachments.0.url')) return 'issue.attachment.created';\nif (hasComment) return 'issue.commented';\nif (action === 'opened') return 'issue.opened';\nif (['edited', 'closed', 'reopened', 'updated'].includes(action)) return 'issue.updated';\nif (read('issue.number', 'number', 'issueNumber', 'githubIssueNumber')) return 'issue.updated';\nreturn '';"
+        },
+        {
+          "name": "githubIssueNumber",
+          "uuid": "1787145100767",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nif (read('issue.pull_request.url', 'issue.pull_request.html_url', 'pull_request.url')) return '';\nconst direct = read('githubIssueNumber', 'issueNumber', 'IssueNumber', 'issue.number', 'issue.Number', 'number', 'Number', 'resource.number');\nif (direct) return direct;\nconst issueUrl = read('issue.url', 'issue.html_url', 'comment.issue_url', 'issue_url');\nconst match = String(issueUrl || '').match(/\\/issues\\/(\\d+)(?:$|[?#])/);\nreturn match ? match[1] : '';"
+        },
+        {
+          "name": "githubSenderLogin",
+          "uuid": "1787145100770",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nreturn read('githubSenderLogin', 'sender.login', 'comment.user.login', 'issue.user.login', 'user.login');"
+        },
+        {
+          "name": "githubSubject",
+          "uuid": "1787145100768",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst issueNumber = read('githubIssueNumber', 'issueNumber', 'issue.number', 'number');\nreturn read('title', 'Title', 'issue.title', 'issue.Title', 'resource.title') || (issueNumber ? 'GitHub Issue #' + issueNumber : 'GitHub Issue');"
+        },
+        {
+          "name": "githubDescription",
+          "uuid": "1787145100769",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst escapeHtml = (value) => String(value)\n  .replace(/&/g, '&amp;')\n  .replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;')\n  .replace(/\"/g, '&quot;')\n  .replace(/'/g, '&#39;');\nconst textToHtml = (value) => String(value || '')\n  .split(/\\n{2,}/)\n  .map((part) => part.trim())\n  .filter(Boolean)\n  .map((part) => '<p>' + escapeHtml(part).replace(/\\n/g, '<br>') + '</p>')\n  .join('');\nconst body = read('body', 'Body', 'issue.body', 'issue.Body', 'resource.body');\nconst issueNumber = read('githubIssueNumber', 'issueNumber', 'issue.number', 'number');\nconst state = read('state', 'issue.state');\nconst issueUrl = read('html_url', 'issue.html_url', 'url', 'issue.url');\nconst metadata = [];\nif (issueNumber) metadata.push('<p>GitHub issue: #' + escapeHtml(issueNumber) + '</p>');\nif (state) metadata.push('<p>State: ' + escapeHtml(state) + '</p>');\nif (issueUrl) metadata.push('<p>URL: <a href=\"' + escapeHtml(issueUrl) + '\">' + escapeHtml(issueUrl) + '</a></p>');\nconst html = textToHtml(body);\nreturn metadata.join('') + html || 'Synced from GitHub';"
+        },
+        {
+          "name": "githubCommentBody",
+          "uuid": "1787293804974",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst escapeHtml = (value) => String(value)\n  .replace(/&/g, '&amp;')\n  .replace(/</g, '&lt;')\n  .replace(/>/g, '&gt;')\n  .replace(/\"/g, '&quot;')\n  .replace(/'/g, '&#39;');\nconst textToHtml = (value) => String(value || '')\n  .split(/\\n{2,}/)\n  .map((part) => part.trim())\n  .filter(Boolean)\n  .map((part) => '<p>' + escapeHtml(part).replace(/\\n/g, '<br>') + '</p>')\n  .join('');\nconst body = read('commentBody', 'CommentBody', 'body', 'Body', 'comment.body', 'comment.Body', 'issue_comment.body', 'resource.commentBody', 'resource.body');\nif (!body) return '';\nconst issueNumber = read('githubIssueNumber', 'issueNumber', 'issue.number', 'number');\nconst login = read('comment.user.login', 'sender.login', 'user.login');\nconst metadata = [];\nif (issueNumber) metadata.push('<p>Synced from GitHub issue #' + escapeHtml(issueNumber) + '</p>');\nif (login) metadata.push('<p>Author: ' + escapeHtml(login) + '</p>');\nreturn metadata.join('') + textToHtml(body);"
+        },
+        {
+          "name": "githubCommentId",
+          "uuid": "1787293804975",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst direct = read('commentId', 'CommentId', 'githubCommentId', 'comment.id', 'comment.Id', 'issue_comment.id', 'resource.commentId');\nif (direct) return direct;\nconst body = read('commentBody', 'CommentBody', 'body', 'comment.body', 'issue_comment.body');\nif (!body) return '';\nconst issueNumber = read('githubIssueNumber', 'issueNumber', 'issue.number', 'number');\nconst updated = read('comment.updated_at', 'comment.created_at', 'updated_at', 'created_at');\nlet hash = 0;\nfor (let i = 0; i < body.length; i++) hash = ((hash << 5) - hash + body.charCodeAt(i)) | 0;\nreturn [issueNumber, updated || Math.abs(hash)].filter(Boolean).join('-');"
+        },
+        {
+          "name": "githubAttachmentId",
+          "uuid": "1787251220522",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentId', 'AttachmentId', 'githubAttachmentId', 'attachment.id', 'attachment.Id', 'attachments.0.id', 'comment.attachments.0.id') || attachment.id || attachment.Id || '';"
+        },
+        {
+          "name": "githubAttachmentUrl",
+          "uuid": "1787251220523",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentUrl', 'AttachmentUrl', 'downloadUrl', 'download_url', 'attachment.url', 'attachment.download_url', 'attachments.0.url', 'attachments.0.download_url', 'comment.attachments.0.url') || attachment.url || attachment.download_url || '';"
+        },
+        {
+          "name": "githubFileName",
+          "uuid": "1787251220524",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [root.attachments, root?.issue?.attachments, root?.comment?.attachments, root?.payload?.attachments];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.attachment || root?.comment?.attachment || {};\n};\nconst attachment = firstAttachment();\nconst url = read('attachmentUrl', 'downloadUrl', 'attachment.url', 'attachment.download_url', 'attachments.0.url') || attachment.url || attachment.download_url || '';\nconst fromUrl = url ? decodeURIComponent(String(url).split('/').pop().split('?')[0]) : '';\nreturn read('fileName', 'filename', 'FileName', 'attachment.name', 'attachment.file_name', 'attachments.0.name', 'comment.attachments.0.name') || attachment.name || attachment.file_name || fromUrl || 'github-attachment';"
+        }
+      ],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.githubIssueNumber",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming GitHub payload must include an issue number"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Issue from GitHub Issue",
+      "description": "Creates a Jira issue when GitHub sends a new issue event and no linked issue exists.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:b10ea291-cf26-44fa-868c-c788115ef9e6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{githubSubject}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{githubIssueNumber}}\",\n    \"description\": {{{htmlToADF githubDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 200,
+      "variables": [],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.githubEventType",
+              "type": "DATA_CONDITION",
+              "value": "issue.opened",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.githubSenderLogin",
+              "type": "DATA_CONDITION",
+              "value": "ihub-sync-bot",
+              "operator": "NOT_EQUALS",
+              "description": "Block GitHub webhook events created by the iHub integration user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Update Jira Issue from GitHub Issue",
+      "description": "Updates the linked Jira issue from a GitHub issue update event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:af765155-d92b-4e98-a584-b46fb64043b2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{githubSubject}}\",\n    \"description\": {{{htmlToADF githubDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 300,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.githubEventType",
+              "type": "DATA_CONDITION",
+              "value": "issue.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.githubSubject",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "GitHub update payload must include a title"
+            },
+            {
+              "jsonPath": "$.githubSenderLogin",
+              "type": "DATA_CONDITION",
+              "value": "ihub-sync-bot",
+              "operator": "NOT_EQUALS",
+              "description": "Block GitHub webhook events created by the iHub integration user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get GitHub Comment ID Property",
+      "description": "Checks whether this GitHub issue comment has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:668417d0-0090-47db-89d5-ea5aef6ad8d9",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{githubCommentId}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 400,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.githubEventType",
+              "type": "DATA_CONDITION",
+              "value": "issue.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.githubCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming GitHub comment payload must include or derive a comment ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.githubSenderLogin",
+              "type": "DATA_CONDITION",
+              "value": "ihub-sync-bot",
+              "operator": "NOT_EQUALS",
+              "description": "Block GitHub webhook events created by the iHub integration user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add GitHub Comment to Jira",
+      "description": "Adds the GitHub issue comment body as a Jira comment.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:264be96c-b181-456a-a7b9-41e448f8918d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF githubCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:668417d0-0090-47db-89d5-ea5aef6ad8d9",
+      "order": 500,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.githubCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming GitHub comment payload must include comment text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming GitHub Comment ID",
+      "description": "Stores the incoming GitHub comment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:160e0eb9-4f3a-4462-9feb-21715dcb422d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{githubCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"github\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{githubCommentId}}",
+      "parentId": "template:action:264be96c-b181-456a-a7b9-41e448f8918d",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get GitHub Attachment ID Property",
+      "description": "Checks whether this GitHub attachment has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:d9a7b9c8-126e-437f-a13a-4e60f12d2adf",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{githubAttachmentId}}",
+      "parentId": "template:action:7e76033a-c292-4ecf-a398-eb55ecdcaa90",
+      "order": 700,
+      "variables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.githubEventType",
+              "type": "DATA_CONDITION",
+              "value": "issue.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.githubAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming GitHub attachment payload must include an attachment ID"
+            },
+            {
+              "jsonPath": "$.githubAttachmentUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming GitHub attachment payload must include an attachment URL"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.githubSenderLogin",
+              "type": "DATA_CONDITION",
+              "value": "ihub-sync-bot",
+              "operator": "NOT_EQUALS",
+              "description": "Block GitHub webhook events created by the iHub integration user"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Download GitHub Attachment",
+      "description": "Downloads the incoming GitHub attachment for upload to Jira. Native GitHub issue webhooks do not emit separate attachment events, so this is for custom payloads that include an attachment URL.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github"
+      },
+      "id": "template:action:b4900e02-0fb2-4212-9c24-6f6ddf72eead",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{githubAttachmentUrl}}",
+      "parentId": "template:action:d9a7b9c8-126e-437f-a13a-4e60f12d2adf",
+      "order": 800,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{githubFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      }
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add GitHub Attachment to Jira",
+      "description": "Uploads the downloaded GitHub attachment to the linked Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:98284bd5-1a13-4050-94f4-fbc2694c3ba8",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:b4900e02-0fb2-4212-9c24-6f6ddf72eead",
+      "order": 900
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming GitHub Attachment ID",
+      "description": "Stores the incoming GitHub attachment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:f332e9a4-e572-4fc4-963f-3bc45d165ca3",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{githubAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"github\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{githubAttachmentId}}",
+      "parentId": "template:action:98284bd5-1a13-4050-94f4-fbc2694c3ba8",
+      "order": 1000
+    }
+  ],
+  "description": "Sync GitHub issue webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "GH",
+      "instruction": "Jira project key used for GitHub-created issues"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new GitHub issues"
+    }
+  ],
+  "groupName": "GitHub",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "GitHub Issues Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
