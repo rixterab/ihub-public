@@ -4,11 +4,8 @@
   "name": "Jira <-> Jira Sync",
   "description": "Two way sync for issues between two Jira Cloud instances",
   "category": "Jira",
-  "flows": [
-    "jira_incoming_sync.json",
-    "jira_outgoing_sync.json"
-  ],
-  "icon": "jira-jira.svg",
+  "flows": ["jira_incoming_sync.json", "jira_outgoing_sync.json"],
+  "icon": "atlassian-jira-icon.png",
   "author": "Rixter AB",
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
