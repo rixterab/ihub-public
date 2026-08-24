@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "key": "linear-sync",
+  "name": "Linear Sync",
+  "description": "Two way sync for Linear issues and Jira issues",
+  "category": "Linear",
+  "flows": [
+    "linear_incoming_sync.json",
+    "linear_outgoing_sync.json"
+  ],
+  "icon": "linear.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-linear-api-key",
+      "name": "Linear API Key",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

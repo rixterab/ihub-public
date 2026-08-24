@@ -1,0 +1,991 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "jiraDescriptionText",
+          "uuid": "1787601001001",
+          "script": "const toText = (node) => {\n  if (node === null || node === undefined) return '';\n  if (typeof node === 'string') return node;\n  if (Array.isArray(node)) return node.map(toText).join('');\n  if (typeof node !== 'object') return String(node);\n  const attrs = node.attrs || {};\n  if (node.type === 'text') return node.text || '';\n  if (node.type === 'hardBreak') return '\\n';\n  if (node.type === 'mention') return attrs.text || '';\n  if (node.type === 'emoji') return attrs.text || attrs.shortName || '';\n  if (node.type === 'inlineCard' || node.type === 'blockCard' || node.type === 'embedCard') return attrs.url || '';\n  if (node.type === 'media') return attrs.alt || attrs.id || '';\n  if (node.type === 'rule') return '\\n';\n  const inner = toText(node.content);\n  const blocks = ['paragraph', 'heading', 'blockquote', 'codeBlock', 'listItem', 'panel', 'mediaSingle', 'mediaGroup', 'tableRow'];\n  return blocks.indexOf(node.type) >= 0 ? inner + '\\n' : inner;\n};\nconst jsonEscape = (value) => String(value)\n  .replace(/\\\\/g, '\\\\\\\\')\n  .replace(/\"/g, '\\\\\"')\n  .replace(/\\r/g, '')\n  .replace(/\\n/g, '\\\\n')\n  .replace(/\\t/g, '\\\\t');\nconst issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\nconst description = fields.description;\nconst text = toText(description).replace(/\\n{3,}/g, '\\n\\n').trim();\nreturn jsonEscape(text);"
+        },
+        {
+          "name": "jiraCommentText",
+          "uuid": "1787601001002",
+          "script": "const toText = (node) => {\n  if (node === null || node === undefined) return '';\n  if (typeof node === 'string') return node;\n  if (Array.isArray(node)) return node.map(toText).join('');\n  if (typeof node !== 'object') return String(node);\n  const attrs = node.attrs || {};\n  if (node.type === 'text') return node.text || '';\n  if (node.type === 'hardBreak') return '\\n';\n  if (node.type === 'mention') return attrs.text || '';\n  if (node.type === 'emoji') return attrs.text || attrs.shortName || '';\n  if (node.type === 'inlineCard' || node.type === 'blockCard' || node.type === 'embedCard') return attrs.url || '';\n  if (node.type === 'media') return attrs.alt || attrs.id || '';\n  if (node.type === 'rule') return '\\n';\n  const inner = toText(node.content);\n  const blocks = ['paragraph', 'heading', 'blockquote', 'codeBlock', 'listItem', 'panel', 'mediaSingle', 'mediaGroup', 'tableRow'];\n  return blocks.indexOf(node.type) >= 0 ? inner + '\\n' : inner;\n};\nconst jsonEscape = (value) => String(value)\n  .replace(/\\\\/g, '\\\\\\\\')\n  .replace(/\"/g, '\\\\\"')\n  .replace(/\\r/g, '')\n  .replace(/\\n/g, '\\\\n')\n  .replace(/\\t/g, '\\\\t');\nconst comment = (scope && scope.comment) || (scope && scope.payload && scope.payload.comment) || {};\nconst body = comment.body !== undefined ? comment.body : comment.value;\nconst text = toText(body).replace(/\\n{3,}/g, '\\n\\n').trim();\nreturn jsonEscape(text);"
+        }
+      ],
+      "method": "POST",
+      "description": "Look up an existing Linear attachment pointing at this Jira issue, so an issue that is already linked is never created twice.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"query AttachmentsForURL($url: String!) { attachmentsForURL(url: $url) { nodes { id url issue { id identifier title } } } }\",\n  \"variables\": {\n    \"url\": \"{{baseUrl}}/browse/{{issue.key}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "linkedLinearIssueId",
+          "behavior": "SET",
+          "value": "$.response.data.data.attachmentsForURL.nodes[0].issue.id",
+          "instruction": ""
+        },
+        {
+          "name": "linkedLinearIssueIdentifier",
+          "behavior": "SET",
+          "value": "$.response.data.data.attachmentsForURL.nodes[0].issue.identifier",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Linear Issue by Jira URL",
+      "id": "template:action:0a1f7c62-5d34-4e18-9b27-6c8a1f3d5e40",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only look up Linear when the Jira issue has no Linear issue id yet"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run the lookup for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Linear issue when a Jira issue without a linked Linear issue id is created.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation IssueCreate($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { id identifier url } } }\",\n  \"variables\": {\n    \"input\": {\n      \"teamId\": \"{{_flow.LINEAR_TEAM_ID}}\",\n      \"title\": \"{{{issue.fields.summary}}}\",\n      \"description\": \"Synced from Jira issue [{{issue.key}}]({{baseUrl}}/browse/{{issue.key}})\\n\\n{{{jiraDescriptionText}}}\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "template:action:0a1f7c62-5d34-4e18-9b27-6c8a1f3d5e40",
+      "flowVariables": [
+        {
+          "name": "linearIssueId",
+          "behavior": "SET",
+          "value": "$.response.data.data.issueCreate.issue.id",
+          "instruction": ""
+        },
+        {
+          "name": "linearIssueIdentifier",
+          "behavior": "SET",
+          "value": "$.response.data.data.issueCreate.issue.identifier",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Linear Issue",
+      "id": "template:action:3c9d2b58-7f41-4a06-8e93-1d5b7a2c6f84",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.linkedLinearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create a Linear issue when no Linear attachment already points at this Jira issue"
+            },
+            {
+              "jsonPath": "$.response.data.errors[0].message",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Linear answers with HTTP 200 and an errors array on failure, so success is checked on the body"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the id of an already linked Linear issue on the Jira issue instead of creating a duplicate.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.linkedLinearIssueId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0a1f7c62-5d34-4e18-9b27-6c8a1f3d5e40",
+      "flowVariables": [],
+      "name": "Store Existing Linear Issue ID on Jira Issue",
+      "id": "template:action:6e4a8d13-2c57-49b2-a81f-9f3c5d70e2b6",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.linkedLinearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write the link field when Linear already had an attachment for this Jira issue"
+            }
+          ]
+        }
+      ],
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created Linear issue UUID on the Jira issue. Linear mutations need the UUID, not the ENG-123 identifier.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.linearIssueId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:3c9d2b58-7f41-4a06-8e93-1d5b7a2c6f84",
+      "flowVariables": [],
+      "name": "Store Linear Issue ID on Jira Issue",
+      "id": "template:action:9b7f3e42-8a16-4d59-b0c7-2e6a4f18d3c5",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].message",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Linear answers with HTTP 200 and an errors array on failure, so success is checked on the body"
+            },
+            {
+              "jsonPath": "$._flow.linearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write the link field when Linear returned an issue id"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Linear attachment pointing at the Jira issue. Linear has no custom fields, so the attachment is the link record and the key used by attachmentsForURL.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation AttachmentCreate($input: AttachmentCreateInput!) { attachmentCreate(input: $input) { success attachment { id url } } }\",\n  \"variables\": {\n    \"input\": {\n      \"issueId\": \"{{_flow.linearIssueId}}\",\n      \"title\": \"Jira {{issue.key}}\",\n      \"subtitle\": \"{{{issue.fields.summary}}}\",\n      \"url\": \"{{baseUrl}}/browse/{{issue.key}}\",\n      \"metadata\": {\n        \"jiraIssueKey\": \"{{issue.key}}\",\n        \"jiraIssueId\": \"{{issue.id}}\"\n      }\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "template:action:3c9d2b58-7f41-4a06-8e93-1d5b7a2c6f84",
+      "flowVariables": [],
+      "name": "Link Jira Issue on Linear Issue",
+      "id": "template:action:1f8c6b07-4e93-42a5-9d31-7b0e5a2c9f68",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].message",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Linear answers with HTTP 200 and an errors array on failure, so success is checked on the body"
+            },
+            {
+              "jsonPath": "$._flow.linearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only create the attachment when Linear returned an issue id"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 350
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Move the created Linear issue into the configured Linear project. Skipped when LINEAR_PROJECT_ID is empty.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) { issueUpdate(id: $id, input: $input) { success issue { id identifier } } }\",\n  \"variables\": {\n    \"id\": \"{{_flow.linearIssueId}}\",\n    \"input\": {\n      \"projectId\": \"{{_flow.LINEAR_PROJECT_ID}}\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "template:action:3c9d2b58-7f41-4a06-8e93-1d5b7a2c6f84",
+      "flowVariables": [],
+      "name": "Set Linear Project on Created Issue",
+      "id": "template:action:5d2e9a34-6b18-4f70-8c25-3a9d1e7b4f60",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.LINEAR_PROJECT_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only run when LINEAR_PROJECT_ID is configured"
+            },
+            {
+              "jsonPath": "$._flow.linearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only run when Linear returned an issue id"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 360
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Move the created Linear issue into the configured initial workflow state. Skipped when LINEAR_STATE_ID is empty.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) { issueUpdate(id: $id, input: $input) { success issue { id identifier } } }\",\n  \"variables\": {\n    \"id\": \"{{_flow.linearIssueId}}\",\n    \"input\": {\n      \"stateId\": \"{{_flow.LINEAR_STATE_ID}}\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "template:action:3c9d2b58-7f41-4a06-8e93-1d5b7a2c6f84",
+      "flowVariables": [],
+      "name": "Set Linear Workflow State on Created Issue",
+      "id": "template:action:8a6b4c19-3d72-4e85-b16f-0c7d2a5e9b31",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.LINEAR_STATE_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only run when LINEAR_STATE_ID is configured"
+            },
+            {
+              "jsonPath": "$._flow.linearIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only run when Linear returned an issue id"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 370
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Update the title and description of the linked Linear issue when the Jira issue is updated.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) { issueUpdate(id: $id, input: $input) { success issue { id identifier } } }\",\n  \"variables\": {\n    \"id\": \"{{issue.fields.customfield_10153}}\",\n    \"input\": {\n      \"title\": \"{{{issue.fields.summary}}}\",\n      \"description\": \"Synced from Jira issue [{{issue.key}}]({{baseUrl}}/browse/{{issue.key}})\\n\\n{{{jiraDescriptionText}}}\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "linearIssueId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Linear Issue",
+      "id": "template:action:2b5f8d61-9c47-4a03-8e72-6d1a3c9f5e28",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.payload.user.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block issue updates made by the iHub integration user, including the write-back of the link field"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the Jira comment to the linked Linear issue.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation CommentCreate($input: CommentCreateInput!) { commentCreate(input: $input) { success comment { id } } }\",\n  \"variables\": {\n    \"input\": {\n      \"issueId\": \"{{issue.fields.customfield_10153}}\",\n      \"body\": \"Synced from Jira issue [{{issue.key}}]({{baseUrl}}/browse/{{issue.key}}) (status: {{issue.fields.status.name}})\\n\\n{{{jiraCommentText}}}\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "linearCommentId",
+          "behavior": "SET",
+          "value": "$.response.data.data.commentCreate.comment.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Comment to Linear Issue",
+      "id": "template:action:7c3a1e95-4b60-48d2-9f17-5e8b2d604a73",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Outgoing Linear Comment ID",
+      "description": "Store the created Linear comment id as a Jira issue property so the incoming flow does not sync it back.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:4e9d7b26-1a58-4c34-b07e-8f2c6a1d5934",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"jira\"\n}",
+      "parentId": "template:action:7c3a1e95-4b60-48d2-9f17-5e8b2d604a73",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.linearCommentId}}",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.linearCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Linear returned a comment id"
+            }
+          ]
+        }
+      ],
+      "order": 550
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add a Linear attachment that links to the Jira attachment. The file itself stays in Jira, see the README on file uploads.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-linear-api-key"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation AttachmentCreate($input: AttachmentCreateInput!) { attachmentCreate(input: $input) { success attachment { id url } } }\",\n  \"variables\": {\n    \"input\": {\n      \"issueId\": \"{{issue.fields.customfield_10153}}\",\n      \"title\": \"{{filename}}\",\n      \"subtitle\": \"Attachment on Jira issue {{issue.key}}\",\n      \"url\": \"{{{content}}}\",\n      \"metadata\": {\n        \"jiraIssueKey\": \"{{issue.key}}\",\n        \"jiraAttachmentFileName\": \"{{filename}}\"\n      }\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.LINEAR_API_URL}}",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [
+        {
+          "name": "linearAttachmentId",
+          "behavior": "SET",
+          "value": "$.response.data.data.attachmentCreate.attachment.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Attachment Link to Linear Issue",
+      "id": "template:action:0d6c4a83-7e29-4b51-9a68-3f5d1b7c2e94",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only add attachment links when the Jira issue has a Linear issue id"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          400,
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Linear Attachment ID",
+      "description": "Store the created Linear attachment id as a Jira issue property to avoid duplicate processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5b8e2f47-6d13-4907-8c5a-1e9b4d3a6072",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.linearAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"linear\"\n}",
+      "parentId": "template:action:0d6c4a83-7e29-4b51-9a68-3f5d1b7c2e94",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.linearAttachmentId}}",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.linearAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Linear returned an attachment id"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to Linear issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "LINEAR_API_URL",
+      "behavior": "SET",
+      "value": "https://api.linear.app/graphql",
+      "instruction": "Linear GraphQL endpoint. Linear has no API versioning, so this never changes."
+    },
+    {
+      "name": "LINEAR_TEAM_ID",
+      "behavior": "SET",
+      "value": "11111111-1111-1111-1111-111111111111",
+      "instruction": "Required. UUID of the Linear team that Jira issues are created in. Read it from Linear Settings, or with the query { teams { nodes { id key name } } }."
+    },
+    {
+      "name": "LINEAR_PROJECT_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Optional. UUID of a Linear project that created issues are moved into. Leave empty to skip."
+    },
+    {
+      "name": "LINEAR_STATE_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Optional. UUID of the Linear workflow state that created issues are moved into. Leave empty to use the team default."
+    }
+  ],
+  "groupName": "Linear",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Linear Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
