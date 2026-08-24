@@ -1,0 +1,684 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Issue by Zendesk Ticket ID",
+      "description": "Searches Jira for an issue linked to the incoming Zendesk ticket ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0860e93c-5942-4310-a901-4cec1a30300b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{zendeskTicketId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "order": 100,
+      "variables": [],
+      "scriptedVariables": [
+        {
+          "name": "zendeskEventType",
+          "uuid": "1787143421872",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst rawEventType = read('eventType', 'EventType', 'type', 'Type', 'action', 'Action', 'webhook_event', 'event_type', 'event.type');\nconst eventType = String(rawEventType || '').toLowerCase();\nif (eventType.includes('attachment_linked_to_comment') || eventType.includes('attachment.created')) return 'ticket.attachment.created';\nif (eventType.includes('comment_added') || eventType.includes('commented')) return 'ticket.commented';\nif (eventType.includes('ticket.created')) return 'ticket.created';\nif (eventType.includes('subject_changed') || eventType.includes('description_changed') || eventType.includes('status_changed') || eventType.includes('priority_changed') || eventType.includes('custom_field_changed') || eventType.includes('ticket.updated') || eventType === 'updated') return 'ticket.updated';\nif (rawEventType) return rawEventType;\nif (read('attachmentId', 'attachment.id', 'event.comment.attachment.id', 'attachments.0.id', 'ticket.attachments.0.id')) return 'ticket.attachment.created';\nif (read('commentId', 'conversationId', 'noteId', 'comment.id', 'event.comment.id') || read('commentBody', 'body', 'comment.body', 'comment.html_body', 'event.comment.body', 'event.comment.html_body')) return 'ticket.commented';\nif (read('ticketId', 'TicketId', 'zendeskTicketId', 'detail.id', 'ticket.id')) return 'ticket.updated';\nreturn '';"
+        },
+        {
+          "name": "zendeskTicketId",
+          "uuid": "1787145100767",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nreturn read('ticketId', 'TicketId', 'zendeskTicketId', 'ZendeskTicketId', 'ticket.id', 'ticket.Id', 'detail.id', 'detail.Id', 'resource.id', 'resource.Id', 'id', 'Id');"
+        },
+        {
+          "name": "zendeskSubject",
+          "uuid": "1787145100768",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst ticketId = read('ticketId', 'TicketId', 'zendeskTicketId', 'ticket.id', 'detail.id', 'id');\nreturn read('ticket.subject', 'ticket.Subject', 'detail.subject', 'detail.Subject', 'resource.subject', 'resource.Subject', 'subject', 'Subject') || (ticketId ? 'Zendesk Ticket ' + ticketId : 'Zendesk Ticket');"
+        },
+        {
+          "name": "zendeskDescription",
+          "uuid": "1787145100769",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst description = read('ticket.description', 'ticket.Description', 'detail.description', 'detail.Description', 'description', 'Description', 'resource.description', 'resource.Description');\nconst commentHtml = read('ticket.comment.html_body', 'comment.html_body', 'event.comment.html_body');\nconst commentText = read('ticket.comment.body', 'comment.body', 'event.comment.body', 'description_text', 'DescriptionText');\nconst ticketId = read('ticketId', 'TicketId', 'zendeskTicketId', 'ticket.id', 'detail.id', 'id');\nconst status = read('ticket.status', 'ticket.Status', 'detail.status', 'detail.Status', 'status', 'Status');\nconst priority = read('ticket.priority', 'ticket.Priority', 'detail.priority', 'detail.Priority', 'priority', 'Priority');\nlet html = commentHtml || description || (commentText ? '<p>' + commentText + '</p>' : '');\nconst metadata = [];\nif (ticketId) metadata.push('<p>Zendesk ticket: ' + ticketId + '</p>');\nif (status) metadata.push('<p>Status: ' + status + '</p>');\nif (priority) metadata.push('<p>Priority: ' + priority + '</p>');\nreturn html || metadata.join('') || 'Synced from Zendesk';"
+        },
+        {
+          "name": "zendeskCommentBody",
+          "uuid": "1787293804974",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nreturn read('commentBody', 'CommentBody', 'body', 'Body', 'comment.html_body', 'comment.body', 'event.comment.html_body', 'event.comment.body', 'ticket.latest_comment', 'ticket.latest_public_comment', 'ticket.latest_private_comment', 'resource.commentBody', 'resource.body');"
+        },
+        {
+          "name": "zendeskCommentId",
+          "uuid": "1787293804975",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst direct = read('commentId', 'CommentId', 'conversationId', 'ConversationId', 'noteId', 'NoteId', 'comment.id', 'comment.Id', 'event.comment.id', 'event.comment.Id', 'resource.commentId');\nif (direct) return direct;\nconst body = read('commentBody', 'CommentBody', 'body', 'comment.body', 'comment.html_body', 'event.comment.body', 'event.comment.html_body', 'ticket.latest_comment', 'ticket.latest_public_comment', 'ticket.latest_private_comment');\nif (!body) return '';\nconst ticketId = read('ticketId', 'TicketId', 'ticket.id', 'detail.id', 'id');\nconst modified = read('updated_at', 'ticket.updated_at', 'detail.updated_at', 'comment.created_at', 'event.comment.created_at', 'time');\nlet hash = 0;\nfor (let i = 0; i < body.length; i++) hash = ((hash << 5) - hash + body.charCodeAt(i)) | 0;\nreturn [ticketId, modified || Math.abs(hash)].filter(Boolean).join('-');"
+        },
+        {
+          "name": "zendeskAttachmentId",
+          "uuid": "1787251220522",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentId', 'AttachmentId', 'attachment.id', 'attachment.Id', 'event.comment.attachment.id', 'event.comment.attachment.Id', 'attachments.0.id', 'ticket.attachments.0.id', 'comment.attachments.0.id') || attachment.id || attachment.Id || '';"
+        },
+        {
+          "name": "zendeskAttachmentUrl",
+          "uuid": "1787251220523",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst attachment = firstAttachment();\nreturn read('attachmentUrl', 'AttachmentUrl', 'content_url', 'attachment.content_url', 'attachment.url', 'event.comment.attachment.content_url', 'event.comment.attachment.url', 'attachments.0.content_url', 'ticket.attachments.0.content_url', 'comment.attachments.0.content_url') || attachment.content_url || attachment.url || '';"
+        },
+        {
+          "name": "zendeskFileName",
+          "uuid": "1787251220524",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst firstAttachment = () => {\n  const containers = [\n    root.attachments,\n    root?.ticket?.attachments,\n    root?.comment?.attachments,\n    root?.event?.comment?.attachments,\n    root?.payload?.attachments\n  ];\n  for (const value of containers) {\n    if (Array.isArray(value) && value.length) return value[0];\n    if (value && typeof value === 'object') return value;\n  }\n  return root?.event?.comment?.attachment || root?.comment?.attachment || root?.attachment || {};\n};\nconst attachment = firstAttachment();\nconst url = read('attachmentUrl', 'content_url', 'attachment.content_url', 'attachment.url', 'event.comment.attachment.content_url', 'attachments.0.content_url') || attachment.content_url || attachment.url || '';\nconst fromUrl = url ? decodeURIComponent(String(url).split('/').pop().split('?')[0]) : '';\nreturn read('fileName', 'filename', 'FileName', 'attachment.name', 'attachment.file_name', 'attachment.filename', 'event.comment.attachment.filename', 'attachments.0.name', 'ticket.attachments.0.name', 'comment.attachments.0.file_name') || attachment.name || attachment.file_name || attachment.filename || fromUrl || 'zendesk-attachment';"
+        }
+      ],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.zendeskTicketId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Zendesk payload must include a ticket ID"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Issue from Zendesk Ticket",
+      "description": "Creates a Jira issue when Zendesk sends a new ticket event and no linked issue exists.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:32fba56d-c292-43df-8a10-b57c64517902",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{zendeskSubject}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{zendeskTicketId}}\",\n    \"description\": {{{htmlToADF zendeskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:0860e93c-5942-4310-a901-4cec1a30300b",
+      "order": 200,
+      "variables": [],
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.zendeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Update Jira Issue from Zendesk Ticket",
+      "description": "Updates the linked Jira issue from a Zendesk ticket update event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:37835e38-082d-4077-bd34-9bb6457789de",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{zendeskSubject}}\",\n    \"description\": {{{htmlToADF zendeskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:0860e93c-5942-4310-a901-4cec1a30300b",
+      "order": 300,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.zendeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.zendeskSubject",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Zendesk update payload must include a subject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Zendesk Comment ID Property",
+      "description": "Checks whether this Zendesk conversation has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:b286a507-67a8-4a92-8523-f36a6095445b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{zendeskCommentId}}",
+      "parentId": "template:action:0860e93c-5942-4310-a901-4cec1a30300b",
+      "order": 400,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.zendeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.zendeskCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Zendesk comment payload must include or derive a comment ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add Zendesk Comment to Jira",
+      "description": "Adds the Zendesk conversation body as a Jira comment.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:3655f7ce-0ff1-4e5c-b9aa-aa2351a4e341",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF zendeskCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:b286a507-67a8-4a92-8523-f36a6095445b",
+      "order": 500,
+      "variables": [],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.zendeskCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Zendesk comment payload must include comment text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Zendesk Comment ID",
+      "description": "Stores the incoming Zendesk conversation ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:1d1a3cf3-9909-4528-a58c-4d58dd263304",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{zendeskCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"zendesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{zendeskCommentId}}",
+      "parentId": "template:action:3655f7ce-0ff1-4e5c-b9aa-aa2351a4e341",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Zendesk Attachment ID Property",
+      "description": "Checks whether this Zendesk attachment has already been synced to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:cc3c9371-996b-458e-be94-3478a40368d0",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{zendeskAttachmentId}}",
+      "parentId": "template:action:0860e93c-5942-4310-a901-4cec1a30300b",
+      "order": 700,
+      "variables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.zendeskEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.zendeskAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Zendesk attachment payload must include an attachment ID"
+            },
+            {
+              "jsonPath": "$.zendeskAttachmentUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Zendesk attachment payload must include an attachment URL"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Download Zendesk Attachment",
+      "description": "Downloads the incoming Zendesk attachment for upload to Jira.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-zendesk"
+      },
+      "id": "template:action:b6fe5657-d076-4364-a664-8d85baf2af40",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{zendeskAttachmentUrl}}",
+      "parentId": "template:action:cc3c9371-996b-458e-be94-3478a40368d0",
+      "order": 800,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{zendeskFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      }
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Add Zendesk Attachment to Jira",
+      "description": "Uploads the downloaded Zendesk attachment to the linked Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:f31210b2-650f-41fe-b0fc-0d13d2454854",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:b6fe5657-d076-4364-a664-8d85baf2af40",
+      "order": 900
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Zendesk Attachment ID",
+      "description": "Stores the incoming Zendesk attachment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5ca67c9d-0948-41a3-ba2d-453c4b0a3bdf",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{zendeskAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"zendesk\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{zendeskAttachmentId}}",
+      "parentId": "template:action:f31210b2-650f-41fe-b0fc-0d13d2454854",
+      "order": 1000
+    }
+  ],
+  "description": "Sync Zendesk webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "ZD",
+      "instruction": "Jira project key used for Zendesk-created tickets"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new Zendesk tickets"
+    }
+  ],
+  "groupName": "Zendesk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Zendesk Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

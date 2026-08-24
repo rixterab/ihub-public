@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "zendesk-sync",
+  "name": "Zendesk Sync",
+  "description": "Two way sync for Zendesk tickets and Jira issues",
+  "category": "Zendesk",
+  "flows": [
+    "zendesk_incoming_sync.json",
+    "zendesk_outgoing_sync.json"
+  ],
+  "icon": "zendesk.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-zendesk",
+      "name": "Zendesk",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "your-email@example.com/token"
+      }
+    }
+  ]
+}
