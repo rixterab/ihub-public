@@ -1,0 +1,499 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-freshdesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"subject\": \"{{{issue.fields.summary}}}\",\n  \"description\": \"<p>Synced from <strong>Jira</strong></p><p>Issue: {{issue.key}}</p>{{{adfToHTML issue.fields.description}}}\",\n  \"email\": \"{{_flow.FRESHDESK_REQUESTER_EMAIL}}\",\n  \"priority\": {{_flow.FRESHDESK_DEFAULT_PRIORITY}},\n  \"status\": {{_flow.FRESHDESK_DEFAULT_STATUS}},\n  \"source\": {{_flow.FRESHDESK_TICKET_SOURCE}}\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.FRESHDESK_URL}}/api/v2/tickets",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "freshdeskTicketId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Ticket in Freshdesk",
+      "id": "template:action:03075045-d668-4f0b-8a9f-896d1befbc3a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if Freshdesk ticket ID exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create Freshdesk tickets for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Freshdesk Ticket ID on Jira Issue",
+      "description": "Stores the linked Freshdesk ticket ID on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ffbd211d-da19-4885-8b29-7e0264d28d8d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.freshdeskTicketId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:03075045-d668-4f0b-8a9f-896d1befbc3a",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-freshdesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": \"<p>Synced from <strong>Jira</strong></p><p>Issue: {{issue.key}}</p><p>Status: {{issue.fields.status.name}}</p>{{{adfToHTML payload.comment.body}}}\",\n  \"private\": {{_flow.FRESHDESK_COMMENT_PRIVATE}},\n  \"incoming\": false\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}/notes",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "freshdeskConversationId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Comment to Freshdesk Ticket",
+      "id": "template:action:650d7192-baf7-455c-a521-9453ad736df0",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block comments authored by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Freshdesk Comment ID",
+      "description": "Stores a synced Freshdesk conversation ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:2c69ab39-f00d-48af-9c8a-acfb9cb6d28d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.freshdeskConversationId}}\",\n  \"status\": \"synced\",\n  \"source\": \"freshdesk\"\n}",
+      "parentId": "template:action:650d7192-baf7-455c-a521-9453ad736df0",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.freshdeskConversationId}}",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-freshdesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"subject\": \"{{{issue.fields.summary}}}\",\n  \"description\": \"<p>Synced from <strong>Jira</strong></p><p>Issue: {{issue.key}}</p>{{{adfToHTML issue.fields.description}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "freshdeskTicketId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Freshdesk Ticket from Jira Issue",
+      "id": "template:action:f8867717-1ae5-4d80-a923-85080f0efcda",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-freshdesk"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": \"Synced attachment from Jira issue {{issue.key}}: {{filename}}\",\n  \"private\": true,\n  \"attachments[]\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}/notes",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "freshdeskAttachmentId",
+          "behavior": "SET",
+          "value": "$.response.data.attachments[0].id",
+          "instruction": ""
+        }
+      ],
+      "name": "Upload Jira Attachment to Freshdesk Ticket",
+      "id": "template:action:9e10aa1b-b200-491d-9992-1656e564e1da",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a Freshdesk ticket ID"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Freshdesk Attachment ID",
+      "description": "Stores a synced Freshdesk attachment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:4b80e0c2-cb0a-4eb0-b7b4-32f5c101644c",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.freshdeskAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"freshdesk\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.freshdeskAttachmentId}}",
+      "parentId": "template:action:9e10aa1b-b200-491d-9992-1656e564e1da",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.freshdeskAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when Freshdesk returned an attachment ID"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to Freshdesk tickets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "FRESHDESK_URL",
+      "behavior": "SET",
+      "value": "https://your-domain.freshdesk.com",
+      "instruction": "Freshdesk account URL, for example https://customer.freshdesk.com"
+    },
+    {
+      "name": "FRESHDESK_REQUESTER_EMAIL",
+      "behavior": "SET",
+      "value": "jira-sync@example.com",
+      "instruction": "Requester email used when Jira creates Freshdesk tickets"
+    },
+    {
+      "name": "FRESHDESK_DEFAULT_PRIORITY",
+      "behavior": "SET",
+      "value": "2",
+      "instruction": "Freshdesk default priority for Jira-created tickets. Freshdesk values are 1 Low, 2 Medium, 3 High, 4 Urgent."
+    },
+    {
+      "name": "FRESHDESK_DEFAULT_STATUS",
+      "behavior": "SET",
+      "value": "2",
+      "instruction": "Freshdesk default status for Jira-created tickets. Freshdesk value 2 is Open."
+    },
+    {
+      "name": "FRESHDESK_TICKET_SOURCE",
+      "behavior": "SET",
+      "value": "2",
+      "instruction": "Freshdesk source value for Jira-created tickets."
+    },
+    {
+      "name": "FRESHDESK_COMMENT_PRIVATE",
+      "behavior": "SET",
+      "value": "true",
+      "instruction": "Whether Jira comments should be added to Freshdesk as private notes."
+    }
+  ],
+  "groupName": "Freshdesk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Freshdesk Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

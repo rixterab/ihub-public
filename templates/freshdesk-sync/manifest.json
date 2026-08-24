@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "freshdesk-sync",
+  "name": "Freshdesk Sync",
+  "description": "Two way sync for Freshdesk tickets and Jira issues",
+  "category": "Freshdesk",
+  "flows": [
+    "freshdesk_incoming_sync.json",
+    "freshdesk_outgoing_sync.json"
+  ],
+  "icon": "freshdesk.png",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-freshdesk",
+      "name": "Freshdesk",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "your-freshdesk-api-key"
+      }
+    }
+  ]
+}
