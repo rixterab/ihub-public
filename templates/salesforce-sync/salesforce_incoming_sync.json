@@ -1,0 +1,625 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "salesforceEventType",
+          "uuid": "1787143421872",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('eventType', 'EventType', 'type', 'Type', 'action', 'Action');\nif (eventType) return eventType;\nif (read('commentId', 'caseCommentId', 'CaseCommentId', 'comment.Id', 'comment.id', 'caseComment.Id', 'CaseComment.Id')) return 'case.commented';\nif (read('contentVersionId', 'ContentVersionId', 'attachment.contentVersionId', 'attachment.ContentVersionId', 'contentVersion.Id', 'ContentVersion.Id')) return 'case.attachment.created';\nif (read('caseId', 'CaseId', 'recordId', 'RecordId', 'id', 'Id', 'case.Id', 'Case.Id')) return 'case.created';\nreturn '';"
+        },
+        {
+          "name": "salesforceCaseId",
+          "uuid": "1787145100767",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('caseId', 'CaseId', 'recordId', 'RecordId', 'id', 'Id', 'case.Id', 'case.id', 'Case.Id', 'Case.id', 'resource.Id', 'resource.id');"
+        },
+        {
+          "name": "salesforceSubject",
+          "uuid": "1787145100768",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst caseId = read('caseId', 'CaseId', 'recordId', 'RecordId', 'id', 'Id', 'case.Id', 'Case.Id', 'resource.Id', 'resource.id');\nreturn read('subject', 'Subject', 'case.Subject', 'case.subject', 'Case.Subject', 'resource.Subject', 'resource.subject') || (caseId ? 'Salesforce Case ' + caseId : 'Salesforce Case');"
+        },
+        {
+          "name": "salesforceDescription",
+          "uuid": "1787145100769",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('description', 'Description', 'case.Description', 'case.description', 'Case.Description', 'resource.Description', 'resource.description');"
+        },
+        {
+          "name": "salesforceCommentId",
+          "uuid": "1787293804974",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentId', 'caseCommentId', 'CaseCommentId', 'comment.Id', 'comment.id', 'caseComment.Id', 'caseComment.id', 'CaseComment.Id', 'resource.commentId', 'resource.caseCommentId');"
+        },
+        {
+          "name": "salesforceCommentBody",
+          "uuid": "1787293804975",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentBody', 'CommentBody', 'comment.CommentBody', 'comment.commentBody', 'comment.body', 'caseComment.CommentBody', 'caseComment.commentBody', 'CaseComment.CommentBody', 'resource.commentBody');"
+        },
+        {
+          "name": "salesforceContentVersionId",
+          "uuid": "1787251220522",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('contentVersionId', 'ContentVersionId', 'attachment.contentVersionId', 'attachment.ContentVersionId', 'contentVersion.Id', 'contentVersion.id', 'ContentVersion.Id', 'resource.contentVersionId');"
+        },
+        {
+          "name": "salesforceAttachmentId",
+          "uuid": "1787251220523",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('contentVersionId', 'ContentVersionId', 'attachmentId', 'AttachmentId', 'contentDocumentId', 'ContentDocumentId', 'attachment.contentVersionId', 'attachment.ContentVersionId', 'attachment.Id', 'contentVersion.Id', 'ContentVersion.Id', 'resource.contentVersionId');"
+        },
+        {
+          "name": "salesforceFileName",
+          "uuid": "1787251220524",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('fileName', 'filename', 'FileName', 'attachment.fileName', 'attachment.filename', 'attachment.Title', 'contentVersion.Title', 'ContentVersion.Title', 'resource.fileName') || 'salesforce-file';"
+        }
+      ],
+      "description": "Search for a Jira issue whose Salesforce Case ID custom field matches the incoming Case ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{salesforceCaseId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Salesforce Case ID",
+      "id": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.salesforceCaseId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Salesforce payload must include a Case ID"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming Salesforce case.created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{salesforceSubject}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{salesforceCaseId}}\",\n    \"description\": {{{htmlToADF salesforceDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue",
+      "id": "template:action:75e6a615-aa12-4920-a595-dfc6bd265151",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.salesforceEventType",
+              "type": "DATA_CONDITION",
+              "value": "case.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the Salesforce CaseComment ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{salesforceCommentId}}",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "name": "Get Salesforce Comment ID Property",
+      "id": "template:action:c3c927f6-60eb-4395-aea6-f89691b802ea",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.salesforceEventType",
+              "type": "DATA_CONDITION",
+              "value": "case.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.salesforceCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Salesforce comment payload must include a CaseComment ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add a Salesforce CaseComment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF salesforceCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:c3c927f6-60eb-4395-aea6-f89691b802ea",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add Salesforce Comment to Jira",
+      "id": "template:action:e8f82ab7-8bf0-473c-b814-0cc800b7435c",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.salesforceCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Salesforce comment payload must include comment text"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Salesforce Comment ID",
+      "description": "Store the Salesforce CaseComment ID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:9ec7f798-6afe-44ce-847a-4e62f8134b67",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{salesforceCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"salesforce\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{salesforceCommentId}}",
+      "parentId": "template:action:e8f82ab7-8bf0-473c-b814-0cc800b7435c",
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Get a Jira issue property for the Salesforce ContentVersion ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{salesforceAttachmentId}}",
+      "name": "Get Salesforce Attachment ID Property",
+      "id": "template:action:d0b4de2a-996d-4c93-8c6f-24a9fe1f9c24",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.salesforceEventType",
+              "type": "DATA_CONDITION",
+              "value": "case.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.salesforceAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Salesforce attachment payload must include a ContentVersion ID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{salesforceFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-salesforce"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/ContentVersion/{{salesforceContentVersionId}}/VersionData",
+      "parentId": "template:action:d0b4de2a-996d-4c93-8c6f-24a9fe1f9c24",
+      "name": "Download Salesforce Attachment",
+      "id": "template:action:aecd8390-7e83-494e-8c8e-9cb60294766d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.salesforceContentVersionId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Salesforce attachment payload must include a ContentVersion ID"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded Salesforce file to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:aecd8390-7e83-494e-8c8e-9cb60294766d",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add Salesforce Attachment to Jira",
+      "id": "template:action:5745cf6b-9b6c-47a1-9d66-9e9eb9238315",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Salesforce Attachment ID",
+      "description": "Store the Salesforce ContentVersion ID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:a4e2fdb7-b436-4cc8-80a6-04f7d72ec283",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{salesforceAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"salesforce\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{salesforceAttachmentId}}",
+      "parentId": "template:action:5745cf6b-9b6c-47a1-9d66-9e9eb9238315",
+      "order": 800
+    }
+  ],
+  "description": "Sync Salesforce Flow webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "SF",
+      "instruction": "Jira project key used for Salesforce-created cases"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new Salesforce cases"
+    },
+    {
+      "name": "SF_URL",
+      "behavior": "SET",
+      "value": "https://your-domain.my.salesforce.com",
+      "instruction": "Salesforce instance URL, for example https://customer.my.salesforce.com"
+    },
+    {
+      "name": "SF_API_VERSION",
+      "behavior": "SET",
+      "value": "v67.0",
+      "instruction": "Salesforce REST API version"
+    }
+  ],
+  "groupName": "Salesforce",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Salesforce Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

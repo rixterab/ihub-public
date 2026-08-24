@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "salesforce-sync",
+  "name": "Salesforce Sync",
+  "description": "Two way sync for Salesforce Cases and Jira issues",
+  "category": "Salesforce",
+  "flows": [
+    "salesforce_incoming_sync.json",
+    "salesforce_outgoing_sync.json"
+  ],
+  "icon": "salesforce.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-22",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-salesforce",
+      "name": "Salesforce",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.salesforce.com/services/oauth2/authorize?response_type=code",
+            "accessTokenUrl": "https://login.salesforce.com/services/oauth2/token"
+          },
+          "grantType": "code",
+          "scope": "api refresh_token",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

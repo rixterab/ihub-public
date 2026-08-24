@@ -1,0 +1,483 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-salesforce"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"Subject\": \"{{{issue.fields.summary}}}\",\n  \"Description\": \"{{{adfToHTML issue.fields.description}}}\",\n  \"Origin\": \"{{_flow.CASE_ORIGIN}}\",\n  \"Status\": \"{{_flow.CASE_STATUS}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/Case",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "caseId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Case in Salesforce",
+      "id": "template:action:0bcb12eb-0ca0-4ec4-bc77-bc0ff402221a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if Salesforce Case ID exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create Salesforce cases for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created Salesforce Case ID on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.caseId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0bcb12eb-0ca0-4ec4-bc77-bc0ff402221a",
+      "flowVariables": [],
+      "name": "Store Salesforce Case ID on Jira Issue",
+      "id": "template:action:3129051f-0f93-4281-a933-7d84580dafa2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-salesforce"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ParentId\": \"{{issue.fields.customfield_10153}}\",\n  \"CommentBody\": \"<p>Synced from <strong>Jira</strong></p><p>Status: {{issue.fields.status.name}}</p><p>Issue: {{issue.key}}</p>{{{adfToHTML payload.comment.body}}}\",\n  \"IsPublished\": false\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/CaseComment",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "caseId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Comment Salesforce Case",
+      "id": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Salesforce Comment ID",
+      "description": "Store the Salesforce CaseComment ID on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ae335078-5935-4a93-ae0f-a39db37ddc66",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"salesforce\"\n}",
+      "parentId": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{id}}",
+      "order": 400
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-salesforce"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"Description\": \"{{{adfToHTML issue.fields.description}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/Case/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "caseId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Salesforce Case Description",
+      "id": "template:action:5e110f20-e411-47c5-a08f-fc0901d308ce",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-salesforce"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"Title\": \"{{filename}}\",\n  \"PathOnClient\": \"{{filename}}\",\n  \"FirstPublishLocationId\": \"{{issue.fields.customfield_10153}}\",\n  \"VersionData\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/ContentVersion",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [],
+      "name": "Upload Attachment to Salesforce Case",
+      "id": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a Salesforce Case ID"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Salesforce Attachment ID",
+      "description": "Store the Salesforce ContentVersion ID on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ac1084e5-0dcd-4ce1-95ee-b6dfc13e0fee",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"salesforce\"\n}",
+      "parentId": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{id}}",
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to Salesforce Cases",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SF_URL",
+      "behavior": "SET",
+      "value": "https://your-domain.my.salesforce.com",
+      "instruction": "Salesforce instance URL, for example https://customer.my.salesforce.com"
+    },
+    {
+      "name": "SF_API_VERSION",
+      "behavior": "SET",
+      "value": "v67.0",
+      "instruction": "Salesforce REST API version"
+    },
+    {
+      "name": "CASE_ORIGIN",
+      "behavior": "SET",
+      "value": "Jira",
+      "instruction": "Salesforce Case Origin value used on created cases"
+    },
+    {
+      "name": "CASE_STATUS",
+      "behavior": "SET",
+      "value": "New",
+      "instruction": "Salesforce Case Status value used on created cases"
+    }
+  ],
+  "groupName": "Salesforce",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Salesforce Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
