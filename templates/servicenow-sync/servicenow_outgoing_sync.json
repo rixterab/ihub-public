@@ -1,0 +1,512 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a ServiceNow ticket when a Jira issue without a linked sys_id is created.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-servicenow"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"short_description\": \"{{{issue.fields.summary}}}\",\n  \"description\": \"{{{adfToHTML issue.fields.description}}}\",\n  \"contact_type\": \"{{_flow.SN_CONTACT_TYPE}}\",\n  \"impact\": \"{{_flow.SN_IMPACT}}\",\n  \"urgency\": \"{{_flow.SN_URGENCY}}\",\n  \"correlation_id\": \"{{issue.key}}\",\n  \"correlation_display\": \"Jira\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "sysId",
+          "behavior": "SET",
+          "value": "$.response.data.result.sys_id",
+          "instruction": ""
+        },
+        {
+          "name": "ticketNumber",
+          "behavior": "SET",
+          "value": "$.response.data.result.number",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Ticket in ServiceNow",
+      "id": "template:action:c58a1e74-0d92-4f36-8b17-6a2e9c4d3f81",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if a ServiceNow sys_id already exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create ServiceNow tickets for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created ServiceNow sys_id on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.sysId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:c58a1e74-0d92-4f36-8b17-6a2e9c4d3f81",
+      "flowVariables": [],
+      "name": "Store ServiceNow sys_id on Jira Issue",
+      "id": "template:action:2d94f6b1-7e35-48c0-9a6d-1b8f5c07e2a4",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Add the Jira comment to the linked ServiceNow ticket as an additional comment.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-servicenow"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"comments\": \"Synced from Jira issue {{issue.key}} (status: {{issue.fields.status.name}})\\n{{{adfToHTML payload.comment.body}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "sysId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Comment ServiceNow Ticket",
+      "id": "template:action:9f13c5e8-4a70-4d29-b53e-8c1a6d2f0b97",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Outgoing Comment ID",
+      "description": "Mark the Jira comment as synced to ServiceNow to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:6b47e0d3-1c58-49a2-8f61-3d9e7a5c4b02",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"jira\"\n}",
+      "parentId": "template:action:9f13c5e8-4a70-4d29-b53e-8c1a6d2f0b97",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{comment.id}}",
+      "order": 400
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Update the linked ServiceNow ticket when the Jira issue is updated.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-servicenow"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"short_description\": \"{{{issue.fields.summary}}}\",\n  \"description\": \"{{{adfToHTML issue.fields.description}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "sysId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update ServiceNow Ticket",
+      "id": "template:action:4a80d2c6-5b19-43e7-9c02-7f6b1e8d5a39",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Upload Jira attachments to the linked ServiceNow ticket using the Attachment API.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-servicenow"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"table_name\": \"{{_flow.SN_TABLE}}\",\n  \"table_sys_id\": \"{{issue.fields.customfield_10153}}\",\n  \"uploadFile\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.SN_URL}}/api/now/attachment/upload",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [
+        {
+          "name": "attachmentSysId",
+          "behavior": "SET",
+          "value": "$.response.data.result.sys_id",
+          "instruction": ""
+        }
+      ],
+      "name": "Upload Attachment to ServiceNow Ticket",
+      "id": "template:action:e71b3f95-8d24-4c60-a1f8-05c9b7e2d463",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a ServiceNow sys_id"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store ServiceNow Attachment ID",
+      "description": "Store the ServiceNow attachment sys_id on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:1c6d8b40-3f57-4a92-b8e3-9a2f5c704d18",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.attachmentSysId}}\",\n  \"status\": \"synced\",\n  \"source\": \"servicenow\"\n}",
+      "parentId": "template:action:e71b3f95-8d24-4c60-a1f8-05c9b7e2d463",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.attachmentSysId}}",
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to ServiceNow tickets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SN_URL",
+      "behavior": "SET",
+      "value": "https://your-instance.service-now.com",
+      "instruction": "ServiceNow instance URL, for example https://acme.service-now.com"
+    },
+    {
+      "name": "SN_API_VERSION",
+      "behavior": "SET",
+      "value": "v2",
+      "instruction": "ServiceNow Table API version used in /api/now/{version}/table"
+    },
+    {
+      "name": "SN_TABLE",
+      "behavior": "SET",
+      "value": "incident",
+      "instruction": "ServiceNow table holding the tickets, for example incident, sn_customerservice_case or sc_req_item"
+    },
+    {
+      "name": "SN_CONTACT_TYPE",
+      "behavior": "SET",
+      "value": "integration",
+      "instruction": "ServiceNow contact_type value set on tickets created from Jira"
+    },
+    {
+      "name": "SN_IMPACT",
+      "behavior": "SET",
+      "value": "3",
+      "instruction": "ServiceNow impact value (1 High, 2 Medium, 3 Low) used on created tickets"
+    },
+    {
+      "name": "SN_URGENCY",
+      "behavior": "SET",
+      "value": "3",
+      "instruction": "ServiceNow urgency value (1 High, 2 Medium, 3 Low) used on created tickets"
+    }
+  ],
+  "groupName": "ServiceNow",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "ServiceNow Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

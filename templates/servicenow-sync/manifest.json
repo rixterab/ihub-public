@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "key": "servicenow-sync",
+  "name": "ServiceNow Sync",
+  "description": "Two way sync for ServiceNow tickets and Jira issues",
+  "category": "ServiceNow",
+  "flows": [
+    "servicenow_incoming_sync.json",
+    "servicenow_outgoing_sync.json"
+  ],
+  "icon": "servicenow.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-servicenow",
+      "name": "ServiceNow",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://your-instance.service-now.com/oauth_auth.do?response_type=code",
+            "accessTokenUrl": "https://your-instance.service-now.com/oauth_token.do"
+          },
+          "grantType": "code",
+          "scope": "useraccount",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}
