@@ -1,0 +1,530 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/vnd.github+json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{{issue.fields.summary}}}\",\n  \"body\": \"Synced from **Jira**\\n\\nIssue: {{issue.key}}\\n\\nStatus: {{issue.fields.status.name}}\\n\\n{{{adfToHTML issue.fields.description}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "githubIssueNumber",
+          "behavior": "SET",
+          "value": "$.response.data.number",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Issue in GitHub",
+      "id": "template:action:03075045-d668-4f0b-8a9f-896d1befbc3a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if a GitHub issue number exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create GitHub issues for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100,
+      "description": "Creates a GitHub issue when Jira sends an issue-created event and no linked GitHub issue exists."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store GitHub Issue Number on Jira Issue",
+      "description": "Stores the linked GitHub issue number on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ffbd211d-da19-4885-8b29-7e0264d28d8d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.githubIssueNumber}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:03075045-d668-4f0b-8a9f-896d1befbc3a",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            },
+            {
+              "jsonPath": "$._flow.githubIssueNumber",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the GitHub issue number when GitHub returned one"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/vnd.github+json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": \"Synced from **Jira**\\n\\nIssue: {{issue.key}}\\n\\nStatus: {{issue.fields.status.name}}\\n\\n{{{adfToHTML payload.comment.body}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "githubCommentId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Comment to GitHub Issue",
+      "id": "template:action:650d7192-baf7-455c-a521-9453ad736df0",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block comments authored by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 300,
+      "description": "Adds a Jira comment to the linked GitHub issue."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store GitHub Comment ID",
+      "description": "Stores a synced GitHub comment ID as a Jira issue property.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:2c69ab39-f00d-48af-9c8a-acfb9cb6d28d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.githubCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"github\"\n}",
+      "parentId": "template:action:650d7192-baf7-455c-a521-9453ad736df0",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.githubCommentId}}",
+      "order": 400,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.githubCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when GitHub returned a comment ID"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "headers": [
+        {
+          "value": "application/vnd.github+json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{{issue.fields.summary}}}\",\n  \"body\": \"Synced from **Jira**\\n\\nIssue: {{issue.key}}\\n\\nStatus: {{issue.fields.status.name}}\\n\\n{{{adfToHTML issue.fields.description}}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "githubIssueNumber",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update GitHub Issue from Jira Issue",
+      "id": "template:action:f8867717-1ae5-4d80-a923-85080f0efcda",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500,
+      "description": "Updates the linked GitHub issue title and body from a Jira issue update event."
+    },
+    {
+      "headers": [
+        {
+          "value": "application/vnd.github+json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": \"Synced attachment from Jira issue {{issue.key}}: [{{filename}}]({{{content}}})\\n\\nThe file remains stored in Jira.\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "githubAttachmentCommentId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Jira Attachment Link to GitHub Issue",
+      "id": "template:action:9e10aa1b-b200-491d-9992-1656e564e1da",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only add attachment links when the Jira issue has a GitHub issue number"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "iterator": "$.payload.issue.fields.attachment",
+      "description": "Adds a GitHub issue comment with a link to the Jira attachment. GitHub does not expose a public issue attachment upload endpoint.",
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store GitHub Attachment Comment ID",
+      "description": "Stores the GitHub comment ID created for a Jira attachment link.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:4b80e0c2-cb0a-4eb0-b7b4-32f5c101644c",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.githubAttachmentCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"github\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.githubAttachmentCommentId}}",
+      "parentId": "template:action:9e10aa1b-b200-491d-9992-1656e564e1da",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.githubAttachmentCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the property when GitHub returned an attachment comment ID"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to GitHub issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "GITHUB_API_URL",
+      "behavior": "SET",
+      "value": "https://api.github.com",
+      "instruction": "GitHub API URL. For GitHub Enterprise Server, replace with the enterprise API URL, for example https://github.example.com/api/v3."
+    },
+    {
+      "name": "GITHUB_API_VERSION",
+      "behavior": "SET",
+      "value": "2026-03-10",
+      "instruction": "GitHub REST API version sent in the X-GitHub-Api-Version header."
+    },
+    {
+      "name": "GITHUB_OWNER",
+      "behavior": "SET",
+      "value": "your-org",
+      "instruction": "GitHub repository owner or organization."
+    },
+    {
+      "name": "GITHUB_REPO",
+      "behavior": "SET",
+      "value": "your-repo",
+      "instruction": "GitHub repository name."
+    }
+  ],
+  "groupName": "GitHub",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "GitHub Issues Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
