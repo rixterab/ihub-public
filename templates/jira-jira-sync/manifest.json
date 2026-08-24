@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-jira-sync",
+  "name": "Jira <-> Jira Sync",
+  "description": "Two way sync for issues between two Jira Cloud instances",
+  "category": "Jira",
+  "flows": [
+    "jira_incoming_sync.json",
+    "jira_outgoing_sync.json"
+  ],
+  "icon": "jira-jira.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-remote-jira",
+      "name": "Remote Jira",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "integration@your-company.com"
+      }
+    }
+  ]
+}
