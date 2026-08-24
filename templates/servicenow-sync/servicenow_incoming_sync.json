@@ -1,0 +1,701 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "serviceNowEventType",
+          "uuid": "1787543421001",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('eventType', 'event_type', 'EventType', 'type', 'Type', 'action', 'Action', 'operation');\nif (eventType) {\n  const normalized = String(eventType).toLowerCase();\n  if (normalized === 'insert' || normalized === 'create' || normalized === 'created') return 'ticket.created';\n  if (normalized === 'update' || normalized === 'updated') return 'ticket.updated';\n  return eventType;\n}\nif (read('commentId', 'comment_id', 'journalId', 'journal_id', 'sys_journal_field.sys_id', 'comment.sys_id')) return 'ticket.commented';\nif (read('attachmentId', 'attachment_id', 'attachment.sys_id', 'sys_attachment.sys_id')) return 'ticket.attachment.created';\nif (read('sysId', 'sys_id', 'sysID', 'recordId', 'record_id', 'id', 'Id', 'record.sys_id', 'record.sysId', 'current.sys_id', 'task.sys_id', 'incident.sys_id', 'result.sys_id')) return 'ticket.created';\nreturn '';"
+        },
+        {
+          "name": "serviceNowTable",
+          "uuid": "1787543421002",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('table', 'Table', 'tableName', 'table_name', 'sys_class_name', 'record.sys_class_name', 'current.sys_class_name') || 'incident';"
+        },
+        {
+          "name": "serviceNowSysId",
+          "uuid": "1787543421003",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('sysId', 'sys_id', 'sysID', 'recordId', 'record_id', 'id', 'Id', 'record.sys_id', 'record.sysId', 'current.sys_id', 'task.sys_id', 'incident.sys_id', 'result.sys_id');"
+        },
+        {
+          "name": "serviceNowNumber",
+          "uuid": "1787543421004",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('number', 'Number', 'ticketNumber', 'ticket_number', 'record.number', 'current.number', 'task.number', 'incident.number', 'result.number');"
+        },
+        {
+          "name": "serviceNowSummary",
+          "uuid": "1787543421005",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst number = read('number', 'Number', 'ticketNumber', 'ticket_number', 'record.number', 'current.number', 'task.number', 'incident.number', 'result.number');\nconst sysId = read('sysId', 'sys_id', 'sysID', 'recordId', 'record_id', 'id', 'Id', 'record.sys_id', 'record.sysId', 'current.sys_id', 'task.sys_id', 'incident.sys_id', 'result.sys_id');\nconst shortDescription = read('shortDescription', 'short_description', 'ShortDescription', 'summary', 'title', 'record.short_description', 'current.short_description', 'task.short_description', 'incident.short_description');\nif (shortDescription) return shortDescription;\nif (number) return 'ServiceNow ' + number;\nreturn sysId ? 'ServiceNow ticket ' + sysId : 'ServiceNow ticket';"
+        },
+        {
+          "name": "serviceNowDescription",
+          "uuid": "1787543421006",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('description', 'Description', 'record.description', 'current.description', 'task.description', 'incident.description');"
+        },
+        {
+          "name": "serviceNowCommentId",
+          "uuid": "1787543421007",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentId', 'comment_id', 'CommentId', 'journalId', 'journal_id', 'comment.sys_id', 'comment.id', 'sys_journal_field.sys_id', 'journal.sys_id');"
+        },
+        {
+          "name": "serviceNowCommentBody",
+          "uuid": "1787543421008",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentBody', 'comment_body', 'CommentBody', 'comments', 'Comments', 'comment.value', 'comment.body', 'work_notes', 'additional_comments', 'record.comments', 'current.comments');"
+        },
+        {
+          "name": "serviceNowAttachmentId",
+          "uuid": "1787543421009",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('attachmentId', 'attachment_id', 'AttachmentId', 'attachment.sys_id', 'attachment.id', 'sys_attachment.sys_id', 'sysAttachmentId');"
+        },
+        {
+          "name": "serviceNowFileName",
+          "uuid": "1787543421010",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('fileName', 'file_name', 'FileName', 'filename', 'attachment.file_name', 'attachment.fileName', 'sys_attachment.file_name') || 'servicenow-file';"
+        }
+      ],
+      "description": "Search for a Jira issue whose ServiceNow sys_id custom field matches the incoming ticket.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{serviceNowSysId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by ServiceNow sys_id",
+      "id": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.serviceNowSysId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ServiceNow payload must include a record sys_id"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming ServiceNow ticket.created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{serviceNowSummary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{serviceNowSysId}}\",\n    \"description\": {{{htmlToADF serviceNowDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue",
+      "id": "template:action:6b9e2c17-5f44-4a19-8c73-2d8f1a9b4c62",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.serviceNowEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the linked Jira issue when the ServiceNow ticket is updated.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{serviceNowSummary}}\",\n    \"description\": {{{htmlToADF serviceNowDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "flowVariables": [],
+      "name": "Update Jira Issue",
+      "id": "template:action:1d7c8a53-3b62-45f7-9e18-7c4b2f6d9a31",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.serviceNowEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the ServiceNow journal entry (comment) sys_id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{serviceNowCommentId}}",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "name": "Get ServiceNow Comment ID Property",
+      "id": "template:action:9a3f6e21-7d58-4c93-b1a4-5e2c8d7f0b46",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.serviceNowEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.serviceNowCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ServiceNow comment payload must include a journal entry sys_id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add the ServiceNow comment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF serviceNowCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:9a3f6e21-7d58-4c93-b1a4-5e2c8d7f0b46",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add ServiceNow Comment to Jira",
+      "id": "template:action:4e8b1c72-2a95-4f16-8d37-6b9a0c3e5d18",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.serviceNowCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ServiceNow comment payload must include comment text"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming ServiceNow Comment ID",
+      "description": "Store the ServiceNow journal entry sys_id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7c2d9f48-6e13-4b57-a92c-1f8e4d6b0a53",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{serviceNowCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"servicenow\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{serviceNowCommentId}}",
+      "parentId": "template:action:4e8b1c72-2a95-4f16-8d37-6b9a0c3e5d18",
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Get a Jira issue property for the ServiceNow attachment sys_id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{serviceNowAttachmentId}}",
+      "name": "Get ServiceNow Attachment ID Property",
+      "id": "template:action:3b6e4a19-8c27-4d51-9f63-0a5c7e2b8d94",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.serviceNowEventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.serviceNowAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ServiceNow attachment payload must include an attachment sys_id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{serviceNowFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the ServiceNow attachment binary using the Attachment API.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-servicenow"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.SN_URL}}/api/now/attachment/{{serviceNowAttachmentId}}/file",
+      "parentId": "template:action:3b6e4a19-8c27-4d51-9f63-0a5c7e2b8d94",
+      "name": "Download ServiceNow Attachment",
+      "id": "template:action:8f0c5d37-1b49-42a6-8e75-9d3a6c1f4b27",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.serviceNowAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ServiceNow attachment payload must include an attachment sys_id"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded ServiceNow attachment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:8f0c5d37-1b49-42a6-8e75-9d3a6c1f4b27",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add ServiceNow Attachment to Jira",
+      "id": "template:action:5a9d3b62-4f18-4e73-b0c9-2e7f8a1d6c35",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming ServiceNow Attachment ID",
+      "description": "Store the ServiceNow attachment sys_id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0e4f7c85-9a26-4318-b7d4-3c6b5e9a2f70",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{serviceNowAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"servicenow\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{serviceNowAttachmentId}}",
+      "parentId": "template:action:5a9d3b62-4f18-4e73-b0c9-2e7f8a1d6c35",
+      "order": 800
+    }
+  ],
+  "description": "Sync ServiceNow webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "SN",
+      "instruction": "Jira project key used for ServiceNow created tickets"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new ServiceNow tickets"
+    },
+    {
+      "name": "SN_URL",
+      "behavior": "SET",
+      "value": "https://your-instance.service-now.com",
+      "instruction": "ServiceNow instance URL, for example https://acme.service-now.com"
+    },
+    {
+      "name": "SN_API_VERSION",
+      "behavior": "SET",
+      "value": "v2",
+      "instruction": "ServiceNow Table API version used in /api/now/{version}/table"
+    },
+    {
+      "name": "SN_TABLE",
+      "behavior": "SET",
+      "value": "incident",
+      "instruction": "ServiceNow table holding the tickets, for example incident, sn_customerservice_case or sc_req_item"
+    }
+  ],
+  "groupName": "ServiceNow",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "ServiceNow Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
