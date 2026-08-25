@@ -1,0 +1,398 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "page",
+          "script": ""
+        },
+        "enabled": false,
+        "breakJsonPath": "$.response.data"
+      },
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "8554a37f-39cc-460f-b4e3-f6c0afeaa88a",
+          "script": "return \"5a4fb8eb-03fd-4d4e-a709-b7f1b7a0f1fd\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Groups\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": true,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"deletedDateTime\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },           \n            {\n              \"name\": \"createdDateTime\",\n              \"description\": \"\",\n              \"type\": \"date\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"displayName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },         \n            {\n              \"name\": \"mail\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mailEnabled\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mailNickname\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },           \n            {\n              \"name\": \"uniqueName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          \n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Groups\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"deletedDateTime\",\n            \"attributeLocators\": [\n              \"deletedDateTime\"\n            ]\n          },         \n          {\n            \"attributeName\": \"createdDateTime\",\n            \"attributeLocators\": [\n              \"createdDateTime\"\n            ]\n          },\n          {\n            \"attributeName\": \"description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"displayName\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"mail\",\n            \"attributeLocators\": [\n              \"mail\"\n            ]\n          },\n          {\n            \"attributeName\": \"mailEnabled\",\n            \"attributeLocators\": [\n              \"mailEnabled\"\n            ]\n          },\n          {\n            \"attributeName\": \"mailNickname\",\n            \"attributeLocators\": [\n              \"mailNickname\"\n            ]\n          },\n          {\n            \"attributeName\": \"uniqueName\",\n            \"attributeLocators\": [\n              \"uniqueName\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "template:action:e9bb7300-0f82-40be-9bd5-87948e5d8cf9",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n    \"data\":{\n        \"value\":{{{toJSON payload.value}}}\n    }\n}",
+      "parentId": "template:action:1f29902e-aaf1-4b8a-a48b-fac180dafede",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "template:action:810f1744-65af-4e25-807b-d6ef87f8a7a4",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "9c4bae37-fc66-4fcb-91a0-660c6a323c74",
+          "script": "return \"5a4fb8eb-03fd-4d4e-a709-b7f1b7a0f1fd\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "template:action:3b2a4b3d-7c5a-402c-b59d-c60f5bcc8349",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:3b2a4b3d-7c5a-402c-b59d-c60f5bcc8349",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "template:action:97bf4d1b-a1f9-4bbb-b83f-ced695012bee",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "18c4139c-0417-4b27-9edd-118ccea950af",
+          "script": "return \"5a4fb8eb-03fd-4d4e-a709-b7f1b7a0f1fd\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "template:action:cce84a1d-dcd0-4e4a-9c60-7f86dc75301d",
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "USER_PAGE_URL",
+          "script": "const _jsonResponsePath=\"$['response']['data']['@odata.nextLink']\";\nconst _defaultValue=\"https://graph.microsoft.com/v1.0/groups?$top=999&$select=id,displayName,description,mail,mailEnabled,mailNickname,uniqueName,createdDateTime,deletedDateTime\";\nconst _nextCursor = path(jsonContext, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$['response']['data']['@odata.nextLink']",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Entra Users",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-entra"
+      },
+      "id": "template:action:1f29902e-aaf1-4b8a-a48b-fac180dafede",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{{USER_PAGE_URL}}}",
+      "parentId": "template:action:cce84a1d-dcd0-4e4a-9c60-7f86dc75301d",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-group-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "template:action:cce84a1d-dcd0-4e4a-9c60-7f86dc75301d",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "template:action:089c5a18-6665-4e07-bafe-bf88dc186eae",
+      "order": 700
+    }
+  ],
+  "description": "Import Azure Entra Users",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Microsoft",
+      "instruction": ""
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "5a4fb8eb-03fd-4d4e-a709-b7f1b7a0f1fd",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Microsoft",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Microsoft Entry Group Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}

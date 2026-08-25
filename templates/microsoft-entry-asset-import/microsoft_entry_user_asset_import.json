@@ -1,0 +1,390 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "8554a37f-39cc-460f-b4e3-f6c0afeaa88a",
+          "script": "return \"711ab3b8-1b00-4ccf-ad20-55e3946ebdd8\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Groups\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Office Location\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Users\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"displayName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"givenName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"jobTitle\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mail\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mobilePhone\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"officeLocation\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Office Location\"\n            },\n            {\n              \"name\": \"preferredLanguage\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"surname\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"userPrincipalName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"groups\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": -1,\n              \"referenceObjectTypeName\": \"Groups\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Office Location\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"officeLocation\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Users\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"displayName\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"givenName\",\n            \"attributeLocators\": [\n              \"givenName\"\n            ]\n          },\n          {\n            \"attributeName\": \"jobTitle\",\n            \"attributeLocators\": [\n              \"jobTitle\"\n            ]\n          },\n          {\n            \"attributeName\": \"mail\",\n            \"attributeLocators\": [\n              \"mail\"\n            ]\n          },\n          {\n            \"attributeName\": \"mobilePhone\",\n            \"attributeLocators\": [\n              \"mobilePhone\"\n            ]\n          },\n          {\n            \"attributeName\": \"officeLocation\",\n            \"attributeLocators\": [\n              \"officeLocation\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${officeLocation}\"\n          },\n          {\n            \"attributeName\": \"preferredLanguage\",\n            \"attributeLocators\": [\n              \"preferredLanguage\"\n            ]\n          },\n          {\n            \"attributeName\": \"surname\",\n            \"attributeLocators\": [\n              \"surname\"\n            ]\n          },\n          {\n            \"attributeName\": \"userPrincipalName\",\n            \"attributeLocators\": [\n              \"userPrincipalName\"\n            ]\n          },\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "template:action:05d4671b-e7b0-4a35-9823-a7a19a8cc5f3",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n    \"data\":{\n        \"value\":{{{toJSON payload.value}}}\n    }\n}",
+      "parentId": "template:action:f58bcc49-de88-42c6-ae0b-4775363ada5a",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "template:action:d3728047-bccf-4cd0-af83-78f102c7adf0",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "9c4bae37-fc66-4fcb-91a0-660c6a323c74",
+          "script": "return \"711ab3b8-1b00-4ccf-ad20-55e3946ebdd8\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "template:action:b94685a4-40cb-4925-9b2b-d69322933838",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:b94685a4-40cb-4925-9b2b-d69322933838",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "template:action:15c6f51d-3348-41f7-ab0f-7c8c9759c2f2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "18c4139c-0417-4b27-9edd-118ccea950af",
+          "script": "return \"711ab3b8-1b00-4ccf-ad20-55e3946ebdd8\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "template:action:63a87308-7620-484a-aad8-5933152ff455",
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "USER_PAGE_URL",
+          "script": "const _jsonResponsePath=\"$['response']['data']['@odata.nextLink']\";\nconst _defaultValue=\"https://graph.microsoft.com/v1.0/users?$top=999&$select=id,displayName,userPrincipalName,mail,jobTitle,officeLocation,surname,givenName,preferredLanguage,mobilePhone\";\nconst _nextCursor = path(jsonContext, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$['response']['data']['@odata.nextLink']",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Entra Users",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-entra"
+      },
+      "id": "template:action:f58bcc49-de88-42c6-ae0b-4775363ada5a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{{USER_PAGE_URL}}}",
+      "parentId": "template:action:63a87308-7620-484a-aad8-5933152ff455",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entry-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "template:action:63a87308-7620-484a-aad8-5933152ff455",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "template:action:0f3ec8a3-d851-4441-94dc-ad378cc2df27",
+      "order": 700
+    }
+  ],
+  "description": "Import Azure Entra Users",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Microsoft",
+      "instruction": ""
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "711ab3b8-1b00-4ccf-ad20-55e3946ebdd8",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Microsoft",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Microsoft Entry User Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}
