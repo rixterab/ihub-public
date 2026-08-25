@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-yousign-signature",
+  "name": "Jira -> Yousign -> Jira Signature",
+  "description": "Sends Jira agreements for Yousign signature and updates Jira from Yousign webhook status changes",
+  "category": "Yousign",
+  "flows": [
+    "yousign_outgoing_signature.json",
+    "yousign_incoming_status.json"
+  ],
+  "icon": "signature.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "yousign",
+    "signature",
+    "agreement"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-yousign-authorization",
+      "name": "Yousign Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

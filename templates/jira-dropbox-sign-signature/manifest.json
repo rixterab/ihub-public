@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-dropbox-sign-signature",
+  "name": "Jira -> Dropbox Sign -> Jira Signature",
+  "description": "Sends Jira agreements for Dropbox Sign signature and updates Jira from Dropbox Sign webhook status changes",
+  "category": "Dropbox Sign",
+  "flows": ["dropbox_sign_outgoing_signature.json", "dropbox_sign_incoming_status.json"],
+  "icon": "dropbox.svg",
+  "author": "Rixter AB",
+  "tags": ["dropbox-sign", "signature", "agreement"],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-dropbox-sign-authorization",
+      "name": "Dropbox Sign Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

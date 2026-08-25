@@ -1,0 +1,265 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "jiraStatusChangedToSendForSignature",
+          "uuid": "3f9d4aa0-0fef-4c87-a5a9-fd5da5e35037",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst items = root?.changelog?.items || root?.payload?.changelog?.items || [];\nconst statusItem = Array.isArray(items) ? items.find((item) => String(item.field || '').toLowerCase() === 'status') : null;\nconst toStatus = statusItem?.toString || statusItem?.to || root?.issue?.fields?.status?.name || '';\nreturn toStatus === 'Send for Signature' ? 'true' : 'false';"
+        }
+      ],
+      "description": "Create and send a PandaDoc signature request from the configured PandaDoc template when a Jira issue moves to Send for Signature.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-pandadoc-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"templateId\": \"{{_flow.PANDADOC_TEMPLATE_ID}}\",\n  \"title\": \"Agreement for Jira issue {{issue.key}}\",\n  \"message\": \"Please review and sign the agreement for Jira issue {{issue.key}}.\",\n  \"signers\": [\n    {\n      \"email\": \"{{issue.fields.customfield_10201}}\",\n      \"name\": \"{{issue.fields.customfield_10202}}\",\n      \"roleName\": \"{{_flow.PANDADOC_SIGNER_ROLE_NAME}}\"\n    }\n  ],\n  \"metadata\": {\n    \"jiraIssueKey\": \"{{issue.key}}\",\n    \"jiraSummary\": \"{{issue.fields.summary}}\",\n    \"jiraBaseUrl\": \"{{baseUrl}}\"\n  },\n  \"webhookUrl\": \"{{_flow.PANDADOC_WEBHOOK_URL}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PANDADOC_BASE_URL}}{{_flow.PANDADOC_CREATE_SIGNATURE_PATH}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "signatureRequestId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Create PandaDoc Signature Request",
+      "id": "template:action:d9623682-5538-4422-9dd5-9c59cf901e89",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only send agreements from the configured Jira project"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS",
+              "description": "Only react to Jira issue updates"
+            },
+            {
+              "jsonPath": "$.jiraStatusChangedToSendForSignature",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "operator": "EQUALS",
+              "description": "Only send when the status becomes Send for Signature"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10203",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create a signature request when no request id is stored on the Jira issue"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10201",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Customer signer email must be present"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10202",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Customer signer name must be present"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the PandaDoc signature request id and initial signature status back on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10203\": \"{{_flow.signatureRequestId}}\",\n    \"customfield_10204\": \"Sent\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:d9623682-5538-4422-9dd5-9c59cf901e89",
+      "flowVariables": [],
+      "name": "Store Signature Request ID on Jira Issue",
+      "id": "template:action:fabd6a6f-294a-42d7-93c5-54fbfb6205b7",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.signatureRequestId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "PandaDoc must return a signature request id"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add a Jira comment with the PandaDoc signature request id for traceability.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Agreement sent for signature. PandaDoc request id: {{_flow.signatureRequestId}}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:fabd6a6f-294a-42d7-93c5-54fbfb6205b7",
+      "flowVariables": [],
+      "name": "Comment Signature Request Sent",
+      "id": "template:action:2e0ea873-6dd3-482f-b375-a7dae12a5c9f",
+      "order": 300
+    }
+  ],
+  "description": "Create a PandaDoc signature request from a Jira issue and store the returned request id on the issue",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AGR",
+      "instruction": "Jira project key containing agreement issues. Only issues in this project are sent to PandaDoc."
+    },
+    {
+      "name": "PANDADOC_BASE_URL",
+      "behavior": "SET",
+      "value": "https://api.example.com",
+      "instruction": "PandaDoc API host for the target account or environment."
+    },
+    {
+      "name": "PANDADOC_CREATE_SIGNATURE_PATH",
+      "behavior": "SET",
+      "value": "/signature-requests",
+      "instruction": "PandaDoc API path that creates and sends a signature request from a template. Adjust the request body and response id JSONPath if your endpoint differs."
+    },
+    {
+      "name": "PANDADOC_TEMPLATE_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "PandaDoc template ID used to create the agreement signature request."
+    },
+    {
+      "name": "PANDADOC_SIGNER_ROLE_NAME",
+      "behavior": "SET",
+      "value": "Customer",
+      "instruction": "PandaDoc signer role name used by the configured template, if supported by the provider."
+    },
+    {
+      "name": "PANDADOC_WEBHOOK_URL",
+      "behavior": "SET",
+      "value": "https://example.com/ihub/pandadoc-webhook",
+      "instruction": "Paste the trigger URL from the PandaDoc Incoming Status flow after it is created."
+    }
+  ],
+  "groupName": "PandaDoc",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "PandaDoc Outgoing Signature",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

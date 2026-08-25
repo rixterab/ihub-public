@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-signicat-signature",
+  "name": "Jira -> Signicat -> Jira Signature",
+  "description": "Sends Jira agreements for Signicat signature and updates Jira from Signicat webhook status changes",
+  "category": "Signicat",
+  "flows": [
+    "signicat_outgoing_signature.json",
+    "signicat_incoming_status.json"
+  ],
+  "icon": "signature.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "signicat",
+    "signature",
+    "agreement"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-signicat-authorization",
+      "name": "Signicat Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}
