@@ -1,0 +1,130 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Post an HTML channel message through the Microsoft Graph API when a work item is created in the configured Jira project. Graph returns 201 on success and 4xx/5xx with an error object on failure, so the HTTP status code is the success signal.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-teams"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"contentType\": \"html\",\n    \"content\": \"<p><b>New work item created</b></p><p><a href=\\\"{{baseUrl}}/browse/{{issue.key}}\\\">{{issue.key}}</a> {{issue.fields.summary}}</p><ul><li><b>Type:</b> {{#if issue.fields.issuetype.name}}{{issue.fields.issuetype.name}}{{else}}Unknown{{/if}}</li><li><b>Priority:</b> {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}</li><li><b>Reporter:</b> {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}</li><li><b>Assignee:</b> {{#if issue.fields.assignee.displayName}}{{issue.fields.assignee.displayName}}{{else}}Unassigned{{/if}}</li></ul><p><i>{{issue.fields.project.name}} ({{issue.fields.project.key}}) - created by {{#if user.displayName}}{{user.displayName}}{{else}}Unknown{{/if}}</i></p>\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/teams/{{_flow.TEAM_ID}}/channels/{{_flow.CHANNEL_ID}}/messages",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "teamsMessageId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "Id of the channel message created by Microsoft Graph. Present on a successful 201 response."
+        },
+        {
+          "name": "teamsErrorCode",
+          "behavior": "SET",
+          "value": "$.response.data.error.code",
+          "instruction": "Microsoft Graph error code when the send fails, for example Unauthorized, AccessDenied, ItemNotFound or InvalidAuthenticationToken."
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 1,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "name": "Post Work Item Created Message to Microsoft Teams",
+      "id": "template:action:9d41c5b8-27fe-4a63-b0d9-6c8e1f34a752",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only notify on work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only notify for work items in the configured Jira project"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    }
+  ],
+  "description": "Post a Microsoft Teams channel message when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "TEAMS",
+      "instruction": "Jira project key to notify for. Only work items created in this project are posted to Microsoft Teams."
+    },
+    {
+      "name": "TEAM_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Group GUID of the target Microsoft Teams team. Read it from the groupId query parameter of the channel link produced by the channel's ... menu -> Get link to channel."
+    },
+    {
+      "name": "CHANNEL_ID",
+      "behavior": "SET",
+      "value": "19:00000000000000000000000000000000@thread.tacv2",
+      "instruction": "Thread id of the target channel, in the form 19:...@thread.tacv2. Read it from the URL-decoded threadId part of the channel link produced by the channel's ... menu -> Get link to channel."
+    }
+  ],
+  "groupName": "Microsoft Teams",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Microsoft Teams - Notify on Work Item Created",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
