@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "key": "zoho-asset-import",
+  "name": "Zoho Asset Import",
+  "description": "Import Zoho MDM users, groups and devices into Jira Assets",
+  "category": "Zoho",
+  "flows": [
+    "zoho_user_asset_import.json",
+    "zoho_group_asset_import.json",
+    "zoho_device_asset_import.json"
+  ],
+  "icon": "zoho.png",
+  "author": "Rixter AB",
+  "tags": [
+    "zoho",
+    "mdm",
+    "assets",
+    "import"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "token-zoho-user-asset-import-token",
+      "name": "Zoho User Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "oauth2-zoho-mdm",
+      "name": "Zoho MDM",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://accounts.zoho.com/oauth/v2/auth?access_type=offline&prompt=consent",
+            "accessTokenUrl": "https://accounts.zoho.com/oauth/v2/token"
+          },
+          "grantType": "code",
+          "scope": "MDMOnDemand.MDMUser.READ MDMOnDemand.MDMDeviceMgmt.READ MDMOnDemand.MDMInventory.READ",
+          "headerPrefix": "Zoho-oauthtoken",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    },
+    {
+      "key": "token-zoho-group-asset-import-token",
+      "name": "Zoho Group Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "token-zoho-device-asset-import-token",
+      "name": "Zoho Device Asset Import Token",
+      "type": "TOKEN"
+    }
+  ]
+}

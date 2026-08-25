@@ -1,0 +1,398 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "81947608-9e39-49c5-910a-f0e278b58b63",
+          "script": "return \"9340bc44-b37f-4a58-a823-fb4d92601636\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"Zoho MDM data imported from ManageEngine\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Users\",\n          \"description\": \"Managed users from Zoho MDM\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Devices\",\n          \"description\": \"Managed devices from Zoho MDM\",\n          \"attributes\": [\n            {\n              \"name\": \"device_id\",\n              \"description\": \"Zoho MDM device id\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": true,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"device_name\",\n              \"description\": \"Device name\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"product_name\",\n              \"description\": \"Device product name\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"model\",\n              \"description\": \"Device model\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"serial_number\",\n              \"description\": \"Device serial number\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"imei\",\n              \"description\": \"Device IMEI\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"udid\",\n              \"description\": \"Device UDID\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"platform_type\",\n              \"description\": \"Device platform type\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"platform_type_id\",\n              \"description\": \"Device platform type id\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"os_version\",\n              \"description\": \"Device OS version\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"owned_by\",\n              \"description\": \"Zoho MDM ownership value\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"is_lost_mode_enabled\",\n              \"description\": \"Lost mode enabled flag\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"is_removed\",\n              \"description\": \"Removed device flag\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"user\",\n              \"description\": \"Assigned Zoho MDM user\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Users\"\n            },\n            {\n              \"name\": \"user_id\",\n              \"description\": \"Assigned Zoho MDM user id\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"user_name\",\n              \"description\": \"Assigned Zoho MDM user name\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"user_email\",\n              \"description\": \"Assigned Zoho MDM user email\",\n              \"type\": \"email\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"profile_count\",\n              \"description\": \"Assigned profile count\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"app_count\",\n              \"description\": \"Installed app count\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"doc_count\",\n              \"description\": \"Document count\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"group_count\",\n              \"description\": \"Device group count\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Devices\",\n        \"selector\": \"devices\",\n        \"description\": \"Managed devices from Zoho MDM\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"device_id\",\n            \"attributeLocators\": [\n              \"device_id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"device_name\",\n            \"attributeLocators\": [\n              \"device_name\"\n            ]\n          },\n          {\n            \"attributeName\": \"product_name\",\n            \"attributeLocators\": [\n              \"product_name\"\n            ]\n          },\n          {\n            \"attributeName\": \"model\",\n            \"attributeLocators\": [\n              \"model\"\n            ]\n          },\n          {\n            \"attributeName\": \"serial_number\",\n            \"attributeLocators\": [\n              \"serial_number\"\n            ]\n          },\n          {\n            \"attributeName\": \"imei\",\n            \"attributeLocators\": [\n              \"imei\"\n            ]\n          },\n          {\n            \"attributeName\": \"udid\",\n            \"attributeLocators\": [\n              \"udid\"\n            ]\n          },\n          {\n            \"attributeName\": \"platform_type\",\n            \"attributeLocators\": [\n              \"platform_type\"\n            ]\n          },\n          {\n            \"attributeName\": \"platform_type_id\",\n            \"attributeLocators\": [\n              \"platform_type_id\"\n            ]\n          },\n          {\n            \"attributeName\": \"os_version\",\n            \"attributeLocators\": [\n              \"os_version\"\n            ]\n          },\n          {\n            \"attributeName\": \"owned_by\",\n            \"attributeLocators\": [\n              \"owned_by\"\n            ]\n          },\n          {\n            \"attributeName\": \"is_lost_mode_enabled\",\n            \"attributeLocators\": [\n              \"is_lost_mode_enabled\"\n            ]\n          },\n          {\n            \"attributeName\": \"is_removed\",\n            \"attributeLocators\": [\n              \"is_removed\"\n            ]\n          },\n          {\n            \"attributeName\": \"user\",\n            \"attributeLocators\": [\n              \"user_id\"\n            ],\n            \"objectMappingIQL\": \"user_id = ${user_id}\"\n          },\n          {\n            \"attributeName\": \"user_id\",\n            \"attributeLocators\": [\n              \"user_id\"\n            ]\n          },\n          {\n            \"attributeName\": \"user_name\",\n            \"attributeLocators\": [\n              \"user_name\"\n            ]\n          },\n          {\n            \"attributeName\": \"user_email\",\n            \"attributeLocators\": [\n              \"user_email\"\n            ]\n          },\n          {\n            \"attributeName\": \"profile_count\",\n            \"attributeLocators\": [\n              \"profile_count\"\n            ]\n          },\n          {\n            \"attributeName\": \"app_count\",\n            \"attributeLocators\": [\n              \"app_count\"\n            ]\n          },\n          {\n            \"attributeName\": \"doc_count\",\n            \"attributeLocators\": [\n              \"doc_count\"\n            ]\n          },\n          {\n            \"attributeName\": \"group_count\",\n            \"attributeLocators\": [\n              \"group_count\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "template:action:9d1209ee-0577-42ce-add7-0fb1599ba1ae",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "formattedDevices",
+          "uuid": "9f45a6b4-58db-4391-8f16-8b32ecea08c5",
+          "script": "const responseData = typeof response !== \"undefined\" ? response?.data : undefined;\nconst payloadData = typeof payload !== \"undefined\" ? payload : undefined;\nconst scopedDevices = typeof devices !== \"undefined\" ? devices : undefined;\nconst input = responseData?.devices ?? payloadData?.devices ?? scopedDevices ?? [];\nif (!Array.isArray(input)) return [];\nreturn input.map((device) => {\n  const item = device ?? {};\n  const { user, summary, ...rest } = item;\n  const userData = user ?? {};\n  const summaryData = summary ?? {};\n  return {\n    ...rest,\n    device_id: rest.device_id !== undefined && rest.device_id !== null ? String(rest.device_id) : rest.device_id,\n    imei: rest.imei !== undefined && rest.imei !== null ? String(rest.imei) : rest.imei,\n    user_id: userData.user_id !== undefined && userData.user_id !== null ? String(userData.user_id) : userData.user_id,\n    user_name: userData.user_name,\n    user_email: userData.user_email,\n    profile_count: summaryData.profile_count,\n    app_count: summaryData.app_count,\n    doc_count: summaryData.doc_count,\n    group_count: summaryData.group_count\n  };\n});"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"devices\": {{{toJSON formattedDevices}}}\n  }\n}",
+      "parentId": "template:action:b5a3d1da-ac11-4a46-932b-a6cb01e57f91",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "template:action:3e865686-1fc9-4ce0-9520-b38652ac9619",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "01073daf-bf1d-49f5-a6d9-0b2b344549b5",
+          "script": "return \"9340bc44-b37f-4a58-a823-fb4d92601636\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "template:action:96be32c9-5c28-403f-a21e-c09ef5e9b7c7",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:96be32c9-5c28-403f-a21e-c09ef5e9b7c7",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "template:action:31c32d0e-6baf-4a03-97ea-3b693f2ee936",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "123920cd-4871-4bbf-9111-79cbcda6e327",
+          "script": "return \"9340bc44-b37f-4a58-a823-fb4d92601636\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "template:action:5ca5fbf0-d021-48c2-a25d-0deeb91a365d",
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGING_NEXT",
+          "script": "const _jsonResponsePath=\"$.paging.next\";\nconst _defaultValue=\"https://mdm.manageengine.com/api/v1/mdm/devices\";\nconst _nextCursor = path(jsonResponse, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$.devices",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Zoho MDM Devices",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-zoho-mdm"
+      },
+      "id": "template:action:b5a3d1da-ac11-4a46-932b-a6cb01e57f91",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{PAGING_NEXT}}",
+      "parentId": "template:action:5ca5fbf0-d021-48c2-a25d-0deeb91a365d",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-device-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "template:action:5ca5fbf0-d021-48c2-a25d-0deeb91a365d",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "template:action:e3874f9e-2c6a-4507-aeda-0f42bc413229",
+      "order": 700
+    }
+  ],
+  "description": "Import Zoho MDM devices into Jira Assets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Zoho",
+      "instruction": ""
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "9340bc44-b37f-4a58-a823-fb4d92601636",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Zoho",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Zoho Device Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}
