@@ -38,7 +38,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Groups\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Office Location\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Users\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"displayName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"givenName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"jobTitle\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mail\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mobilePhone\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"officeLocation\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Office Location\"\n            },\n            {\n              \"name\": \"preferredLanguage\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"surname\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"userPrincipalName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"groups\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": -1,\n              \"referenceObjectTypeName\": \"Groups\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Office Location\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"officeLocation\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Users\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"displayName\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"givenName\",\n            \"attributeLocators\": [\n              \"givenName\"\n            ]\n          },\n          {\n            \"attributeName\": \"jobTitle\",\n            \"attributeLocators\": [\n              \"jobTitle\"\n            ]\n          },\n          {\n            \"attributeName\": \"mail\",\n            \"attributeLocators\": [\n              \"mail\"\n            ]\n          },\n          {\n            \"attributeName\": \"mobilePhone\",\n            \"attributeLocators\": [\n              \"mobilePhone\"\n            ]\n          },\n          {\n            \"attributeName\": \"officeLocation\",\n            \"attributeLocators\": [\n              \"officeLocation\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${officeLocation}\"\n          },\n          {\n            \"attributeName\": \"preferredLanguage\",\n            \"attributeLocators\": [\n              \"preferredLanguage\"\n            ]\n          },\n          {\n            \"attributeName\": \"surname\",\n            \"attributeLocators\": [\n              \"surname\"\n            ]\n          },\n          {\n            \"attributeName\": \"userPrincipalName\",\n            \"attributeLocators\": [\n              \"userPrincipalName\"\n            ]\n          },\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          }\n        ]\n      }\n    ]\n  }\n}",
@@ -86,7 +86,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n    \"data\":{\n        \"value\":{{{toJSON payload.value}}}\n    }\n}",
@@ -135,7 +135,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
@@ -183,7 +183,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{}",
@@ -246,7 +246,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
@@ -346,7 +346,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-user-asset-import-token"
+        "value": "template:token-microsoft-entra-user-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"completed\": true\n}",
@@ -381,7 +381,7 @@
     "createdBy": "5ee9eea44784510aca6df3d0",
     "updatedBy": "5ee9eea44784510aca6df3d0"
   },
-  "name": "Microsoft Entry User Asset Import",
+  "name": "Microsoft Entra User Asset Import",
   "trigger": {
     "type": "SCHEDULED_TRIGGER_TYPE",
     "value": "0 9 * * *"

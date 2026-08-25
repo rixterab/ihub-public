@@ -46,7 +46,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Groups\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": true,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"deletedDateTime\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },           \n            {\n              \"name\": \"createdDateTime\",\n              \"description\": \"\",\n              \"type\": \"date\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"displayName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },         \n            {\n              \"name\": \"mail\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mailEnabled\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"mailNickname\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },           \n            {\n              \"name\": \"uniqueName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          \n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Groups\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"deletedDateTime\",\n            \"attributeLocators\": [\n              \"deletedDateTime\"\n            ]\n          },         \n          {\n            \"attributeName\": \"createdDateTime\",\n            \"attributeLocators\": [\n              \"createdDateTime\"\n            ]\n          },\n          {\n            \"attributeName\": \"description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"displayName\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"mail\",\n            \"attributeLocators\": [\n              \"mail\"\n            ]\n          },\n          {\n            \"attributeName\": \"mailEnabled\",\n            \"attributeLocators\": [\n              \"mailEnabled\"\n            ]\n          },\n          {\n            \"attributeName\": \"mailNickname\",\n            \"attributeLocators\": [\n              \"mailNickname\"\n            ]\n          },\n          {\n            \"attributeName\": \"uniqueName\",\n            \"attributeLocators\": [\n              \"uniqueName\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
@@ -94,7 +94,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n    \"data\":{\n        \"value\":{{{toJSON payload.value}}}\n    }\n}",
@@ -143,7 +143,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
@@ -191,7 +191,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{}",
@@ -254,7 +254,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "",
@@ -354,7 +354,7 @@
       "uiRenderer": "WEB_ACTION",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:token-microsoft-entry-group-asset-import-token"
+        "value": "template:token-microsoft-entra-group-asset-import-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
       "body": "{\n  \"completed\": true\n}",
@@ -389,7 +389,7 @@
     "createdBy": "5ee9eea44784510aca6df3d0",
     "updatedBy": "5ee9eea44784510aca6df3d0"
   },
-  "name": "Microsoft Entry Group Asset Import",
+  "name": "Microsoft Entra Group Asset Import",
   "trigger": {
     "type": "SCHEDULED_TRIGGER_TYPE",
     "value": "0 9 * * *"

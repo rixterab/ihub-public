@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "key": "microsoft-entra-asset-import",
+  "name": "Microsoft Entra Asset Import",
+  "description": "Import Microsoft Entra users and groups into Jira Assets",
+  "category": "Microsoft",
+  "flows": [
+    "microsoft_entra_user_asset_import.json",
+    "microsoft_entra_group_asset_import.json",
+    "microsoft_entra_user_group_asset_import.json"
+  ],
+  "icon": "microsoft.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "microsoft",
+    "assets"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "token-microsoft-entra-user-asset-import-token",
+      "name": "Microsoft Entra User Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "oauth2-microsoft-entra",
+      "name": "Microsoft Entra",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+          },
+          "grantType": "code",
+          "scope": "offline_access User.Read User.Read.All Group.Read.All",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": true,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    },
+    {
+      "key": "token-microsoft-entra-group-asset-import-token",
+      "name": "Microsoft Entra Group Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "token-microsoft-entra-group-asset-import-token-2",
+      "name": "Microsoft Entra Group Asset Import Token",
+      "type": "TOKEN"
+    }
+  ]
+}
