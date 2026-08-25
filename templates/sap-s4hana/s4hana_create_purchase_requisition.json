@@ -1,0 +1,235 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "Fetch",
+          "key": "x-csrf-token"
+        }
+      ],
+      "method": "GET",
+      "description": "Fetch an SAP CSRF token before creating a purchase requisition.",
+      "scriptedVariables": [
+        {
+          "name": "prShortText",
+          "uuid": "0d135c50-abd4-4dd3-94c4-1e78b909c710",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10160||fields.summary||'Jira purchase request';"
+        },
+        {
+          "name": "prMaterial",
+          "uuid": "aae271cd-bb08-469a-8065-562f47b4bcc3",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10161||'';"
+        },
+        {
+          "name": "prQuantity",
+          "uuid": "847c333d-fc4b-41f4-88a1-6256d0bc2533",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10162||1;"
+        },
+        {
+          "name": "prUnit",
+          "uuid": "de4de564-8d8c-43b3-b801-9acc01456da1",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10163||'EA';"
+        },
+        {
+          "name": "prPlant",
+          "uuid": "33445410-e015-4846-863b-2cdb804c9b9c",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10164||'1000';"
+        },
+        {
+          "name": "prPurchasingGroup",
+          "uuid": "9e9610a7-7d1a-404c-84e5-24f4c30d61f8",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10165||'001';"
+        },
+        {
+          "name": "prDeliveryDate",
+          "uuid": "2e8ef432-1778-424d-946c-fe64a719d6c5",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10166||'';"
+        },
+        {
+          "name": "prCostCenter",
+          "uuid": "992a068c-b090-4630-8889-0fc51c0f0d9e",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10167||'';"
+        },
+        {
+          "name": "prGlAccount",
+          "uuid": "bad2c9a2-36b2-4de8-bf2e-9a10acbd3a55",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10168||'';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-s4hana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.S4_URL}}/sap/opu/odata/sap/{{_flow.PR_SERVICE}}/",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "sapCsrfToken",
+          "behavior": "SET",
+          "value": "$.response.headers['x-csrf-token']",
+          "instruction": "SAP CSRF token returned by the OData service."
+        }
+      ],
+      "name": "Fetch SAP CSRF Token",
+      "id": "template:action:7688b679-ddbf-4e2a-8717-2a926173eca3",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS",
+              "description": "Create the SAP requisition after a Jira update, usually an approval transition."
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10154",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create a requisition if the Jira issue does not already hold an SAP PR number."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.sapCsrfToken}}",
+          "key": "x-csrf-token"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the purchase requisition in SAP S/4HANA from the approved Jira request.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-s4hana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"PurchaseRequisitionType\":\"{{_flow.PR_TYPE}}\",\"PurReqnDescription\":\"{{issue.key}} - {{prShortText}}\",\"to_PurchaseReqnItem\":{\"results\":[{\"PurchaseRequisitionItem\":\"00010\",\"PurchaseRequisitionItemText\":\"{{prShortText}}\",\"Material\":\"{{prMaterial}}\",\"RequestedQuantity\":\"{{prQuantity}}\",\"BaseUnit\":\"{{prUnit}}\",\"Plant\":\"{{prPlant}}\",\"PurchasingGroup\":\"{{prPurchasingGroup}}\",\"DeliveryDate\":\"{{prDeliveryDate}}\",\"AccountAssignmentCategory\":\"{{_flow.ACCOUNT_ASSIGNMENT_CATEGORY}}\",\"CostCenter\":\"{{prCostCenter}}\",\"GLAccount\":\"{{prGlAccount}}\"}]}}",
+      "enabled": true,
+      "url": "{{_flow.S4_URL}}/sap/opu/odata/sap/{{_flow.PR_SERVICE}}/A_PurchaseRequisitionHeader",
+      "parentId": "template:action:7688b679-ddbf-4e2a-8717-2a926173eca3",
+      "flowVariables": [
+        {
+          "name": "sapPurchaseRequisition",
+          "behavior": "SET",
+          "value": "$.response.data.d.PurchaseRequisition",
+          "instruction": "SAP purchase requisition number created by S/4HANA."
+        }
+      ],
+      "name": "Create SAP Purchase Requisition",
+      "id": "template:action:0b6bcb9f-8210-4faa-a884-d7e82547d70d",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the SAP purchase requisition number back to the originating Jira request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"customfield_10154\":\"{{_flow.sapPurchaseRequisition}}\"},\"update\":{\"comment\":[{\"add\":{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP purchase requisition {{_flow.sapPurchaseRequisition}} was created from this Jira request.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}}]}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0b6bcb9f-8210-4faa-a884-d7e82547d70d",
+      "flowVariables": [],
+      "name": "Write SAP PR Number to Jira",
+      "id": "template:action:b03a4253-6056-4223-a14b-6cba9bfd92d9",
+      "order": 300
+    }
+  ],
+  "description": "Create an SAP S/4HANA purchase requisition after a Jira Service Management purchase request is approved.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PROC",
+      "instruction": "Jira project key for purchase requests."
+    },
+    {
+      "name": "APPROVED_STATUS",
+      "behavior": "SET",
+      "value": "Approved",
+      "instruction": "Jira status that indicates manager approval is complete."
+    },
+    {
+      "name": "S4_URL",
+      "behavior": "SET",
+      "value": "https://my-s4hana.example.com",
+      "instruction": "SAP S/4HANA base URL, without a trailing slash."
+    },
+    {
+      "name": "PR_SERVICE",
+      "behavior": "SET",
+      "value": "API_PURCHASEREQ_PROCESS_SRV",
+      "instruction": "OData service used for purchase requisition create operations."
+    },
+    {
+      "name": "PR_TYPE",
+      "behavior": "SET",
+      "value": "NB",
+      "instruction": "SAP purchase requisition document type."
+    },
+    {
+      "name": "ACCOUNT_ASSIGNMENT_CATEGORY",
+      "behavior": "SET",
+      "value": "K",
+      "instruction": "SAP account assignment category, for example K for cost center."
+    }
+  ],
+  "groupName": "SAP S/4HANA",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP S/4HANA - Create Purchase Requisition",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

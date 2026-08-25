@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "sap-s4hana",
+  "name": "SAP S/4HANA",
+  "description": "Procurement, purchase order, business partner, and exception-management templates for SAP S/4HANA and Jira",
+  "category": "SAP S/4HANA",
+  "flows": [
+    "s4hana_create_purchase_requisition.json",
+    "s4hana_get_purchase_order.json",
+    "s4hana_business_partner_asset_import.json",
+    "s4hana_create_jira_issue_from_exception.json"
+  ],
+  "icon": "sap.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "sap",
+    "s4hana",
+    "procurement",
+    "purchase-requisition",
+    "purchase-order",
+    "business-partner",
+    "jira-assets"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-sap-s4hana",
+      "name": "SAP S/4HANA",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "COMMUNICATION_USER"
+      }
+    },
+    {
+      "key": "token-sap-s4-business-partner-asset-import-token",
+      "name": "SAP S/4HANA Business Partner Asset Import Token",
+      "type": "TOKEN"
+    }
+  ]
+}

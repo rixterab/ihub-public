@@ -1,0 +1,183 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Patch selected Microsoft Entra profile fields when SuccessFactors sends an employee-updated event.",
+      "scriptedVariables": [
+        {
+          "name": "sfEventType",
+          "uuid": "0d5cf655-0cfa-4881-bd57-c3f356eccf25",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const raw=String(read('eventType','event_type','type','action','operation','event.reason')||'').toLowerCase();if(raw.includes('update')||raw==='change'||raw==='employee.updated')return 'employee.updated';return raw;"
+        },
+        {
+          "name": "employeeId",
+          "uuid": "c7c09987-8c91-47be-acff-0191369e1f17",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('employeeId','personIdExternal','userId','employee.employeeId','employee.personIdExternal','employment.personIdExternal');"
+        },
+        {
+          "name": "employeeDisplayName",
+          "uuid": "a822b67f-53e0-4fe5-b565-5eb5d75a9492",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('displayName','employee.displayName','userNav.displayName','person.displayName');if(direct)return direct;return [read('firstName','givenName','employee.firstName'),read('lastName','surname','employee.lastName')].filter(Boolean).join(' ')||read('employeeId','personIdExternal','userId')||'Employee';"
+        },
+        {
+          "name": "employeeEmail",
+          "uuid": "691beb2e-2925-4fde-b34d-551ea8c855ed",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('email','mail','userPrincipalName','employee.email','employee.mail','userNav.email','userNav.userPrincipalName');"
+        },
+        {
+          "name": "employeeJobTitle",
+          "uuid": "9bbf3cb8-ec16-4b73-9b7a-8e36061d8718",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('jobTitle','title','employee.jobTitle','jobInfo.jobTitle','jobInfo.position');"
+        },
+        {
+          "name": "employeeDepartment",
+          "uuid": "a2877c1b-ce7d-4b29-9f0c-2a219d7275ee",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('department','departmentName','employee.department','jobInfo.department','jobInfo.departmentName');"
+        },
+        {
+          "name": "employeeLocation",
+          "uuid": "3805345b-6ae6-4aff-8b87-942b7c72855f",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('location','officeLocation','employee.location','jobInfo.location','jobInfo.officeLocation');"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-sap-successfactors-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"displayName\":\"{{employeeDisplayName}}\",\"jobTitle\":\"{{employeeJobTitle}}\",\"department\":\"{{employeeDepartment}}\",\"officeLocation\":\"{{employeeLocation}}\"}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Update Entra User Profile",
+      "id": "template:action:003deb7a-f92b-40bd-a388-850c343fb528",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.sfEventType",
+              "type": "DATA_CONDITION",
+              "value": "employee.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.employeeEmail",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Find any Jira work item linked to this SuccessFactors employee ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"jql\":\"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{employeeId}}\\\" ORDER BY updated DESC\",\"maxResults\":10,\"fields\":[\"summary\",\"status\"]}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "template:action:003deb7a-f92b-40bd-a388-850c343fb528",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Linked Jira issue key, if one exists."
+        }
+      ],
+      "name": "Find Linked Jira Issue",
+      "id": "template:action:9d569d8d-5bd6-4427-a5e1-c4ba19c59514",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Add an internal Jira comment that records the SuccessFactors update.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SuccessFactors updated {{employeeDisplayName}} ({{employeeId}}). Job title: {{employeeJobTitle}}. Department: {{employeeDepartment}}. Location: {{employeeLocation}}.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:9d569d8d-5bd6-4427-a5e1-c4ba19c59514",
+      "flowVariables": [],
+      "name": "Comment Linked Jira Issue",
+      "id": "template:action:4c31ac48-2334-4eae-bdf6-2f02e9a20501",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    }
+  ],
+  "description": "Patch Entra profile data and annotate linked Jira work when SuccessFactors employee details change.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "HR",
+      "instruction": "Jira project key used when looking for linked employee issues."
+    }
+  ],
+  "groupName": "SAP SuccessFactors",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP SuccessFactors - Employee Updated",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

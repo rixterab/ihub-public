@@ -1,0 +1,175 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create an SAP Ariba purchase request from an approved Jira Service Management request.",
+      "scriptedVariables": [
+        {
+          "name": "aribaItemDescription",
+          "uuid": "ad7ee415-c92f-4d3f-baac-cdbdfb22cee0",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10180||fields.summary||'Jira purchase request';"
+        },
+        {
+          "name": "aribaQuantity",
+          "uuid": "718dd138-0961-4fd1-9bd1-bbb602d768c3",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10181||1;"
+        },
+        {
+          "name": "aribaSupplier",
+          "uuid": "c19fa696-c1be-4abe-a674-8aaf1f5f4884",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10182||'';"
+        },
+        {
+          "name": "aribaCommodityCode",
+          "uuid": "ed28a82b-35b1-4f1b-9791-550b029b4ada",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10183||'';"
+        },
+        {
+          "name": "aribaCostCenter",
+          "uuid": "d84c2877-dc68-436b-9f23-75008c5b71ae",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10184||'';"
+        },
+        {
+          "name": "aribaNeedByDate",
+          "uuid": "698eeea5-93d6-406f-a198-6b3eccc35f63",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10185||'';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-sap-ariba-api"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"realm\":\"{{_flow.ARIBA_REALM}}\",\"externalId\":\"{{issue.key}}\",\"title\":\"{{issue.fields.summary}}\",\"requester\":\"{{accountId}}\",\"lineItems\":[{\"description\":\"{{aribaItemDescription}}\",\"quantity\":\"{{aribaQuantity}}\",\"supplier\":\"{{aribaSupplier}}\",\"commodityCode\":\"{{aribaCommodityCode}}\",\"costCenter\":\"{{aribaCostCenter}}\",\"needByDate\":\"{{aribaNeedByDate}}\"}]}",
+      "enabled": true,
+      "url": "{{_flow.ARIBA_API_URL}}{{_flow.ARIBA_PURCHASE_REQUEST_PATH}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "aribaPurchaseRequestId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "SAP Ariba purchase request ID returned by the API."
+        }
+      ],
+      "name": "Create Ariba Purchase Request",
+      "id": "template:action:aaf031a0-730f-43a5-ad11-6eba8a104370",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10170",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create an Ariba request when Jira does not already hold the Ariba ID."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the Ariba purchase request ID back to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"customfield_10170\":\"{{_flow.aribaPurchaseRequestId}}\"},\"update\":{\"comment\":[{\"add\":{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP Ariba purchase request {{_flow.aribaPurchaseRequestId}} was created from this Jira request.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}}]}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:aaf031a0-730f-43a5-ad11-6eba8a104370",
+      "flowVariables": [],
+      "name": "Write Ariba Request ID to Jira",
+      "id": "template:action:ea4bc476-abdb-4793-a4d8-ef58f06e8011",
+      "order": 200
+    }
+  ],
+  "description": "Create an SAP Ariba purchase request after a Jira Service Management purchase request is approved.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PROC",
+      "instruction": "Jira project key for purchase requests."
+    },
+    {
+      "name": "APPROVED_STATUS",
+      "behavior": "SET",
+      "value": "Approved",
+      "instruction": "Jira status that indicates manager approval is complete."
+    },
+    {
+      "name": "ARIBA_API_URL",
+      "behavior": "SET",
+      "value": "https://openapi.ariba.com/api",
+      "instruction": "SAP Ariba API gateway base URL, without a trailing slash."
+    },
+    {
+      "name": "ARIBA_PURCHASE_REQUEST_PATH",
+      "behavior": "SET",
+      "value": "/requisitioning/v2/prod/requisitions",
+      "instruction": "Ariba endpoint path used to create purchase requests. Confirm this for the customer's Ariba product and realm."
+    },
+    {
+      "name": "ARIBA_REALM",
+      "behavior": "SET",
+      "value": "your-realm",
+      "instruction": "SAP Ariba realm."
+    }
+  ],
+  "groupName": "SAP Ariba",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP Ariba - Create Purchase Request",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

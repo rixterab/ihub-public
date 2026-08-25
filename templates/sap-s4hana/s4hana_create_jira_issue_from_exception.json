@@ -1,0 +1,231 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Search Jira for an open exception issue already linked to the incoming SAP object ID.",
+      "scriptedVariables": [
+        {
+          "name": "sapObjectId",
+          "uuid": "26fce757-a523-4032-9662-ff2517baa61f",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('sapObjectId','objectId','object_id','OrderID','InvoiceID','businessObject.id','event.objectId','detail.objectId');"
+        },
+        {
+          "name": "sapObjectType",
+          "uuid": "40cba3a1-44cf-4285-8861-49f44f51d1e0",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('sapObjectType','objectType','object_type','businessObject.type','event.objectType','detail.objectType')||'SAP object';"
+        },
+        {
+          "name": "sapProcess",
+          "uuid": "1e59ee81-3e7a-4b38-9769-83dcf92df486",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('process','businessProcess','processName','event.process','detail.process')||'SAP process';"
+        },
+        {
+          "name": "sapSeverity",
+          "uuid": "bc557acb-66a7-47ea-a7f2-79fcce8c3a82",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('severity','level','priority','event.severity','detail.severity')||'Medium';"
+        },
+        {
+          "name": "sapSummary",
+          "uuid": "d4f5846e-cbfd-4a14-b779-2bc6f7e248eb",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('summary','title','message','errorMessage','event.message','detail.message');if(direct)return direct;const type=read('sapObjectType','objectType','businessObject.type')||'SAP object';const id=read('sapObjectId','objectId','businessObject.id')||'unknown';return type+' exception '+id;"
+        },
+        {
+          "name": "sapDescription",
+          "uuid": "b3ef2c0d-f1e1-45e8-a448-46e0565e0c80",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const escapeHtml=(value)=>String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const objectId=read('sapObjectId','objectId','businessObject.id');const objectType=read('sapObjectType','objectType','businessObject.type');const process=read('process','businessProcess','processName');const details=read('description','details','errorDetails','message','errorMessage','event.message','detail.message');return '<p>Source: SAP S/4HANA</p><p>Object: '+escapeHtml(objectType)+' '+escapeHtml(objectId)+'</p><p>Process: '+escapeHtml(process)+'</p><p>'+escapeHtml(details)+'</p>';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"jql\":\"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{sapObjectId}}\\\" AND statusCategory != Done ORDER BY created DESC\",\"maxResults\":10,\"fields\":[\"summary\",\"status\"]}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Existing Jira exception issue key, if one exists."
+        }
+      ],
+      "name": "Find Existing SAP Exception Issue",
+      "id": "template:action:269608c0-aaef-4582-9a79-874070bebeb9",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.sapObjectId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Jira issue for a new SAP business process exception.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.SPACE}}\"},\"summary\":\"{{sapSummary}}\",\"issuetype\":{\"name\":\"{{_flow.ISSUE_TYPE}}\"},\"priority\":{\"name\":\"{{sapSeverity}}\"},\"customfield_10153\":\"{{sapObjectId}}\",\"customfield_10154\":\"{{sapObjectType}}\",\"description\":{{{htmlToADF sapDescription}}}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:269608c0-aaef-4582-9a79-874070bebeb9",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": "Jira exception issue key created for the SAP exception."
+        }
+      ],
+      "name": "Create Jira Issue from SAP Exception",
+      "id": "template:action:902814af-36f7-45be-8340-907c1a3eabfe",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Add a comment to the existing Jira issue when SAP reports another exception for the same object.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP reported another {{sapProcess}} exception for {{sapObjectType}} {{sapObjectId}}: {{sapSummary}}\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:269608c0-aaef-4582-9a79-874070bebeb9",
+      "flowVariables": [],
+      "name": "Comment Existing Exception Issue",
+      "id": "template:action:22c6b4bd-4e7f-4972-ba21-9b8c27d1d75f",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Optional callback to acknowledge the Jira issue key back to SAP or middleware. Disabled until the callback URL is configured.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-s4hana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"sapObjectId\":\"{{sapObjectId}}\",\"jiraIssueKey\":\"{{_flow.issueKey}}\",\"status\":\"accepted\"}",
+      "enabled": false,
+      "url": "{{_flow.SAP_EXCEPTION_CALLBACK_URL}}",
+      "parentId": "template:action:902814af-36f7-45be-8340-907c1a3eabfe",
+      "flowVariables": [],
+      "name": "Acknowledge Exception to SAP",
+      "id": "template:action:07af9cfd-09f6-41b8-b50a-1cfda5dfe0e2",
+      "order": 400
+    }
+  ],
+  "description": "Create or update Jira exception-management issues from SAP S/4HANA business process errors.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "SAP",
+      "instruction": "Jira project key for SAP exception-management issues."
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type used for SAP exception issues."
+    },
+    {
+      "name": "SAP_EXCEPTION_CALLBACK_URL",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Optional SAP or middleware callback URL used by the disabled acknowledgement action."
+    }
+  ],
+  "groupName": "SAP S/4HANA",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP S/4HANA - Create Jira Issue from SAP Exception",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

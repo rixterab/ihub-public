@@ -1,0 +1,230 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Jira Service Management offboarding request when SuccessFactors sends an employee-terminated event.",
+      "scriptedVariables": [
+        {
+          "name": "sfEventType",
+          "uuid": "37d7e32f-1155-46c3-82d1-eb9508633b52",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const raw=String(read('eventType','event_type','type','action','operation','event.reason','termination.reason')||'').toLowerCase();if(raw.includes('terminate')||raw.includes('leaver')||raw.includes('offboard')||raw==='employee.terminated')return 'employee.terminated';return raw;"
+        },
+        {
+          "name": "employeeId",
+          "uuid": "ce4c4638-2460-4baa-a206-1ce70ebe546a",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('employeeId','personIdExternal','userId','employee.employeeId','employee.personIdExternal','employment.personIdExternal');"
+        },
+        {
+          "name": "employeeDisplayName",
+          "uuid": "27590102-26c4-40bf-9857-05ed7ce71d12",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('displayName','employee.displayName','userNav.displayName','person.displayName');if(direct)return direct;return [read('firstName','givenName','employee.firstName'),read('lastName','surname','employee.lastName')].filter(Boolean).join(' ')||read('employeeId','personIdExternal','userId')||'Employee';"
+        },
+        {
+          "name": "employeeEmail",
+          "uuid": "242c1e30-ac2b-4a47-b0e2-632fef7a2517",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('email','mail','userPrincipalName','employee.email','employee.mail','userNav.email','userNav.userPrincipalName');"
+        },
+        {
+          "name": "employeeEndDate",
+          "uuid": "7687d6f6-7a7a-4647-ab95-aaef7557bca2",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('endDate','terminationDate','lastDateWorked','employment.endDate','employee.endDate','termination.effectiveDate');"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"serviceDeskId\":\"{{_flow.JSM_SERVICE_DESK_ID}}\",\"requestTypeId\":\"{{_flow.JSM_OFFBOARDING_REQUEST_TYPE_ID}}\",\"requestFieldValues\":{\"summary\":\"Offboard {{employeeDisplayName}}\",\"description\":\"SuccessFactors employee {{employeeId}} terminates {{employeeEndDate}}. Disable access, recover hardware, and revoke software licenses.\",\"{{_flow.JSM_EMPLOYEE_ID_FIELD}}\":\"{{employeeId}}\",\"{{_flow.JSM_END_DATE_FIELD}}\":\"{{employeeEndDate}}\"}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/servicedeskapi/request",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "jsmIssueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issueKey",
+          "instruction": "JSM request issue key created for the offboarding case."
+        }
+      ],
+      "name": "Create Offboarding JSM Request",
+      "id": "template:action:946485fa-afd5-48c4-a783-6730dffe942e",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.sfEventType",
+              "type": "DATA_CONDITION",
+              "value": "employee.terminated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.employeeId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Disable the linked Microsoft Entra account.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-sap-successfactors-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"accountEnabled\":false}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}",
+      "parentId": "template:action:946485fa-afd5-48c4-a783-6730dffe942e",
+      "flowVariables": [],
+      "name": "Disable Entra User",
+      "id": "template:action:be98f172-6908-4064-9b57-9415e6cc7dbe",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.employeeEmail",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the hardware recovery task under the offboarding request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Recover hardware for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Recover assigned hardware and update Jira Assets for SuccessFactors employee {{employeeId}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:946485fa-afd5-48c4-a783-6730dffe942e",
+      "flowVariables": [],
+      "name": "Create Hardware Recovery Task",
+      "id": "template:action:cc7518b5-bc62-4715-bd16-75a618f12846",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the software and access revocation task under the offboarding request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Revoke software and access for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Remove group memberships, application licenses, shared mailbox access, and privileged access for {{employeeId}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:946485fa-afd5-48c4-a783-6730dffe942e",
+      "flowVariables": [],
+      "name": "Create Access Revocation Task",
+      "id": "template:action:37bd4c60-a4e7-4244-a6a5-08c67e1e12dc",
+      "order": 400
+    }
+  ],
+  "description": "Create a JSM offboarding request, disable Entra access, and open recovery/revocation tasks from a SuccessFactors termination event.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "JSM_SERVICE_DESK_ID",
+      "behavior": "SET",
+      "value": "1",
+      "instruction": "Jira Service Management service desk ID used for offboarding requests."
+    },
+    {
+      "name": "JSM_OFFBOARDING_REQUEST_TYPE_ID",
+      "behavior": "SET",
+      "value": "101",
+      "instruction": "JSM request type ID for employee offboarding."
+    },
+    {
+      "name": "JSM_EMPLOYEE_ID_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10153",
+      "instruction": "Request field/custom field that stores the SuccessFactors employee ID."
+    },
+    {
+      "name": "JSM_END_DATE_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10155",
+      "instruction": "Request field/custom field that stores the employee end date."
+    },
+    {
+      "name": "TASK_PROJECT",
+      "behavior": "SET",
+      "value": "HR",
+      "instruction": "Jira project key where offboarding subtasks are created."
+    },
+    {
+      "name": "TASK_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Sub-task",
+      "instruction": "Issue type used for offboarding tasks. Use Task instead if the project does not support subtasks."
+    }
+  ],
+  "groupName": "SAP SuccessFactors",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP SuccessFactors - Employee Terminated",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

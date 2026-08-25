@@ -1,0 +1,135 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Find the Jira request linked to an incoming Ariba purchase status event.",
+      "scriptedVariables": [
+        {
+          "name": "aribaRequestId",
+          "uuid": "4b6887b8-c387-4af8-875d-9f4c9922ef02",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('aribaRequestId','requestId','requisitionId','id','document.id','event.documentId','detail.requestId');"
+        },
+        {
+          "name": "aribaStatus",
+          "uuid": "6d13c5cc-c035-4d85-bbb2-75ff4de8e1e7",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('status','state','document.status','event.status','detail.status')||'Updated';"
+        },
+        {
+          "name": "aribaPurchaseOrder",
+          "uuid": "942d6019-af9d-458b-9a83-fd56526144af",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('purchaseOrder','purchaseOrderNumber','poNumber','po.number','document.purchaseOrder','detail.purchaseOrderNumber');"
+        },
+        {
+          "name": "aribaStatusMessage",
+          "uuid": "8d28ca90-0a59-48fb-a936-c6a093e8158c",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('message','statusMessage','comment','event.message','detail.message')||'SAP Ariba purchase status changed.';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"jql\":\"project = {{_flow.SPACE}} AND \\\"cf[10170]\\\" ~ \\\"{{aribaRequestId}}\\\" ORDER BY updated DESC\",\"maxResults\":10,\"fields\":[\"summary\",\"status\"]}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Jira request linked to the Ariba request ID."
+        }
+      ],
+      "name": "Find Jira Request by Ariba ID",
+      "id": "template:action:274d7b0b-94cc-43a9-98aa-f17c216f2f34",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.aribaRequestId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write Ariba status, PO number, and an internal comment back to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"customfield_10172\":\"{{aribaStatus}}\",\"customfield_10173\":\"{{aribaPurchaseOrder}}\"},\"update\":{\"comment\":[{\"add\":{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP Ariba request {{aribaRequestId}} changed to {{aribaStatus}}. Purchase order: {{aribaPurchaseOrder}}. {{aribaStatusMessage}}\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}}]}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:274d7b0b-94cc-43a9-98aa-f17c216f2f34",
+      "flowVariables": [],
+      "name": "Update Jira with Ariba Status",
+      "id": "template:action:30da9b8c-2395-416c-8489-49cb498b66a6",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    }
+  ],
+  "description": "Update Jira when SAP Ariba purchase request or purchase order status changes.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PROC",
+      "instruction": "Jira project key for purchase requests."
+    }
+  ],
+  "groupName": "SAP Ariba",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP Ariba - Purchase Status to Jira",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
