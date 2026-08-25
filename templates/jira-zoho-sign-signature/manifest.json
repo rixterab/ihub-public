@@ -4,17 +4,10 @@
   "name": "Jira -> Zoho Sign -> Jira Signature",
   "description": "Sends Jira agreements for Zoho Sign signature and updates Jira from Zoho Sign webhook status changes",
   "category": "Zoho Sign",
-  "flows": [
-    "zoho_sign_outgoing_signature.json",
-    "zoho_sign_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["zoho_sign_outgoing_signature.json", "zoho_sign_incoming_status.json"],
+  "icon": "zoho.svg",
   "author": "Rixter AB",
-  "tags": [
-    "zoho-sign",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["zoho-sign", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {

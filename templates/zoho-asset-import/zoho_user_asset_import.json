@@ -1,0 +1,398 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "6a4618c6-8265-4c62-8fe5-30780cbcfd6c",
+          "script": "return \"0f3850a6-d813-4de4-90c9-4e703a4c8d6a\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"Zoho MDM data imported from ManageEngine\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Users\",\n          \"description\": \"Managed users from Zoho MDM\",\n          \"attributes\": [\n            {\n              \"name\": \"user_id\",\n              \"description\": \"Zoho MDM user id\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": true,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"name\",\n              \"description\": \"Managed user name\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"email_address\",\n              \"description\": \"Managed user email address\",\n              \"type\": \"email\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"phone_number\",\n              \"description\": \"Managed user phone number\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"domain\",\n              \"description\": \"User domain\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Users\",\n        \"selector\": \"users\",\n        \"description\": \"Managed users from Zoho MDM\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"user_id\",\n            \"attributeLocators\": [\n              \"user_id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"email_address\",\n            \"attributeLocators\": [\n              \"email_address\"\n            ]\n          },\n          {\n            \"attributeName\": \"phone_number\",\n            \"attributeLocators\": [\n              \"phone_number\"\n            ]\n          },\n          {\n            \"attributeName\": \"domain\",\n            \"attributeLocators\": [\n              \"domain\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "template:action:e242f036-9fde-4159-836d-7661a2e08442",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "formattedUsers",
+          "uuid": "edbcbd82-e7bd-49d2-ab0f-ad3f2f193713",
+          "script": "const responseData = typeof response !== \"undefined\" ? response?.data : undefined;\nconst payloadData = typeof payload !== \"undefined\" ? payload : undefined;\nconst scopedUsers = typeof users !== \"undefined\" ? users : undefined;\nconst input = responseData?.users ?? payloadData?.users ?? scopedUsers ?? [];\nif (!Array.isArray(input)) return [];\nreturn input.map((user) => {\n  const item = user ?? {};\n  return {\n    ...item,\n    user_id: item.user_id !== undefined && item.user_id !== null ? String(item.user_id) : item.user_id\n  };\n});"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"users\": {{{toJSON formattedUsers}}}\n  }\n}",
+      "parentId": "template:action:b1c6cacd-37c8-426f-adc6-7532354971ab",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "template:action:f5cc198a-fb2d-4653-a436-ed7860b1f735",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "f483b018-e095-426e-9157-6733eb36de1e",
+          "script": "return \"0f3850a6-d813-4de4-90c9-4e703a4c8d6a\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "template:action:49af19d4-c36f-46dd-9ae5-0c1d1d11f64b",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:49af19d4-c36f-46dd-9ae5-0c1d1d11f64b",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "template:action:9c6317a3-7f39-4a70-8d83-b88a417c1da3",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "4f75d78e-d02b-46e7-9489-a90669bc8005",
+          "script": "return \"0f3850a6-d813-4de4-90c9-4e703a4c8d6a\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "template:action:8be974f2-6f6a-4a99-9e62-e073c320df16",
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGING_NEXT",
+          "script": "const _jsonResponsePath=\"$.paging.next\";\nconst _defaultValue=\"https://mdm.manageengine.com/api/v1/mdm/users\";\nconst _nextCursor = path(jsonResponse, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$.users",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Zoho MDM Users",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-zoho-mdm"
+      },
+      "id": "template:action:b1c6cacd-37c8-426f-adc6-7532354971ab",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{PAGING_NEXT}}",
+      "parentId": "template:action:8be974f2-6f6a-4a99-9e62-e073c320df16",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-zoho-user-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "template:action:8be974f2-6f6a-4a99-9e62-e073c320df16",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "template:action:2b6a37b4-e465-4a05-ad84-0118ba28dc2b",
+      "order": 700
+    }
+  ],
+  "description": "Import Zoho MDM users into Jira Assets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Zoho",
+      "instruction": ""
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "0f3850a6-d813-4de4-90c9-4e703a4c8d6a",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Zoho",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Zoho User Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}
