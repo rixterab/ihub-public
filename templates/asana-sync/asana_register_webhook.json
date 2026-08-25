@@ -1,0 +1,89 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Register the Asana Incoming Sync trigger URL as an Asana webhook for the configured project. Run this once via Test Flow after the Asana Incoming Sync flow has been created and its custom webhook trigger URL copied into ASANA_TARGET_URL.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"resource\": \"{{_flow.ASANA_PROJECT_GID}}\",\n    \"target\": \"{{_flow.ASANA_TARGET_URL}}\"\n  }\n}",
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/webhooks",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "asanaWebhookGid",
+          "behavior": "SET",
+          "value": "$.response.data.data.gid",
+          "instruction": ""
+        }
+      ],
+      "name": "Register Asana Webhook",
+      "id": "template:action:6b1f2e4a-2f5d-4b6a-9b3a-8e7f2c9d1a6b",
+      "order": 100
+    }
+  ],
+  "description": "One-time setup: registers the Asana Incoming Sync trigger URL as an Asana webhook. Asana calls the target URL immediately after this request with an X-Hook-Secret handshake, which the Asana Incoming Sync trigger answers automatically.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "ASANA_URL",
+      "behavior": "SET",
+      "value": "https://app.asana.com/api/1.0",
+      "instruction": "Asana API base URL"
+    },
+    {
+      "name": "ASANA_PROJECT_GID",
+      "behavior": "SET",
+      "value": "0000000000000000",
+      "instruction": "Asana project GID to subscribe to. Use the same project that Asana Outgoing Sync creates tasks in."
+    },
+    {
+      "name": "ASANA_TARGET_URL",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Paste the trigger URL from the Asana Incoming Sync flow's custom webhook trigger here before running this flow."
+    }
+  ],
+  "groupName": "Asana",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Asana Register Webhook",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
