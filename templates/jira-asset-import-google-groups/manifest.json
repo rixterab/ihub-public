@@ -3,12 +3,11 @@
   "key": "jira-asset-import-google-groups",
   "name": "Jira Asset Import: Google Groups",
   "description": "Import Google groups into Jira Assets",
-  "category": "Jira Assets",
-  "flows": [
-    "jira_asset_import_google_groups.json"
-  ],
+  "category": "Google",
+  "flows": ["jira_asset_import_google_groups.json"],
   "icon": "google.png",
   "author": "Rixter AB",
+  "tags": ["google", "assets", "groups"],
   "createdAt": "2026-06-24",
   "credentialDefinitions": [
     {

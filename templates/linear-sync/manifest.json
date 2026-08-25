@@ -10,6 +10,7 @@
   ],
   "icon": "linear.svg",
   "author": "Rixter AB",
+  "tags": ["linear", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

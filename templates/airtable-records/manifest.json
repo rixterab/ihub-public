@@ -7,6 +7,7 @@
   "flows": ["airtable.json"],
   "icon": "airtable.png",
   "author": "Rixter AB",
+  "tags": ["airtable", "records"],
   "createdAt": "2026-06-16",
   "credentialDefinitions": [
     {

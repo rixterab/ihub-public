@@ -10,6 +10,7 @@
   ],
   "icon": "freshdesk.png",
   "author": "Rixter AB",
+  "tags": ["freshdesk", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

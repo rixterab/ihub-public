@@ -10,6 +10,7 @@
   ],
   "icon": "salesforce.svg",
   "author": "Rixter AB",
+  "tags": ["salesforce", "sync", "work-items"],
   "createdAt": "2026-08-22",
   "credentialDefinitions": [
     {
