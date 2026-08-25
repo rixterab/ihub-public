@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-pandadoc-signature",
+  "name": "Jira -> PandaDoc -> Jira Signature",
+  "description": "Sends Jira agreements for PandaDoc signature and updates Jira from PandaDoc webhook status changes",
+  "category": "PandaDoc",
+  "flows": [
+    "pandadoc_outgoing_signature.json",
+    "pandadoc_incoming_status.json"
+  ],
+  "icon": "signature.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "pandadoc",
+    "signature",
+    "agreement"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-pandadoc-authorization",
+      "name": "PandaDoc Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

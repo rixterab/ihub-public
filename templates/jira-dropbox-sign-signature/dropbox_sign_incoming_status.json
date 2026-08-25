@@ -1,0 +1,522 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "signatureRequestId",
+          "uuid": "aeef9070-0b40-4ada-bd0b-7b9624f6da70",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.id', 'data.signatureRequestId', 'data.signature_request_id', 'data.agreementId', 'data.documentId', 'data.requestId', 'event.data.id', 'event.data.signature_request_id', 'signature_request.signature_request_id', 'signature_request.id', 'agreement.id', 'agreementId', 'document.id', 'documentId', 'request.id', 'requestId', 'id');"
+        },
+        {
+          "name": "rawSignatureStatus",
+          "uuid": "b84c5972-b88b-49ae-9f05-6a33a562ce0a",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state');"
+        },
+        {
+          "name": "normalizedSignatureStatus",
+          "uuid": "032580e1-8701-40f4-b4d6-3b797aa6ed37",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('complete') || raw.includes('signed') || raw.includes('approved') || raw.includes('done')) return 'completed';\nif (raw.includes('delivered') || raw.includes('viewed') || raw.includes('opened') || raw.includes('read')) return 'delivered';\nif (raw.includes('sent') || raw.includes('pending') || raw.includes('created') || raw.includes('requested')) return 'sent';\nreturn raw;"
+        },
+        {
+          "name": "jiraSignatureStatus",
+          "uuid": "4cd49999-853d-4f10-b950-862fbd88a03e",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('complete') || raw.includes('signed') || raw.includes('approved') || raw.includes('done')) return 'Signed';\nif (raw.includes('delivered') || raw.includes('viewed') || raw.includes('opened') || raw.includes('read')) return 'Delivered';\nif (raw.includes('sent') || raw.includes('pending') || raw.includes('created') || raw.includes('requested')) return 'Sent';\nreturn raw;"
+        }
+      ],
+      "description": "Find the Jira issue whose signature request id field matches the incoming Dropbox Sign webhook event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10203]\\\" ~ \\\"{{signatureRequestId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 1,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10203\",\n    \"customfield_10204\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Signature Request ID",
+      "id": "template:action:25d459dc-def7-48f5-8a5a-0f036d44d843",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.signatureRequestId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Dropbox Sign webhook must include a signature request id"
+            },
+            {
+              "jsonPath": "$.normalizedSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Dropbox Sign webhook must include a signature status"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the provider signature status to the configured Jira signature status custom field: Sent, Delivered, or Signed.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10204\": \"{{jiraSignatureStatus}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:25d459dc-def7-48f5-8a5a-0f036d44d843",
+      "flowVariables": [],
+      "name": "Update Jira Signature Status",
+      "id": "template:action:973ad4db-d8af-48f4-82cb-5cb058d9b47f",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A matching Jira issue must exist"
+            },
+            {
+              "jsonPath": "$.jiraSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Completion Property",
+      "description": "Check whether the completed signature request has already been processed, so signed PDFs and comments are not duplicated by webhook retries.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:8474cd1e-de63-4e3a-b333-1d5ce865ca65",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-dropbox-sign-{{signatureRequestId}}-completed",
+      "parentId": "template:action:973ad4db-d8af-48f4-82cb-5cb058d9b47f",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.normalizedSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "completed",
+              "operator": "EQUALS",
+              "description": "Only completed signature requests attach a PDF and transition Jira"
+            },
+            {
+              "jsonPath": "$._flow.issueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/pdf",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "signed-agreement-{{_flow.issueKey}}-{{signatureRequestId}}.pdf",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the completed Dropbox Sign signature request as a signed PDF.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-dropbox-sign-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.DROPBOX_SIGN_BASE_URL}}{{_flow.DROPBOX_SIGN_DOWNLOAD_SIGNED_PDF_PATH_PREFIX}}{{signatureRequestId}}{{_flow.DROPBOX_SIGN_DOWNLOAD_SIGNED_PDF_PATH_SUFFIX}}",
+      "parentId": "template:action:8474cd1e-de63-4e3a-b333-1d5ce865ca65",
+      "name": "Download Signed PDF",
+      "id": "template:action:24062b5c-71fa-4316-b7c0-e8e414cef661",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only continue when the completion property does not already exist"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Attach the signed Dropbox Sign PDF to the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:24062b5c-71fa-4316-b7c0-e8e414cef661",
+      "name": "Attach Signed PDF to Jira",
+      "id": "template:action:2e17a2a0-c951-42b5-85d9-eb6da2908042",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the required signed agreement comment to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Agreement signed by customer\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:2e17a2a0-c951-42b5-85d9-eb6da2908042",
+      "flowVariables": [],
+      "name": "Comment Agreement Signed",
+      "id": "template:action:7705a515-ee58-4ba6-a275-d6eb6f64cb56",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Transition the Jira issue to Completed after the signed PDF and comment have been added.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.COMPLETED_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/transitions",
+      "parentId": "template:action:7705a515-ee58-4ba6-a275-d6eb6f64cb56",
+      "flowVariables": [],
+      "name": "Transition Jira to Completed",
+      "id": "template:action:cf8d259c-4688-436d-9db9-56fb25cd4b4c",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Completion Property",
+      "description": "Mark the Dropbox Sign completion webhook as processed to avoid duplicate PDFs, comments, and transitions.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:426d08bd-3749-4d87-923e-5ab879958af7",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{signatureRequestId}}\",\n  \"status\": \"completed\",\n  \"source\": \"dropbox-sign\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-dropbox-sign-{{signatureRequestId}}-completed",
+      "parentId": "template:action:cf8d259c-4688-436d-9db9-56fb25cd4b4c",
+      "order": 800
+    }
+  ],
+  "description": "Receive Dropbox Sign webhook events, update Jira signature status, attach completed agreements, and transition completed issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AGR",
+      "instruction": "Jira project key containing the agreement issues."
+    },
+    {
+      "name": "DROPBOX_SIGN_BASE_URL",
+      "behavior": "SET",
+      "value": "https://api.example.com",
+      "instruction": "Dropbox Sign API host. Use the same value as the outgoing flow."
+    },
+    {
+      "name": "DROPBOX_SIGN_DOWNLOAD_SIGNED_PDF_PATH_PREFIX",
+      "behavior": "SET",
+      "value": "/signature-requests/",
+      "instruction": "Dropbox Sign API path prefix before the signature request id for downloading the signed PDF."
+    },
+    {
+      "name": "DROPBOX_SIGN_DOWNLOAD_SIGNED_PDF_PATH_SUFFIX",
+      "behavior": "SET",
+      "value": "/documents/download",
+      "instruction": "Dropbox Sign API path suffix after the signature request id for downloading the signed PDF."
+    },
+    {
+      "name": "COMPLETED_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "31",
+      "instruction": "Jira workflow transition ID that moves the issue to Completed."
+    }
+  ],
+  "groupName": "Dropbox Sign",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Dropbox Sign Incoming Status",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "mode": "custom",
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}"
+      }
+    }
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,522 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "signatureRequestId",
+          "uuid": "792bf4fc-e8ce-46ee-bb8a-a1adf0981379",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.id', 'data.signatureRequestId', 'data.signature_request_id', 'data.agreementId', 'data.documentId', 'data.requestId', 'event.data.id', 'event.data.signature_request_id', 'signature_request.signature_request_id', 'signature_request.id', 'agreement.id', 'agreementId', 'document.id', 'documentId', 'request.id', 'requestId', 'id');"
+        },
+        {
+          "name": "rawSignatureStatus",
+          "uuid": "7747dcf9-6afb-4eab-ae8b-66b2e4c48b58",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state');"
+        },
+        {
+          "name": "normalizedSignatureStatus",
+          "uuid": "2f38994c-c009-46b9-916c-b02bde8e22eb",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('complete') || raw.includes('signed') || raw.includes('approved') || raw.includes('done')) return 'completed';\nif (raw.includes('delivered') || raw.includes('viewed') || raw.includes('opened') || raw.includes('read')) return 'delivered';\nif (raw.includes('sent') || raw.includes('pending') || raw.includes('created') || raw.includes('requested')) return 'sent';\nreturn raw;"
+        },
+        {
+          "name": "jiraSignatureStatus",
+          "uuid": "62daa9c6-595c-4ecb-8a6e-8190ce39276b",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.status', 'data.state', 'data.event_type', 'data.event', 'event_type', 'event', 'status', 'state', 'agreement.status', 'document.status', 'request.status', 'signature_request.status', 'signature_request.state') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('complete') || raw.includes('signed') || raw.includes('approved') || raw.includes('done')) return 'Signed';\nif (raw.includes('delivered') || raw.includes('viewed') || raw.includes('opened') || raw.includes('read')) return 'Delivered';\nif (raw.includes('sent') || raw.includes('pending') || raw.includes('created') || raw.includes('requested')) return 'Sent';\nreturn raw;"
+        }
+      ],
+      "description": "Find the Jira issue whose signature request id field matches the incoming Signicat webhook event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10203]\\\" ~ \\\"{{signatureRequestId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 1,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10203\",\n    \"customfield_10204\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Signature Request ID",
+      "id": "template:action:2d6be6e0-8a5c-4188-8349-ef88dc2eab7d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.signatureRequestId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Signicat webhook must include a signature request id"
+            },
+            {
+              "jsonPath": "$.normalizedSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Signicat webhook must include a signature status"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the provider signature status to the configured Jira signature status custom field: Sent, Delivered, or Signed.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10204\": \"{{jiraSignatureStatus}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:2d6be6e0-8a5c-4188-8349-ef88dc2eab7d",
+      "flowVariables": [],
+      "name": "Update Jira Signature Status",
+      "id": "template:action:93424873-0cea-436e-b3e3-e1b7c22ffa32",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A matching Jira issue must exist"
+            },
+            {
+              "jsonPath": "$.jiraSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Completion Property",
+      "description": "Check whether the completed signature request has already been processed, so signed PDFs and comments are not duplicated by webhook retries.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ea985db1-44b4-4eb1-9974-b1789e51f76b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-signicat-{{signatureRequestId}}-completed",
+      "parentId": "template:action:93424873-0cea-436e-b3e3-e1b7c22ffa32",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.normalizedSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "completed",
+              "operator": "EQUALS",
+              "description": "Only completed signature requests attach a PDF and transition Jira"
+            },
+            {
+              "jsonPath": "$._flow.issueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/pdf",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "signed-agreement-{{_flow.issueKey}}-{{signatureRequestId}}.pdf",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the completed Signicat signature request as a signed PDF.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-signicat-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SIGNICAT_BASE_URL}}{{_flow.SIGNICAT_DOWNLOAD_SIGNED_PDF_PATH_PREFIX}}{{signatureRequestId}}{{_flow.SIGNICAT_DOWNLOAD_SIGNED_PDF_PATH_SUFFIX}}",
+      "parentId": "template:action:ea985db1-44b4-4eb1-9974-b1789e51f76b",
+      "name": "Download Signed PDF",
+      "id": "template:action:1c86b2d3-5770-470b-8da9-d536ae5f1ead",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only continue when the completion property does not already exist"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Attach the signed Signicat PDF to the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:1c86b2d3-5770-470b-8da9-d536ae5f1ead",
+      "name": "Attach Signed PDF to Jira",
+      "id": "template:action:ec711726-7f15-4ae6-a590-38bbcb1eecf2",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the required signed agreement comment to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Agreement signed by customer\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:ec711726-7f15-4ae6-a590-38bbcb1eecf2",
+      "flowVariables": [],
+      "name": "Comment Agreement Signed",
+      "id": "template:action:340b68cc-512c-4e1c-b780-ce8eb7cea6c2",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Transition the Jira issue to Completed after the signed PDF and comment have been added.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.COMPLETED_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/transitions",
+      "parentId": "template:action:340b68cc-512c-4e1c-b780-ce8eb7cea6c2",
+      "flowVariables": [],
+      "name": "Transition Jira to Completed",
+      "id": "template:action:8adb178c-295e-45f8-84e5-3fcbf461de9a",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Completion Property",
+      "description": "Mark the Signicat completion webhook as processed to avoid duplicate PDFs, comments, and transitions.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:fee1f676-e501-46f9-851f-28649ab22535",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{signatureRequestId}}\",\n  \"status\": \"completed\",\n  \"source\": \"signicat\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-signicat-{{signatureRequestId}}-completed",
+      "parentId": "template:action:8adb178c-295e-45f8-84e5-3fcbf461de9a",
+      "order": 800
+    }
+  ],
+  "description": "Receive Signicat webhook events, update Jira signature status, attach completed agreements, and transition completed issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AGR",
+      "instruction": "Jira project key containing the agreement issues."
+    },
+    {
+      "name": "SIGNICAT_BASE_URL",
+      "behavior": "SET",
+      "value": "https://api.example.com",
+      "instruction": "Signicat API host. Use the same value as the outgoing flow."
+    },
+    {
+      "name": "SIGNICAT_DOWNLOAD_SIGNED_PDF_PATH_PREFIX",
+      "behavior": "SET",
+      "value": "/signature-requests/",
+      "instruction": "Signicat API path prefix before the signature request id for downloading the signed PDF."
+    },
+    {
+      "name": "SIGNICAT_DOWNLOAD_SIGNED_PDF_PATH_SUFFIX",
+      "behavior": "SET",
+      "value": "/documents/download",
+      "instruction": "Signicat API path suffix after the signature request id for downloading the signed PDF."
+    },
+    {
+      "name": "COMPLETED_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "31",
+      "instruction": "Jira workflow transition ID that moves the issue to Completed."
+    }
+  ],
+  "groupName": "Signicat",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Signicat Incoming Status",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "mode": "custom",
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}"
+      }
+    }
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-getaccept-signature",
+  "name": "Jira -> GetAccept -> Jira Signature",
+  "description": "Sends Jira agreements for GetAccept signature and updates Jira from GetAccept webhook status changes",
+  "category": "GetAccept",
+  "flows": [
+    "getaccept_outgoing_signature.json",
+    "getaccept_incoming_status.json"
+  ],
+  "icon": "signature.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "getaccept",
+    "signature",
+    "agreement"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-getaccept-authorization",
+      "name": "GetAccept Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

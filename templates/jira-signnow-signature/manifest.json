@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-signnow-signature",
+  "name": "Jira -> SignNow -> Jira Signature",
+  "description": "Sends Jira agreements for SignNow signature and updates Jira from SignNow webhook status changes",
+  "category": "SignNow",
+  "flows": [
+    "signnow_outgoing_signature.json",
+    "signnow_incoming_status.json"
+  ],
+  "icon": "signature.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "signnow",
+    "signature",
+    "agreement"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-signnow-authorization",
+      "name": "SignNow Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}
