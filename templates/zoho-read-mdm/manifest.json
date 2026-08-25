@@ -9,6 +9,7 @@
   ],
   "icon": "zoho.png",
   "author": "Rixter AB",
+  "tags": ["zoho", "mdm", "assets"],
   "createdAt": "2026-06-14",
   "credentialDefinitions": [
     {

@@ -1,14 +1,13 @@
 {
   "schemaVersion": 1,
   "key": "okta",
-  "name": "Okta",
+  "name": "Okta Resource Import",
   "description": "Import Okta resources into Jira Assets",
-  "category": "Jira Assets",
-  "flows": [
-    "okta.json"
-  ],
+  "category": "Okta",
+  "flows": ["okta.json"],
   "icon": "okta.png",
   "author": "Rixter AB",
+  "tags": ["okta", "assets"],
   "createdAt": "2026-06-25",
   "credentialDefinitions": [
     {

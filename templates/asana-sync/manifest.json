@@ -11,6 +11,7 @@
   ],
   "icon": "asana.svg",
   "author": "Rixter AB",
+  "tags": ["asana", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

@@ -7,6 +7,7 @@
   "flows": ["github_issues_incoming_sync.json", "github_issues_outgoing_sync.json"],
   "icon": "github.svg",
   "author": "Rixter AB",
+  "tags": ["github", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

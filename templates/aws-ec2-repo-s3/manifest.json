@@ -7,6 +7,7 @@
   "flows": ["aws_ec2.json", "aws_s3.json", "aws_repositories.json"],
   "icon": "social.png",
   "author": "Rixter AB",
+  "tags": ["aws", "ec2", "s3", "repositories"],
   "createdAt": "2026-06-14",
   "credentialDefinitions": [
     {

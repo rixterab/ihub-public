@@ -10,6 +10,7 @@
   ],
   "icon": "azure-devops.svg",
   "author": "Rixter AB",
+  "tags": ["azure-devops", "sync", "work-items"],
   "createdAt": "2026-08-21",
   "credentialDefinitions": [
     {

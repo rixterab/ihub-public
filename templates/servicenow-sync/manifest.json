@@ -10,6 +10,7 @@
   ],
   "icon": "servicenow.svg",
   "author": "Rixter AB",
+  "tags": ["servicenow", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

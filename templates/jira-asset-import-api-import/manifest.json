@@ -9,6 +9,7 @@
   ],
   "icon": "assets.png",
   "author": "Rixter AB",
+  "tags": ["jira", "assets", "import"],
   "createdAt": "2026-06-23",
   "credentialDefinitions": [
     {

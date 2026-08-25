@@ -10,6 +10,7 @@
   ],
   "icon": "zendesk.svg",
   "author": "Rixter AB",
+  "tags": ["zendesk", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {

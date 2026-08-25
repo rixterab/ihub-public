@@ -10,6 +10,7 @@
   ],
   "icon": "monday.svg",
   "author": "Rixter AB",
+  "tags": ["monday", "sync", "work-items"],
   "createdAt": "2026-08-24",
   "credentialDefinitions": [
     {
