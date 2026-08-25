@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "key": "slack-notify-work-item-created",
+  "name": "Slack - Notify on Work Item Created",
+  "description": "Posts a Slack message when a Jira work item is created",
+  "category": "Slack",
+  "flows": [
+    "slack_notify_work_item_created.json"
+  ],
+  "icon": "slack.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "notification",
+    "slack",
+    "work-items"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-slack-bot-token",
+      "name": "Slack Bot Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}
