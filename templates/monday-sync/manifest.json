@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "key": "monday-sync",
+  "name": "Monday Sync",
+  "description": "Two way sync for monday.com items and Jira issues",
+  "category": "Monday",
+  "flows": [
+    "monday_incoming_sync.json",
+    "monday_outgoing_sync.json"
+  ],
+  "icon": "monday.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-monday-api-token",
+      "name": "Monday API Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

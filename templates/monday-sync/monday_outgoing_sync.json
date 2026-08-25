@@ -1,0 +1,840 @@
+{
+  "actions": [
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Look up an existing monday item carrying this Jira issue key, so a retried or re-linked issue does not create a duplicate item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"query FindItemByJiraKey($boardId: ID!, $columnId: String!, $jiraKey: String!) {\\n  items_page_by_column_values(limit: 1, board_id: $boardId, columns: [{column_id: $columnId, column_values: [$jiraKey]}]) {\\n    cursor\\n    items {\\n      id\\n      name\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"boardId\": \"{{_flow.MONDAY_BOARD_ID}}\",\n    \"columnId\": \"{{_flow.MONDAY_JIRA_KEY_COLUMN}}\",\n    \"jiraKey\": \"{{issue.key}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "mondayItemId",
+          "behavior": "SET",
+          "value": "$.response.data.data.items_page_by_column_values.items[0].id",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Monday Item by Jira Key",
+      "id": "template:action:0b9e4d61-7c28-4a35-9f80-2e6a5c3b7d19",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only look up when the Jira issue has no linked monday item ID"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 50
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Re-link the Jira issue to the monday item that already carries its key instead of creating a duplicate.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.mondayItemId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0b9e4d61-7c28-4a35-9f80-2e6a5c3b7d19",
+      "flowVariables": [],
+      "name": "Link Jira Issue to Existing Monday Item",
+      "id": "template:action:e47a2f95-1d63-4c08-b52a-9f8c6e1d3b74",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.data.items_page_by_column_values.items",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A monday item already carries this Jira issue key"
+            }
+          ]
+        }
+      ],
+      "order": 75
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a monday.com item on the configured board when a Jira issue without a linked monday item ID is created.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation CreateItem($boardId: ID!, $groupId: String!, $itemName: String!, $columnValues: JSON!) {\\n  create_item(board_id: $boardId, group_id: $groupId, item_name: $itemName, column_values: $columnValues) {\\n    id\\n    name\\n  }\\n}\",\n  \"variables\": {\n    \"boardId\": \"{{_flow.MONDAY_BOARD_ID}}\",\n    \"groupId\": \"{{_flow.MONDAY_GROUP_ID}}\",\n    \"itemName\": \"{{{issue.fields.summary}}}\",\n    \"columnValues\": \"{\\\"{{_flow.MONDAY_JIRA_KEY_COLUMN}}\\\": \\\"{{issue.key}}\\\"}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "template:action:0b9e4d61-7c28-4a35-9f80-2e6a5c3b7d19",
+      "flowVariables": [
+        {
+          "name": "mondayItemId",
+          "behavior": "SET",
+          "value": "$.response.data.data.create_item.id",
+          "instruction": ""
+        },
+        {
+          "name": "mondayItemName",
+          "behavior": "SET",
+          "value": "$.response.data.data.create_item.name",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Monday Item",
+      "id": "template:action:3c81f0a5-6d47-4e29-9b13-7a5e2c8d4f60",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.data.items_page_by_column_values.items",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "No monday item already carries this Jira issue key"
+            },
+            {
+              "jsonPath": "$.response.data.errors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "monday returns HTTP 200 even on failure; only continue when the GraphQL errors array is absent"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created monday item ID on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.mondayItemId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:3c81f0a5-6d47-4e29-9b13-7a5e2c8d4f60",
+      "flowVariables": [],
+      "name": "Store Monday Item ID on Jira Issue",
+      "id": "template:action:d92a4b17-08c3-4f56-8e71-1b6d5a3f9c24",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "monday returns HTTP 200 even on failure; only continue when the GraphQL errors array is absent"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Update the linked monday item name when the Jira issue summary changes.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation UpdateItemName($boardId: ID!, $itemId: ID!, $value: String!) {\\n  change_simple_column_value(board_id: $boardId, item_id: $itemId, column_id: \\\"name\\\", value: $value) {\\n    id\\n  }\\n}\",\n  \"variables\": {\n    \"boardId\": \"{{_flow.MONDAY_BOARD_ID}}\",\n    \"itemId\": \"{{issue.fields.customfield_10153}}\",\n    \"value\": \"{{{issue.fields.summary}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "mondayItemId",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Monday Item Name",
+      "id": "template:action:5f27e8c3-9a14-4b70-8d62-4c9f1e7a3b58",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.user.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block the issue update iHub itself makes when it writes the monday item ID back"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Write the Jira description into the monday long text column on the linked item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation UpdateItemDescription($boardId: ID!, $itemId: ID!, $columnId: String!, $value: String!) {\\n  change_simple_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {\\n    id\\n  }\\n}\",\n  \"variables\": {\n    \"boardId\": \"{{_flow.MONDAY_BOARD_ID}}\",\n    \"itemId\": \"{{issue.fields.customfield_10153}}\",\n    \"columnId\": \"{{_flow.MONDAY_DESCRIPTION_COLUMN}}\",\n    \"value\": \"{{{adfToHTML issue.fields.description}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Update Monday Item Description Column",
+      "id": "template:action:a14b7d69-2e58-4c31-9f05-8b3e6d2c7a91",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.user.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block the issue update iHub itself makes when it writes the monday item ID back"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the Jira comment to the linked monday item as an update. monday update bodies are HTML.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation AddUpdate($itemId: ID!, $body: String!) {\\n  create_update(item_id: $itemId, body: $body) {\\n    id\\n  }\\n}\",\n  \"variables\": {\n    \"itemId\": \"{{issue.fields.customfield_10153}}\",\n    \"body\": \"Synced from Jira issue {{issue.key}} (status: {{issue.fields.status.name}})<br/>{{{adfToHTML payload.comment.body}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.monday.com/v2",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "mondayUpdateId",
+          "behavior": "SET",
+          "value": "$.response.data.data.create_update.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Add Update to Monday Item",
+      "id": "template:action:7e5c2a48-3b91-4d67-a028-6f1d9c4b5e73",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Outgoing Comment ID",
+      "description": "Mark the Jira comment as synced to monday to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:2b8f6e14-7c53-49a0-b1d9-0e4a7c6f8352",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"jira\"\n}",
+      "parentId": "template:action:7e5c2a48-3b91-4d67-a028-6f1d9c4b5e73",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{comment.id}}",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "monday returns HTTP 200 even on failure; only continue when the GraphQL errors array is absent"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "{{_flow.MONDAY_API_VERSION}}",
+          "key": "API-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Upload Jira attachments to the monday files column on the linked item using the multipart GraphQL file endpoint.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-monday-api-token"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"query\": \"mutation AddFile($file: File!) { add_file_to_column(item_id: {{issue.fields.customfield_10153}}, column_id: \\\"{{_flow.MONDAY_FILES_COLUMN}}\\\", file: $file) { id } }\",\n  \"map\": \"{\\\"image\\\": \\\"variables.file\\\"}\",\n  \"image\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.monday.com/v2/file",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [
+        {
+          "name": "mondayAssetId",
+          "behavior": "SET",
+          "value": "$.response.data.data.add_file_to_column.id",
+          "instruction": ""
+        }
+      ],
+      "name": "Upload Attachment to Monday Item",
+      "id": "template:action:c63d9a27-4f18-4e85-9720-3a8b5d1c6e49",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a monday item ID"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub user"
+            }
+          ]
+        }
+      ],
+      "order": 700,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Monday Asset ID",
+      "description": "Store the monday asset ID on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:8a4e1c76-5d20-4739-b6f8-9c2e7b3a0d15",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.mondayAssetId}}\",\n  \"status\": \"synced\",\n  \"source\": \"monday\"\n}",
+      "parentId": "template:action:c63d9a27-4f18-4e85-9720-3a8b5d1c6e49",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.mondayAssetId}}",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "monday returns HTTP 200 even on failure; only continue when the GraphQL errors array is absent"
+            }
+          ]
+        }
+      ],
+      "order": 800
+    }
+  ],
+  "description": "Sync Jira issues to monday.com items",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "MONDAY_API_VERSION",
+      "behavior": "SET",
+      "value": "2026-07",
+      "instruction": "monday.com API version sent in the API-Version header. 2026-07 is the current stable version; see developer.monday.com/api-reference/docs/api-versioning"
+    },
+    {
+      "name": "MONDAY_BOARD_ID",
+      "behavior": "SET",
+      "value": "1234567890",
+      "instruction": "Numeric ID of the single monday.com board that mirrors the Jira project"
+    },
+    {
+      "name": "MONDAY_GROUP_ID",
+      "behavior": "SET",
+      "value": "topics",
+      "instruction": "ID of the group on the board where new items are created, for example topics or new_group"
+    },
+    {
+      "name": "MONDAY_JIRA_KEY_COLUMN",
+      "behavior": "SET",
+      "value": "text__1",
+      "instruction": "ID of the monday text column holding the linked Jira issue key"
+    },
+    {
+      "name": "MONDAY_DESCRIPTION_COLUMN",
+      "behavior": "SET",
+      "value": "long_text__1",
+      "instruction": "ID of the monday long text column holding the Jira description"
+    },
+    {
+      "name": "MONDAY_FILES_COLUMN",
+      "behavior": "SET",
+      "value": "files__1",
+      "instruction": "ID of the monday files column that receives Jira attachments"
+    }
+  ],
+  "groupName": "Monday",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Monday Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
