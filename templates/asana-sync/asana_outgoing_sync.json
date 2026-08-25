@@ -1,0 +1,463 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"name\": \"{{{issue.fields.summary}}}\",\n    \"notes\": \"{{{adfToHTML issue.fields.description}}}\",\n    \"workspace\": \"{{_flow.ASANA_WORKSPACE_GID}}\",\n    \"projects\": [\n      \"{{_flow.ASANA_PROJECT_GID}}\"\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/tasks",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "taskGid",
+          "behavior": "SET",
+          "value": "$.response.data.data.gid",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Task in Asana",
+      "id": "template:action:0bcb12eb-0ca0-4ec4-bc77-bc0ff402221a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10200",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if Asana Task GID exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create Asana tasks for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created Asana Task GID on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10200\": \"{{_flow.taskGid}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0bcb12eb-0ca0-4ec4-bc77-bc0ff402221a",
+      "flowVariables": [],
+      "name": "Store Asana Task GID on Jira Issue",
+      "id": "template:action:3129051f-0f93-4281-a933-7d84580dafa2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"text\": \"Synced from Jira\\nStatus: {{issue.fields.status.name}}\\nIssue: {{issue.key}}\\n{{{adfToHTML payload.comment.body}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}/stories",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "storyGid",
+          "behavior": "SET",
+          "value": "$.response.data.data.gid",
+          "instruction": ""
+        }
+      ],
+      "name": "Comment Asana Task",
+      "id": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10200",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Asana Story ID",
+      "description": "Store the Asana Story ID on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ae335078-5935-4a93-ae0f-a39db37ddc66",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"asana\"\n}",
+      "parentId": "template:action:57e80169-60c2-479d-a57c-a8efe8d74077",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{id}}",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"notes\": \"{{{adfToHTML issue.fields.description}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "taskGid",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10200",
+          "instruction": ""
+        }
+      ],
+      "name": "Update Asana Task Notes",
+      "id": "template:action:5e110f20-e411-47c5-a08f-fc0901d308ce",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10200",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"parent\": \"{{issue.fields.customfield_10200}}\",\n  \"file\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/attachments",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [],
+      "name": "Upload Attachment to Asana Task",
+      "id": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10200",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has an Asana Task GID"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Asana Attachment ID",
+      "description": "Store the Asana Attachment GID on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:ac1084e5-0dcd-4ce1-95ee-b6dfc13e0fee",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"asana\"\n}",
+      "parentId": "template:action:c17555ce-6828-44e0-8787-06eabf3560bc",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{id}}",
+      "order": 700
+    }
+  ],
+  "description": "Sync Jira issues to Asana Tasks",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "ASANA_URL",
+      "behavior": "SET",
+      "value": "https://app.asana.com/api/1.0",
+      "instruction": "Asana API base URL"
+    },
+    {
+      "name": "ASANA_WORKSPACE_GID",
+      "behavior": "SET",
+      "value": "0000000000000000",
+      "instruction": "Asana workspace GID where tasks are created"
+    },
+    {
+      "name": "ASANA_PROJECT_GID",
+      "behavior": "SET",
+      "value": "0000000000000000",
+      "instruction": "Asana project GID that created tasks are added to"
+    }
+  ],
+  "groupName": "Asana",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Asana Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

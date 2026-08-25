@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "asana-sync",
+  "name": "Asana Sync",
+  "description": "Two way sync for Asana Tasks and Jira issues",
+  "category": "Asana",
+  "flows": [
+    "asana_incoming_sync.json",
+    "asana_outgoing_sync.json",
+    "asana_register_webhook.json"
+  ],
+  "icon": "asana.svg",
+  "author": "Rixter AB",
+  "createdAt": "2026-08-24",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-asana",
+      "name": "Asana",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://app.asana.com/-/oauth_authorize?response_type=code",
+            "accessTokenUrl": "https://app.asana.com/-/oauth_token"
+          },
+          "grantType": "code",
+          "scope": "default",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

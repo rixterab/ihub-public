@@ -1,0 +1,825 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "iterator": "$.events",
+      "scriptedVariables": [
+        {
+          "name": "asanaResourceType",
+          "uuid": "1787143421872",
+          "script": "return scope?.resource?.resource_type || '';"
+        },
+        {
+          "name": "asanaAction",
+          "uuid": "1787143421873",
+          "script": "return scope?.action || '';"
+        },
+        {
+          "name": "asanaTaskGid",
+          "uuid": "1787145100767",
+          "script": "if (scope?.resource?.resource_type === 'task') return scope.resource.gid || '';\nreturn scope?.parent?.gid || '';"
+        },
+        {
+          "name": "asanaStoryGid",
+          "uuid": "1787145100768",
+          "script": "return scope?.resource?.resource_type === 'story' ? (scope.resource.gid || '') : '';"
+        },
+        {
+          "name": "asanaAttachmentGid",
+          "uuid": "1787145100769",
+          "script": "return scope?.resource?.resource_type === 'attachment' ? (scope.resource.gid || '') : '';"
+        },
+        {
+          "name": "asanaEventType",
+          "uuid": "1787145100770",
+          "script": "const type = scope?.resource?.resource_type;\nconst action = scope?.action;\nif (type === 'task' && action === 'added') return 'task.created';\nif (type === 'story' && action === 'added') return 'task.commented';\nif (type === 'attachment' && action === 'added') return 'task.attachment.created';\nreturn '';"
+        }
+      ],
+      "description": "Search for a Jira issue whose Asana Task GID custom field matches the incoming Task GID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10200]\\\" ~ \\\"{{asanaTaskGid}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Asana Task GID",
+      "id": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.asanaTaskGid",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Asana event must resolve to a Task GID"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "iterator": "$.events",
+      "description": "Fetch the Asana task name and notes for a newly created task.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/tasks/{{asanaTaskGid}}",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "flowVariables": [
+        {
+          "name": "asanaTaskName",
+          "behavior": "SET",
+          "value": "$.response.data.data.name",
+          "instruction": ""
+        },
+        {
+          "name": "asanaTaskNotes",
+          "behavior": "SET",
+          "value": "$.response.data.data.notes",
+          "instruction": ""
+        }
+      ],
+      "name": "Get Asana Task Details",
+      "id": "template:action:9f2f6a6e-6f61-4d8a-9d3a-6c4b8a2d6c1f",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.asanaEventType",
+              "type": "DATA_CONDITION",
+              "value": "task.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 150
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "iterator": "$.events",
+      "description": "Create a Jira issue from an incoming Asana task.created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{_flow.asanaTaskName}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10200\": \"{{asanaTaskGid}}\",\n    \"description\": {{{htmlToADF _flow.asanaTaskNotes}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:9f2f6a6e-6f61-4d8a-9d3a-6c4b8a2d6c1f",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue",
+      "id": "template:action:75e6a615-aa12-4920-a595-dfc6bd265151",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.asanaEventType",
+              "type": "DATA_CONDITION",
+              "value": "task.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "iterator": "$.events",
+      "description": "Get a Jira issue property for the Asana Story GID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{asanaStoryGid}}",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "name": "Get Asana Story ID Property",
+      "id": "template:action:c3c927f6-60eb-4395-aea6-f89691b802ea",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.asanaEventType",
+              "type": "DATA_CONDITION",
+              "value": "task.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.asanaStoryGid",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Asana story event must include a Story GID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "iterator": "$.events",
+      "description": "Fetch the Asana story text for an incoming comment event.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/stories/{{asanaStoryGid}}",
+      "parentId": "template:action:c3c927f6-60eb-4395-aea6-f89691b802ea",
+      "flowVariables": [
+        {
+          "name": "asanaStoryText",
+          "behavior": "SET",
+          "value": "$.response.data.data.text",
+          "instruction": ""
+        }
+      ],
+      "name": "Get Asana Story Details",
+      "id": "template:action:0d5b6f8a-2a3b-4e2f-8b7e-6b6a7c9d4f1a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "order": 350
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "iterator": "$.events",
+      "description": "Add an Asana Story to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF _flow.asanaStoryText}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:0d5b6f8a-2a3b-4e2f-8b7e-6b6a7c9d4f1a",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add Asana Comment to Jira",
+      "id": "template:action:e8f82ab7-8bf0-473c-b814-0cc800b7435c",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.asanaStoryText",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Asana story must include comment text"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "iterator": "$.events",
+      "name": "Store Incoming Asana Story ID",
+      "description": "Store the Asana Story GID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:9ec7f798-6afe-44ce-847a-4e62f8134b67",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{asanaStoryGid}}\",\n  \"status\": \"synced\",\n  \"source\": \"asana\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{asanaStoryGid}}",
+      "parentId": "template:action:e8f82ab7-8bf0-473c-b814-0cc800b7435c",
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "iterator": "$.events",
+      "description": "Get a Jira issue property for the Asana Attachment GID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "template:action:82c6f96b-6ff7-490a-8d05-ca4ecdf012dd",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{asanaAttachmentGid}}",
+      "name": "Get Asana Attachment ID Property",
+      "id": "template:action:d0b4de2a-996d-4c93-8c6f-24a9fe1f9c24",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.asanaEventType",
+              "type": "DATA_CONDITION",
+              "value": "task.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.asanaAttachmentGid",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Asana attachment event must include an Attachment GID"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "iterator": "$.events",
+      "description": "Fetch the Asana attachment name and download URL.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-asana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.ASANA_URL}}/attachments/{{asanaAttachmentGid}}",
+      "parentId": "template:action:d0b4de2a-996d-4c93-8c6f-24a9fe1f9c24",
+      "flowVariables": [
+        {
+          "name": "asanaDownloadUrl",
+          "behavior": "SET",
+          "value": "$.response.data.data.download_url",
+          "instruction": ""
+        },
+        {
+          "name": "asanaFileName",
+          "behavior": "SET",
+          "value": "$.response.data.data.name",
+          "instruction": ""
+        }
+      ],
+      "name": "Get Asana Attachment Details",
+      "id": "template:action:2a9c6e1b-4b7a-4a2e-9e6b-8b8c2f6a9d3e",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ]
+        }
+      ],
+      "order": 550
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{_flow.asanaFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "iterator": "$.events",
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.asanaDownloadUrl}}",
+      "parentId": "template:action:2a9c6e1b-4b7a-4a2e-9e6b-8b8c2f6a9d3e",
+      "name": "Download Asana Attachment",
+      "id": "template:action:aecd8390-7e83-494e-8c8e-9cb60294766d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.asanaDownloadUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Asana attachment metadata must include a download URL"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "iterator": "$.events",
+      "description": "Upload the downloaded Asana file to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:aecd8390-7e83-494e-8c8e-9cb60294766d",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add Asana Attachment to Jira",
+      "id": "template:action:5745cf6b-9b6c-47a1-9d66-9e9eb9238315",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "iterator": "$.events",
+      "name": "Store Incoming Asana Attachment ID",
+      "description": "Store the Asana Attachment GID after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:a4e2fdb7-b436-4cc8-80a6-04f7d72ec283",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{asanaAttachmentGid}}\",\n  \"status\": \"synced\",\n  \"source\": \"asana\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{asanaAttachmentGid}}",
+      "parentId": "template:action:5745cf6b-9b6c-47a1-9d66-9e9eb9238315",
+      "order": 800
+    }
+  ],
+  "description": "Sync Asana webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AS",
+      "instruction": "Jira project key used for Asana-created tasks"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new Asana tasks"
+    },
+    {
+      "name": "ASANA_URL",
+      "behavior": "SET",
+      "value": "https://app.asana.com/api/1.0",
+      "instruction": "Asana API base URL"
+    }
+  ],
+  "groupName": "Asana",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Asana Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "mode": "custom",
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "X-Hook-Secret",
+            "value": "{{headers.x-hook-secret}}"
+          }
+        ],
+        "customTemplate": "{}"
+      }
+    }
+  },
+  "useStaticIP": false
+}
