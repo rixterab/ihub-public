@@ -1,0 +1,455 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "8554a37f-39cc-460f-b4e3-f6c0afeaa88a",
+          "script": "return \"010eefa7-d640-45bd-b3ac-41aa5e019665\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Groups\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Users\",\n          \"description\": \"\",\n          \"attributes\": [ \n            {\n               \"name\": \"groups\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": -1,\n              \"referenceObjectTypeName\": \"Groups\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [     \n      {\n        \"objectTypeName\": \"Users\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [ \n          {\n            \"attributeName\": \"displayName\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"groups\",\n            \"attributeLocators\": [\n              \"groupName\"\n            ],\n            \"objectMappingIQL\": \"displayName IN (${groupName})\" \n          }         \n        ]\n      }\n    ]\n  }\n}",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "name": "Update Import Mapping",
+      "id": "template:action:9c44cec9-5324-41b5-ac75-56a3ca7da860",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "formattedData",
+          "uuid": "1787657299469",
+          "script": "const input = response?.data?.value;\n\nreturn input?.map(({ id, displayName, ...item }) => ({\n  ...item,\n  groupId: id,\n  groupName: displayName,\n  displayName: scope?.displayName,\n  userId: scope?.id\n})) ?? [];"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n    \"data\":{\n        \"value\":{{{toJSON formattedData}}}\n    }\n}",
+      "parentId": "template:action:8deb5a61-bf35-4811-959c-7c4724a1fef5",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Submit Data",
+      "id": "template:action:bac2a1d1-596b-4350-aa3c-c7bd5ba32a5b",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "9c4bae37-fc66-4fcb-91a0-660c6a323c74",
+          "script": "return \"010eefa7-d640-45bd-b3ac-41aa5e019665\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "name": "Check Import Status",
+      "id": "template:action:f7e1c22d-deee-4dac-bc33-26570a798fc4",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "page",
+          "script": ""
+        },
+        "enabled": false,
+        "breakJsonPath": "$.response.data"
+      },
+      "method": "GET",
+      "scriptedVariables": [],
+      "description": "",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "responseOpt": {
+        "transformation": {
+          "enabled": false,
+          "script": ""
+        }
+      },
+      "parentId": "template:action:a8199926-2e3e-4039-babb-668691f27d87",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{id}}/memberOf/microsoft.graph.group?$select=id,displayName",
+      "iterator": "$.value",
+      "name": "Get group membership",
+      "id": "template:action:8deb5a61-bf35-4811-959c-7c4724a1fef5",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:f7e1c22d-deee-4dac-bc33-26570a798fc4",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "name": "Cancel import if it has stuck.",
+      "id": "template:action:dce6ca6a-4357-4363-a9dd-e4cb4df6f845",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "18c4139c-0417-4b27-9edd-118ccea950af",
+          "script": "return \"010eefa7-d640-45bd-b3ac-41aa5e019665\";"
+        }
+      ],
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "name": "Start Import",
+      "id": "template:action:a36e8312-a5fb-4974-ad9a-22f3d454d9ab",
+      "conditions": [],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "USER_PAGE_URL",
+          "script": "const _jsonResponsePath=\"$['response']['data']['@odata.nextLink']\";\nconst _defaultValue=\"https://graph.microsoft.com/v1.0/users?$top=999&$select=id,displayName\";\nconst _nextCursor = path(jsonContext, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$['response']['data']['@odata.nextLink']",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Entra Users",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-entra"
+      },
+      "id": "template:action:a8199926-2e3e-4039-babb-668691f27d87",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{{USER_PAGE_URL}}}",
+      "parentId": "template:action:a36e8312-a5fb-4974-ad9a-22f3d454d9ab",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "IntegrationsHub/cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "uiRenderer": "WEB_ACTION",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-microsoft-entra-group-asset-import-token-2"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "parentId": "template:action:a36e8312-a5fb-4974-ad9a-22f3d454d9ab",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "name": "Complete Import",
+      "id": "template:action:d497d1a5-5ee0-407a-b3cb-315a3ad07d8f",
+      "order": 800
+    }
+  ],
+  "description": "Import Azure Entra Users-Groups",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Microsoft",
+      "instruction": ""
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "010eefa7-d640-45bd-b3ac-41aa5e019665",
+      "instruction": ""
+    }
+  ],
+  "groupName": "Microsoft",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Microsoft Entra User-Group Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}
