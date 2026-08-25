@@ -1,0 +1,261 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Create or refresh the Jira Assets external import mapping for SuccessFactors employees.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"$schema\":\"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\"schema\":{\"objectSchema\":{\"name\":\"{{_flow.assetSchema}}\",\"description\":\"Employees imported from SAP SuccessFactors\",\"objectTypes\":[{\"name\":\"Employees\",\"description\":\"SAP SuccessFactors employee master data\",\"attributes\":[{\"name\":\"Display Name\",\"type\":\"text\",\"label\":true},{\"name\":\"Employee ID\",\"type\":\"text\"},{\"name\":\"User ID\",\"type\":\"text\"},{\"name\":\"Email\",\"type\":\"text\"},{\"name\":\"Status\",\"type\":\"text\"},{\"name\":\"Job Title\",\"type\":\"text\"},{\"name\":\"Department\",\"type\":\"text\"},{\"name\":\"Location\",\"type\":\"text\"},{\"name\":\"Start Date\",\"type\":\"date\"},{\"name\":\"End Date\",\"type\":\"date\"}]}]}},\"mapping\":{\"objectTypeMappings\":[{\"objectTypeName\":\"Employees\",\"selector\":\"employees\",\"description\":\"SuccessFactors employees\",\"attributesMapping\":[{\"attributeName\":\"Display Name\",\"attributeLocators\":[\"userNav.displayName\"]},{\"attributeName\":\"Employee ID\",\"attributeLocators\":[\"personIdExternal\"],\"externalIdPart\":true},{\"attributeName\":\"User ID\",\"attributeLocators\":[\"userId\"]},{\"attributeName\":\"Email\",\"attributeLocators\":[\"userNav.email\"]},{\"attributeName\":\"Status\",\"attributeLocators\":[\"employmentNav.emplStatus\"]},{\"attributeName\":\"Job Title\",\"attributeLocators\":[\"jobInfoNav.results.0.jobTitle\"]},{\"attributeName\":\"Department\",\"attributeLocators\":[\"jobInfoNav.results.0.department\"]},{\"attributeName\":\"Location\",\"attributeLocators\":[\"jobInfoNav.results.0.location\"]},{\"attributeName\":\"Start Date\",\"attributeLocators\":[\"startDate\"]},{\"attributeName\":\"End Date\",\"attributeLocators\":[\"endDate\"]}]}]}}",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/mapping",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Update Employee Import Mapping",
+      "id": "template:action:c7253de4-b747-4347-87d9-56060da9b930",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "GET",
+      "description": "Check whether the Jira Assets import source is ready to accept data.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/configstatus",
+      "parentId": "template:action:c7253de4-b747-4347-87d9-56060da9b930",
+      "flowVariables": [],
+      "name": "Check Import Status",
+      "id": "template:action:b7c0c4ed-2892-4577-a07c-c9eddba44068",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "description": "Cancel a stuck Jira Assets import execution before starting a fresh run.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "parentId": "template:action:b7c0c4ed-2892-4577-a07c-c9eddba44068",
+      "flowVariables": [],
+      "name": "Cancel Stuck Import",
+      "id": "template:action:8084592d-8abc-4d12-8454-527621678e9d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "POST",
+      "description": "Start a Jira Assets import execution.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/executions",
+      "parentId": "template:action:b7c0c4ed-2892-4577-a07c-c9eddba44068",
+      "flowVariables": [],
+      "name": "Start Import",
+      "id": "template:action:eaadbea9-5ca8-4e6c-80fc-4d3abf3bed74",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "GET",
+      "description": "Read employee data from SuccessFactors OData v2.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-successfactors"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.SUCCESSFACTORS_URL}}/odata/v2/EmpEmployment?$format=json&$select=userId,personIdExternal,startDate,endDate,userNav/displayName,userNav/email,jobInfoNav/jobTitle,jobInfoNav/department,jobInfoNav/location&$expand=userNav,jobInfoNav&$top={{_flow.PAGE_SIZE}}",
+      "parentId": "template:action:eaadbea9-5ca8-4e6c-80fc-4d3abf3bed74",
+      "flowVariables": [],
+      "name": "Get SuccessFactors Employees",
+      "id": "template:action:2778231c-198c-4373-bb64-3b1616a9670d",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "description": "Submit SuccessFactors employees to the Jira Assets import execution.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"data\":{\"employees\":{{{toJSON payload.d.results}}}}}",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:2778231c-198c-4373-bb64-3b1616a9670d",
+      "flowVariables": [],
+      "name": "Submit Employee Data",
+      "id": "template:action:c09e8b27-cc6d-4c5b-8cff-ff4d684a86e2",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "description": "Mark the Jira Assets import execution as complete.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-successfactors-employee-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"completed\":true}",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:eaadbea9-5ca8-4e6c-80fc-4d3abf3bed74",
+      "flowVariables": [],
+      "name": "Complete Import",
+      "id": "template:action:e8bfc468-05f5-44e8-b6bf-d0323d542ec5",
+      "order": 700
+    }
+  ],
+  "description": "Import SuccessFactors employee master data into Jira Assets.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "SAP SuccessFactors",
+      "instruction": "Jira Assets object schema name."
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Jira Assets external import source ID for SuccessFactors employees."
+    },
+    {
+      "name": "SUCCESSFACTORS_URL",
+      "behavior": "SET",
+      "value": "https://api.successfactors.com",
+      "instruction": "Base URL for the customer's SuccessFactors tenant, without a trailing slash."
+    },
+    {
+      "name": "PAGE_SIZE",
+      "behavior": "SET",
+      "value": "1000",
+      "instruction": "Maximum number of employee records to read per run. Add pagination if the tenant exceeds this size."
+    }
+  ],
+  "groupName": "SAP SuccessFactors",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP SuccessFactors - Sync Employee to Jira Assets",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 9 * * *"
+  },
+  "useStaticIP": false
+}

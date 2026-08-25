@@ -1,0 +1,170 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create an SAP Ariba supplier onboarding request from an approved Jira request.",
+      "scriptedVariables": [
+        {
+          "name": "supplierName",
+          "uuid": "e9549c19-2ac2-47d2-b738-f2d61c493704",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10190||fields.summary||'New supplier';"
+        },
+        {
+          "name": "supplierEmail",
+          "uuid": "e4af0e33-0fc1-432b-b377-b53c172b7996",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10191||'';"
+        },
+        {
+          "name": "supplierCountry",
+          "uuid": "0dde438f-419f-490b-bb62-02cc7e97ed3a",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10192||'';"
+        },
+        {
+          "name": "supplierCategory",
+          "uuid": "8dad91ed-1b14-4093-a9ed-b64122a38b40",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10193||'';"
+        },
+        {
+          "name": "supplierTaxId",
+          "uuid": "8909f5eb-d6c8-496a-9767-3f585c0f761c",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10194||'';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-sap-ariba-api"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"realm\":\"{{_flow.ARIBA_REALM}}\",\"externalId\":\"{{issue.key}}\",\"supplier\":{\"name\":\"{{supplierName}}\",\"primaryContactEmail\":\"{{supplierEmail}}\",\"country\":\"{{supplierCountry}}\",\"category\":\"{{supplierCategory}}\",\"taxId\":\"{{supplierTaxId}}\"},\"source\":\"Jira Service Management\"}",
+      "enabled": true,
+      "url": "{{_flow.ARIBA_API_URL}}{{_flow.ARIBA_SUPPLIER_ONBOARDING_PATH}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "aribaSupplierRequestId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "SAP Ariba supplier onboarding request ID returned by the API."
+        }
+      ],
+      "name": "Create Ariba Supplier Onboarding Request",
+      "id": "template:action:aa1d0287-1ab8-4544-bdab-7d709e3c7850",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10171",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create an Ariba supplier onboarding request when Jira does not already hold the Ariba supplier request ID."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the Ariba supplier onboarding request ID back to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"customfield_10171\":\"{{_flow.aribaSupplierRequestId}}\"},\"update\":{\"comment\":[{\"add\":{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP Ariba supplier onboarding request {{_flow.aribaSupplierRequestId}} was created for {{supplierName}}.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}}]}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:aa1d0287-1ab8-4544-bdab-7d709e3c7850",
+      "flowVariables": [],
+      "name": "Write Ariba Supplier Request ID to Jira",
+      "id": "template:action:bf45beb8-9a6b-4585-bb0c-93c895063004",
+      "order": 200
+    }
+  ],
+  "description": "Create an SAP Ariba supplier onboarding request after a Jira supplier request is approved.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PROC",
+      "instruction": "Jira project key for supplier onboarding requests."
+    },
+    {
+      "name": "APPROVED_STATUS",
+      "behavior": "SET",
+      "value": "Approved",
+      "instruction": "Jira status that indicates supplier onboarding approval is complete."
+    },
+    {
+      "name": "ARIBA_API_URL",
+      "behavior": "SET",
+      "value": "https://openapi.ariba.com/api",
+      "instruction": "SAP Ariba API gateway base URL, without a trailing slash."
+    },
+    {
+      "name": "ARIBA_SUPPLIER_ONBOARDING_PATH",
+      "behavior": "SET",
+      "value": "/suppliermanagement/v1/prod/supplierRequests",
+      "instruction": "Ariba endpoint path used to create supplier onboarding requests. Confirm this for the customer's Ariba product and realm."
+    },
+    {
+      "name": "ARIBA_REALM",
+      "behavior": "SET",
+      "value": "your-realm",
+      "instruction": "SAP Ariba realm."
+    }
+  ],
+  "groupName": "SAP Ariba",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP Ariba - Supplier Onboarding",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

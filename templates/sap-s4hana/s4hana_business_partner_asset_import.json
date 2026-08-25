@@ -1,0 +1,267 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Create or refresh the Jira Assets external import mapping for SAP Business Partners.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"$schema\":\"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\"schema\":{\"objectSchema\":{\"name\":\"{{_flow.assetSchema}}\",\"description\":\"SAP S/4HANA master data imported into Jira Assets\",\"objectTypes\":[{\"name\":\"Business Partners\",\"description\":\"SAP Business Partner, supplier, and customer records\",\"attributes\":[{\"name\":\"Name\",\"type\":\"text\",\"label\":true},{\"name\":\"SAP Business Partner ID\",\"type\":\"text\"},{\"name\":\"Category\",\"type\":\"text\"},{\"name\":\"Grouping\",\"type\":\"text\"},{\"name\":\"Search Term 1\",\"type\":\"text\"},{\"name\":\"Search Term 2\",\"type\":\"text\"},{\"name\":\"Supplier\",\"type\":\"text\"},{\"name\":\"Customer\",\"type\":\"text\"},{\"name\":\"Blocked\",\"type\":\"text\"},{\"name\":\"Marked for Archiving\",\"type\":\"text\"}]}]}},\"mapping\":{\"objectTypeMappings\":[{\"objectTypeName\":\"Business Partners\",\"selector\":\"businessPartners\",\"description\":\"SAP Business Partners\",\"attributesMapping\":[{\"attributeName\":\"Name\",\"attributeLocators\":[\"BusinessPartnerFullName\"]},{\"attributeName\":\"SAP Business Partner ID\",\"attributeLocators\":[\"BusinessPartner\"],\"externalIdPart\":true},{\"attributeName\":\"Category\",\"attributeLocators\":[\"BusinessPartnerCategory\"]},{\"attributeName\":\"Grouping\",\"attributeLocators\":[\"BusinessPartnerGrouping\"]},{\"attributeName\":\"Search Term 1\",\"attributeLocators\":[\"SearchTerm1\"]},{\"attributeName\":\"Search Term 2\",\"attributeLocators\":[\"SearchTerm2\"]},{\"attributeName\":\"Supplier\",\"attributeLocators\":[\"Supplier\"]},{\"attributeName\":\"Customer\",\"attributeLocators\":[\"Customer\"]},{\"attributeName\":\"Blocked\",\"attributeLocators\":[\"BusinessPartnerIsBlocked\"]},{\"attributeName\":\"Marked for Archiving\",\"attributeLocators\":[\"IsMarkedForArchiving\"]}]}]}}",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/mapping",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Update Business Partner Import Mapping",
+      "id": "template:action:c748d23e-36a1-402d-9580-bbc5569588ad",
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "GET",
+      "description": "Check whether the Jira Assets import source is ready to accept data.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/configstatus",
+      "parentId": "template:action:c748d23e-36a1-402d-9580-bbc5569588ad",
+      "flowVariables": [],
+      "name": "Check Import Status",
+      "id": "template:action:20133de5-6d43-40a3-96ef-aa0968cb9920",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.cancel",
+          "key": "cancelUrl"
+        }
+      ],
+      "method": "DELETE",
+      "description": "Cancel a stuck Jira Assets import execution before starting a fresh run.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "parentId": "template:action:20133de5-6d43-40a3-96ef-aa0968cb9920",
+      "flowVariables": [],
+      "name": "Cancel Stuck Import",
+      "id": "template:action:949fc1e0-e75b-472a-8450-2718b074477b",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "POST",
+      "description": "Start a Jira Assets import execution.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/executions",
+      "parentId": "template:action:20133de5-6d43-40a3-96ef-aa0968cb9920",
+      "flowVariables": [],
+      "name": "Start Import",
+      "id": "template:action:68dc1c2d-d717-41c8-917c-5f530e2cb1fc",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "GET",
+      "description": "Read Business Partner records from SAP S/4HANA.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-s4hana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.S4_URL}}/sap/opu/odata/sap/{{_flow.BUSINESS_PARTNER_SERVICE}}/A_BusinessPartner?$format=json&$select=BusinessPartner,BusinessPartnerCategory,BusinessPartnerFullName,BusinessPartnerGrouping,SearchTerm1,SearchTerm2,Supplier,Customer,BusinessPartnerIsBlocked,IsMarkedForArchiving&$top={{_flow.PAGE_SIZE}}",
+      "parentId": "template:action:68dc1c2d-d717-41c8-917c-5f530e2cb1fc",
+      "flowVariables": [],
+      "name": "Get SAP Business Partners",
+      "id": "template:action:22ea3a69-f352-4358-9f21-3a3069d8f339",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "description": "Submit Business Partner records to the Jira Assets import execution.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"data\":{\"businessPartners\":{{{toJSON payload.d.results}}}}}",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:22ea3a69-f352-4358-9f21-3a3069d8f339",
+      "flowVariables": [],
+      "name": "Submit Business Partner Data",
+      "id": "template:action:2af13842-17ae-48a7-8dbc-4b057e1d9609",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "variables": [
+        {
+          "value": "$.links.submitResults",
+          "key": "submitResultsUrl"
+        }
+      ],
+      "method": "POST",
+      "description": "Mark the Jira Assets import execution as complete.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-sap-s4-business-partner-asset-import-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"completed\":true}",
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:68dc1c2d-d717-41c8-917c-5f530e2cb1fc",
+      "flowVariables": [],
+      "name": "Complete Import",
+      "id": "template:action:69322671-7171-45e1-97a9-e9e59cbd2c51",
+      "order": 700
+    }
+  ],
+  "description": "Import SAP S/4HANA Business Partner records into Jira Assets.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "SAP S/4HANA",
+      "instruction": "Jira Assets object schema name."
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Jira Assets external import source ID for SAP Business Partners."
+    },
+    {
+      "name": "S4_URL",
+      "behavior": "SET",
+      "value": "https://my-s4hana.example.com",
+      "instruction": "SAP S/4HANA base URL, without a trailing slash."
+    },
+    {
+      "name": "BUSINESS_PARTNER_SERVICE",
+      "behavior": "SET",
+      "value": "API_BUSINESS_PARTNER",
+      "instruction": "OData service used for Business Partner reads."
+    },
+    {
+      "name": "PAGE_SIZE",
+      "behavior": "SET",
+      "value": "1000",
+      "instruction": "Maximum number of Business Partner records to read per run. Add pagination if the tenant exceeds this size."
+    }
+  ],
+  "groupName": "SAP S/4HANA",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP S/4HANA - Sync Business Partner",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 8 * * *"
+  },
+  "useStaticIP": false
+}

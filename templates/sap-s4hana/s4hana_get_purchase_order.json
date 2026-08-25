@@ -1,0 +1,139 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        }
+      ],
+      "method": "GET",
+      "description": "Read purchase order details from SAP S/4HANA for the PO number stored on the Jira issue.",
+      "scriptedVariables": [
+        {
+          "name": "sapPurchaseOrder",
+          "uuid": "d471ad98-ac1d-4ccb-a31d-003e616b193a",
+          "script": "const fields=scope?.issue?.fields||{};return fields.customfield_10155||'';"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-sap-s4hana"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.S4_URL}}/sap/opu/odata/sap/{{_flow.PO_SERVICE}}/A_PurchaseOrder('{{sapPurchaseOrder}}')?$format=json&$expand=to_PurchaseOrderItem",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "sapPurchaseOrderStatus",
+          "behavior": "SET",
+          "value": "$.response.data.d.PurchasingDocumentStatus",
+          "instruction": "Status returned by SAP for the purchase order."
+        },
+        {
+          "name": "sapSupplier",
+          "behavior": "SET",
+          "value": "$.response.data.d.Supplier",
+          "instruction": "Supplier number returned by SAP."
+        },
+        {
+          "name": "sapNetAmount",
+          "behavior": "SET",
+          "value": "$.response.data.d.TotalNetAmount",
+          "instruction": "Net amount returned by SAP."
+        }
+      ],
+      "name": "Get SAP Purchase Order",
+      "id": "template:action:b1a057ca-6a69-4093-a60c-5ffaaea52aa5",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.sapPurchaseOrder",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write current SAP purchase order status and supplier data back to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"customfield_10156\":\"{{_flow.sapPurchaseOrderStatus}}\",\"customfield_10157\":\"{{_flow.sapSupplier}}\",\"customfield_10158\":\"{{_flow.sapNetAmount}}\"},\"update\":{\"comment\":[{\"add\":{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SAP purchase order {{sapPurchaseOrder}} status is {{_flow.sapPurchaseOrderStatus}}. Supplier: {{_flow.sapSupplier}}. Net amount: {{_flow.sapNetAmount}}.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}}]}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:b1a057ca-6a69-4093-a60c-5ffaaea52aa5",
+      "flowVariables": [],
+      "name": "Update Jira with SAP PO Status",
+      "id": "template:action:9e928ff3-94e3-4f3a-9aee-a70a7958a863",
+      "order": 200
+    }
+  ],
+  "description": "Fetch purchase order details from SAP S/4HANA and write the current status back to Jira.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PROC",
+      "instruction": "Jira project key for purchase requests."
+    },
+    {
+      "name": "S4_URL",
+      "behavior": "SET",
+      "value": "https://my-s4hana.example.com",
+      "instruction": "SAP S/4HANA base URL, without a trailing slash."
+    },
+    {
+      "name": "PO_SERVICE",
+      "behavior": "SET",
+      "value": "API_PURCHASEORDER_PROCESS_SRV",
+      "instruction": "OData service used for purchase order read operations."
+    }
+  ],
+  "groupName": "SAP S/4HANA",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "SAP S/4HANA - Get Purchase Order",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

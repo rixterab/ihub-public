@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "sap-ariba",
+  "name": "SAP Ariba",
+  "description": "Purchase request, supplier onboarding, and purchase status templates for SAP Ariba and Jira Service Management",
+  "category": "SAP Ariba",
+  "flows": [
+    "ariba_create_purchase_request.json",
+    "ariba_supplier_onboarding.json",
+    "ariba_purchase_status_to_jira.json"
+  ],
+  "icon": "sap.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "sap",
+    "ariba",
+    "procurement",
+    "supplier-onboarding",
+    "jira-service-management"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-sap-ariba-api",
+      "name": "SAP Ariba API",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          },
+          {
+            "key": "apiKey"
+          }
+        ]
+      }
+    }
+  ]
+}
