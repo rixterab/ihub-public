@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "key": "teams-notify-work-item-created",
+  "name": "Microsoft Teams - Notify on Work Item Created",
+  "description": "Posts a Microsoft Teams channel message when a Jira work item is created",
+  "category": "Microsoft Teams",
+  "flows": [
+    "teams_notify_work_item_created.json"
+  ],
+  "icon": "microsoft-teams.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "notification",
+    "microsoft-teams",
+    "work-items"
+  ],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-microsoft-teams",
+      "name": "Microsoft Teams",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+          },
+          "grantType": "code",
+          "scope": "https://graph.microsoft.com/ChannelMessage.Send offline_access",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}
