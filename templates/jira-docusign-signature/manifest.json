@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-docusign-signature",
+  "name": "Jira -> DocuSign -> Jira Signature",
+  "description": "Sends Jira agreements for DocuSign signature and updates Jira from DocuSign webhook status changes",
+  "category": "DocuSign",
+  "flows": ["docusign_outgoing_signature.json", "docusign_incoming_status.json"],
+  "icon": "docusign.svg",
+  "author": "Rixter AB",
+  "tags": ["docusign", "signature", "agreement"],
+  "createdAt": "2026-08-25",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-docusign",
+      "name": "DocuSign",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://account-d.docusign.com/oauth/auth?response_type=code",
+            "accessTokenUrl": "https://account-d.docusign.com/oauth/token"
+          },
+          "grantType": "code",
+          "scope": "signature",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "query_params",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}
