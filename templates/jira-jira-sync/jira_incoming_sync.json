@@ -1,0 +1,864 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "remoteEventType",
+          "uuid": "1787643421101",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('webhookEvent', 'event', 'eventType', 'event_type', 'issue_event_type_name');\nif (eventType) {\n  const normalized = String(eventType).toLowerCase();\n  if (normalized === 'jira:issue_created' || normalized === 'issue_created' || normalized === 'created') return 'jira:issue_created';\n  if (normalized === 'jira:issue_updated' || normalized === 'issue_updated' || normalized === 'updated') return 'jira:issue_updated';\n  if (normalized === 'comment_created' || normalized === 'jira:issue_commented' || normalized === 'commented') return 'comment_created';\n  return eventType;\n}\nif (read('comment.id', 'comment.body')) return 'comment_created';\nif (read('changelog.id', 'changelog.items')) return 'jira:issue_updated';\nif (read('issue.key', 'issue.id')) return 'jira:issue_created';\nreturn '';"
+        },
+        {
+          "name": "remoteIssueKey",
+          "uuid": "1787643421102",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('issue.key', 'issueKey', 'key', 'payload.issue.key');"
+        },
+        {
+          "name": "remoteIssueId",
+          "uuid": "1787643421103",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst value = read('issue.id', 'issueId', 'id');\nreturn value === '' ? '' : String(value);"
+        },
+        {
+          "name": "remoteSummary",
+          "uuid": "1787643421104",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst summary = read('issue.fields.summary', 'fields.summary', 'summary');\nif (summary) return summary;\nconst key = read('issue.key', 'issueKey', 'key');\nreturn key ? 'Jira issue ' + key : 'Jira issue';"
+        },
+        {
+          "name": "remoteDescription",
+          "uuid": "1787643421105",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst description = read('issue.fields.description', 'fields.description', 'description');\nif (description && typeof description === 'object') return description;\nif (typeof description === 'string' && description.trim() !== '') {\n  return { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: description }] }] };\n}\nreturn { type: 'doc', version: 1, content: [] };"
+        },
+        {
+          "name": "remoteLinkFieldValue",
+          "uuid": "1787643421106",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('issue.fields.customfield_10200', 'fields.customfield_10200');"
+        },
+        {
+          "name": "remoteAuthorAccountId",
+          "uuid": "1787643421107",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('user.accountId', 'user.account_id', 'issue.fields.creator.accountId');"
+        },
+        {
+          "name": "remoteLinkFieldOnlyChange",
+          "uuid": "1787643421108",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst items = read('changelog.items');\nif (!Array.isArray(items) || items.length === 0) return 'false';\nconst linkFields = ['customfield_10200'];\nconst onlyLink = items.every((entry) => linkFields.includes(String(entry?.fieldId || entry?.field || '')));\nreturn onlyLink ? 'true' : 'false';"
+        },
+        {
+          "name": "remoteCommentId",
+          "uuid": "1787643421109",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst value = read('comment.id', 'commentId', 'comment.commentId');\nreturn value === '' ? '' : String(value);"
+        },
+        {
+          "name": "remoteCommentBody",
+          "uuid": "1787643421110",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst body = read('comment.body', 'commentBody', 'body');\nif (body && typeof body === 'object') return body;\nif (typeof body === 'string' && body.trim() !== '') {\n  return { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: body }] }] };\n}\nreturn { type: 'doc', version: 1, content: [] };"
+        },
+        {
+          "name": "remoteCommentAuthorAccountId",
+          "uuid": "1787643421111",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('comment.author.accountId', 'comment.updateAuthor.accountId', 'user.accountId');"
+        },
+        {
+          "name": "remoteHasAttachmentChange",
+          "uuid": "1787643421112",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst items = read('changelog.items');\nif (!Array.isArray(items)) return 'false';\nconst changed = items.some((entry) => String(entry?.field || entry?.fieldId || '').toLowerCase() === 'attachment');\nreturn changed ? 'true' : 'false';"
+        },
+        {
+          "name": "remoteAttachments",
+          "uuid": "1787643421113",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst attachments = read('issue.fields.attachment', 'fields.attachment', 'attachment');\nreturn Array.isArray(attachments) ? attachments : [];"
+        }
+      ],
+      "description": "Search the local instance for the issue whose link field holds the incoming remote issue key.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{remoteIssueKey}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Local Issue by Remote Issue Key",
+      "id": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteIssueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The incoming Jira webhook must contain an issue key"
+            },
+            {
+              "jsonPath": "$.remoteAuthorAccountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip every event authored by the remote iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a local issue from an incoming remote jira:issue_created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{remoteSummary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{remoteIssueKey}}\",\n    \"description\": {{{toJSON remoteDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Local Issue",
+      "id": "template:action:5d0b8f27-4a61-4e39-8c14-7b2f9e6d0a35",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteEventType",
+              "type": "DATA_CONDITION",
+              "value": "jira:issue_created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "No local issue is linked to this remote issue yet"
+            },
+            {
+              "jsonPath": "$.remoteLinkFieldValue",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Loop guard: only create when the remote link field is empty, otherwise the remote issue is already a mirror"
+            },
+            {
+              "jsonPath": "$.remoteAuthorAccountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip issues created by the remote iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Write the new local issue key into the remote link field so both sides are linked.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-remote-jira"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10200\": \"{{_flow.issueKey}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{remoteIssueKey}}",
+      "parentId": "template:action:5d0b8f27-4a61-4e39-8c14-7b2f9e6d0a35",
+      "flowVariables": [],
+      "name": "Store Local Issue Key on Remote Issue",
+      "id": "template:action:9e6c2b51-8d47-40a2-b593-1f7a4c8e5d20",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteEventType",
+              "type": "DATA_CONDITION",
+              "value": "jira:issue_created",
+              "operator": "EQUALS",
+              "description": "Only write back the local key after a remote create event"
+            }
+          ]
+        }
+      ],
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the summary and description of the linked local issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{remoteSummary}}\",\n    \"description\": {{{toJSON remoteDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
+      "flowVariables": [],
+      "name": "Update Local Issue",
+      "id": "template:action:3c8f5a06-2e19-4b74-9d68-5a1c7f3b9e42",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteEventType",
+              "type": "DATA_CONDITION",
+              "value": "jira:issue_updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.remoteAuthorAccountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip updates made by the remote iHub integration user, including the local key write back"
+            },
+            {
+              "jsonPath": "$.remoteLinkFieldOnlyChange",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip updates whose changelog only contains the remote link field"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Check whether this remote comment has already been copied to the local issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteCommentId}}",
+      "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
+      "name": "Get Remote Comment ID Property",
+      "id": "template:action:7f2d9b64-1c53-48e0-a726-9b4e0d6c3a17",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteEventType",
+              "type": "DATA_CONDITION",
+              "value": "comment_created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.remoteCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The incoming comment payload must contain a comment id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.remoteCommentAuthorAccountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip comments written by the remote iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add the remote comment to the linked local issue, passing the ADF body through unchanged.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{toJSON remoteCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:7f2d9b64-1c53-48e0-a726-9b4e0d6c3a17",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add Remote Comment to Local Issue",
+      "id": "template:action:0b5a3e78-9f26-4c17-8d43-2e6b1a9f7c50",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only add the comment when it has not been synced yet"
+            },
+            {
+              "jsonPath": "$.remoteCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Remote Comment ID",
+      "description": "Store the remote comment id on the local issue to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:4a9e1d35-7b80-42f6-9c25-8d3f6b0e4a19",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{remoteCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteCommentId}}",
+      "parentId": "template:action:0b5a3e78-9f26-4c17-8d43-2e6b1a9f7c50",
+      "order": 550
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "remoteAttachmentId",
+          "uuid": "1787643422101",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.id != null ? String(item.id) : '';"
+        },
+        {
+          "name": "remoteAttachmentFileName",
+          "uuid": "1787643422102",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.filename || item?.fileName || 'remote-jira-file';"
+        },
+        {
+          "name": "remoteAttachmentContentUrl",
+          "uuid": "1787643422103",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.content || '';"
+        },
+        {
+          "name": "remoteAttachmentAuthorAccountId",
+          "uuid": "1787643422104",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.author?.accountId || '';"
+        }
+      ],
+      "description": "Check whether this remote attachment has already been copied to the local issue. Jira has no attachment webhook event, so attachments are detected from a jira:issue_updated changelog entry for the Attachment field.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteAttachmentId}}",
+      "iterator": "$.remoteAttachments",
+      "name": "Get Remote Attachment ID Property",
+      "id": "template:action:8d3b6f02-5a94-4e71-b0c8-6f1d9a2e7b53",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.remoteEventType",
+              "type": "DATA_CONDITION",
+              "value": "jira:issue_updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.remoteHasAttachmentChange",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "operator": "EQUALS",
+              "description": "The changelog must contain an Attachment field change"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            },
+            {
+              "jsonPath": "$.remoteAuthorAccountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip attachments added by the remote iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{remoteEventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{remoteAttachmentFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the remote attachment binary from the remote Jira instance.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-remote-jira"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{remoteAttachmentContentUrl}}",
+      "parentId": "template:action:8d3b6f02-5a94-4e71-b0c8-6f1d9a2e7b53",
+      "name": "Download Remote Attachment",
+      "id": "template:action:2e7c4a19-3d68-45b0-8f92-0a5e7c1b6d38",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only download when the attachment has not been synced yet"
+            },
+            {
+              "jsonPath": "$.remoteAttachmentContentUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The attachment must expose a content URL"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded remote attachment to the linked local issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:2e7c4a19-3d68-45b0-8f92-0a5e7c1b6d38",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add Remote Attachment to Local Issue",
+      "id": "template:action:6f1a8d40-0e35-4927-b6d1-4c8b2f5a9e07",
+      "order": 800
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Remote Attachment ID",
+      "description": "Store the remote attachment id on the local issue to avoid duplicate uploads.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0c4e7b96-8a12-43d5-9e70-1b6f3d8c5a24",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{remoteAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteAttachmentId}}",
+      "parentId": "template:action:6f1a8d40-0e35-4927-b6d1-4c8b2f5a9e07",
+      "order": 900
+    }
+  ],
+  "description": "Sync remote Jira Cloud webhook events to local Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "LOCAL",
+      "instruction": "Jira project key in the local instance (the instance where iHub is installed) that holds the synced issues"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Issue type name used when creating issues in the local instance, for example Task or Bug"
+    },
+    {
+      "name": "REMOTE_URL",
+      "behavior": "SET",
+      "value": "https://your-remote-instance.atlassian.net",
+      "instruction": "Base URL of the remote Jira Cloud instance, for example https://acme.atlassian.net"
+    },
+    {
+      "name": "REMOTE_PROJECT",
+      "behavior": "SET",
+      "value": "REMOTE",
+      "instruction": "Jira project key in the remote instance that holds the synced issues"
+    },
+    {
+      "name": "REMOTE_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Issue type name used when creating issues in the remote instance. Issue type names differ per instance, so this is separate from ISSUE_TYPE"
+    },
+    {
+      "name": "LOCAL_IHUB_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped. The same value is hard coded in the action conditions and must be replaced there too"
+    },
+    {
+      "name": "REMOTE_IHUB_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+      "instruction": "Atlassian accountId of the iHub integration user in the REMOTE instance. This is a different account from LOCAL_IHUB_ACCOUNT_ID. The same value is hard coded in the action conditions and must be replaced there too"
+    }
+  ],
+  "groupName": "Jira",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jira Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
