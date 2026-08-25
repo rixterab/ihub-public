@@ -1,0 +1,516 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "docusignEnvelopeId",
+          "uuid": "56d228e6-0850-4fb9-b44d-f516fde2906c",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.envelopeId', 'data.envelopeSummary.envelopeId', 'envelopeId', 'envelopeSummary.envelopeId', 'DocuSignEnvelopeInformation.EnvelopeStatus.EnvelopeID', 'EnvelopeStatus.EnvelopeID');"
+        },
+        {
+          "name": "docusignRawStatus",
+          "uuid": "724ba3dc-43f7-40ad-abb1-55b867b9d619",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('data.envelopeSummary.status', 'envelopeSummary.status', 'status', 'data.status', 'event', 'DocuSignEnvelopeInformation.EnvelopeStatus.Status', 'EnvelopeStatus.Status');"
+        },
+        {
+          "name": "docusignNormalizedStatus",
+          "uuid": "ee9d77b7-da7a-49f3-b443-cd0237d2957f",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.envelopeSummary.status', 'envelopeSummary.status', 'status', 'data.status', 'event', 'DocuSignEnvelopeInformation.EnvelopeStatus.Status', 'EnvelopeStatus.Status') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('signed')) return 'completed';\nif (raw.includes('delivered')) return 'delivered';\nif (raw.includes('sent')) return 'sent';\nreturn raw;"
+        },
+        {
+          "name": "jiraSignatureStatus",
+          "uuid": "a24c81e3-be58-4733-ac26-a976a4076210",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => {\n      if (obj == null) return undefined;\n      if (/^\\d+$/.test(key) && Array.isArray(obj)) return obj[Number(key)];\n      return obj[key];\n    }, root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst raw = String(read('data.envelopeSummary.status', 'envelopeSummary.status', 'status', 'data.status', 'event', 'DocuSignEnvelopeInformation.EnvelopeStatus.Status', 'EnvelopeStatus.Status') || '').toLowerCase();\nif (raw.includes('completed') || raw.includes('signed')) return 'Signed';\nif (raw.includes('delivered')) return 'Delivered';\nif (raw.includes('sent')) return 'Sent';\nreturn raw;"
+        }
+      ],
+      "description": "Find the Jira issue whose DocuSign envelopeId field matches the incoming DocuSign webhook event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10203]\\\" ~ \\\"{{docusignEnvelopeId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 1,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10203\",\n    \"customfield_10204\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Envelope ID",
+      "id": "template:action:f2b3b4c4-8d5c-4a15-9db9-7c5be98ce154",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.docusignEnvelopeId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "DocuSign webhook must include an envelopeId"
+            },
+            {
+              "jsonPath": "$.docusignNormalizedStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "DocuSign webhook must include an envelope status"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Write the DocuSign status to the configured Jira signature status custom field: Sent, Delivered, or Signed.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10204\": \"{{jiraSignatureStatus}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:f2b3b4c4-8d5c-4a15-9db9-7c5be98ce154",
+      "flowVariables": [],
+      "name": "Update Jira Signature Status",
+      "id": "template:action:6963d4ec-1a2d-4814-9e23-a7fcd532615a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A matching Jira issue must exist"
+            },
+            {
+              "jsonPath": "$.jiraSignatureStatus",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Get Completion Property",
+      "description": "Check whether the completed envelope has already been processed, so signed PDFs and comments are not duplicated by webhook retries.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:2f3bbe88-591e-436d-9b98-8e3568508536",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-docusign-{{docusignEnvelopeId}}-completed",
+      "parentId": "template:action:6963d4ec-1a2d-4814-9e23-a7fcd532615a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.docusignNormalizedStatus",
+              "type": "DATA_CONDITION",
+              "value": "completed",
+              "operator": "EQUALS",
+              "description": "Only completed envelopes attach a PDF and transition Jira"
+            },
+            {
+              "jsonPath": "$._flow.issueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/pdf",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "signed-agreement-{{_flow.issueKey}}-{{docusignEnvelopeId}}.pdf",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the completed DocuSign envelope as one combined signed PDF.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-docusign"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.DOCUSIGN_BASE_URL}}/restapi/v2.1/accounts/{{_flow.DOCUSIGN_ACCOUNT_ID}}/envelopes/{{docusignEnvelopeId}}/documents/combined?certificate=true",
+      "parentId": "template:action:2f3bbe88-591e-436d-9b98-8e3568508536",
+      "name": "Download Signed PDF",
+      "id": "template:action:8531650c-efab-4e0d-a7e9-2e62fb634966",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only continue when the completion property does not already exist"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Attach the signed DocuSign PDF to the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "parentId": "template:action:8531650c-efab-4e0d-a7e9-2e62fb634966",
+      "name": "Attach Signed PDF to Jira",
+      "id": "template:action:9c2f4481-5bb1-4219-ad7b-54fb790ce3f1",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the required signed agreement comment to Jira.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Agreement signed by customer\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:9c2f4481-5bb1-4219-ad7b-54fb790ce3f1",
+      "flowVariables": [],
+      "name": "Comment Agreement Signed",
+      "id": "template:action:f910c7f3-2696-4a83-8d1f-3b85de067fc4",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Transition the Jira issue to Completed after the signed PDF and comment have been added.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.COMPLETED_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/transitions",
+      "parentId": "template:action:f910c7f3-2696-4a83-8d1f-3b85de067fc4",
+      "flowVariables": [],
+      "name": "Transition Jira to Completed",
+      "id": "template:action:54799ba2-bb9d-4b06-b96a-1e3fec01c7a3",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Completion Property",
+      "description": "Mark the DocuSign completion webhook as processed to avoid duplicate PDFs, comments, and transitions.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:844aa96f-e7fa-426e-8996-bd6b76a98812",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{docusignEnvelopeId}}\",\n  \"status\": \"completed\",\n  \"source\": \"docusign\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-docusign-{{docusignEnvelopeId}}-completed",
+      "parentId": "template:action:54799ba2-bb9d-4b06-b96a-1e3fec01c7a3",
+      "order": 800
+    }
+  ],
+  "description": "Receive DocuSign webhook events, update Jira signature status, attach completed agreements, and transition completed issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AGR",
+      "instruction": "Jira project key containing the agreement issues."
+    },
+    {
+      "name": "DOCUSIGN_BASE_URL",
+      "behavior": "SET",
+      "value": "https://demo.docusign.net",
+      "instruction": "DocuSign eSignature API host. Use the same value as the outgoing flow."
+    },
+    {
+      "name": "DOCUSIGN_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "DocuSign API Account ID GUID. Use the same value as the outgoing flow."
+    },
+    {
+      "name": "COMPLETED_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "31",
+      "instruction": "Jira workflow transition ID that moves the issue to Completed."
+    }
+  ],
+  "groupName": "DocuSign",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "DocuSign Incoming Status",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "mode": "custom",
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}"
+      }
+    }
+  },
+  "useStaticIP": false
+}

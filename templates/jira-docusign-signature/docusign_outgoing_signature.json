@@ -1,0 +1,265 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "jiraStatusChangedToSendForSignature",
+          "uuid": "00306f9b-fcb5-493b-9b56-f6d8ae197748",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst items = root?.changelog?.items || root?.payload?.changelog?.items || [];\nconst statusItem = Array.isArray(items) ? items.find((item) => String(item.field || '').toLowerCase() === 'status') : null;\nconst toStatus = statusItem?.toString || statusItem?.to || root?.issue?.fields?.status?.name || '';\nreturn toStatus === 'Send for Signature' ? 'true' : 'false';"
+        }
+      ],
+      "description": "Create and send a DocuSign envelope from the configured DocuSign template when a Jira issue moves to Send for Signature.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-docusign"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"status\": \"sent\",\n  \"templateId\": \"{{_flow.DOCUSIGN_TEMPLATE_ID}}\",\n  \"emailSubject\": \"Agreement for Jira issue {{issue.key}}\",\n  \"emailBlurb\": \"Please review and sign the agreement for Jira issue {{issue.key}}.\",\n  \"templateRoles\": [\n    {\n      \"email\": \"{{issue.fields.customfield_10201}}\",\n      \"name\": \"{{issue.fields.customfield_10202}}\",\n      \"roleName\": \"{{_flow.DOCUSIGN_SIGNER_ROLE_NAME}}\",\n      \"tabs\": {\n        \"textTabs\": [\n          {\n            \"tabLabel\": \"JiraIssueKey\",\n            \"value\": \"{{issue.key}}\"\n          },\n          {\n            \"tabLabel\": \"JiraSummary\",\n            \"value\": \"{{issue.fields.summary}}\"\n          }\n        ]\n      }\n    }\n  ],\n  \"customFields\": {\n    \"textCustomFields\": [\n      {\n        \"name\": \"jiraIssueKey\",\n        \"show\": \"false\",\n        \"value\": \"{{issue.key}}\"\n      },\n      {\n        \"name\": \"jiraBaseUrl\",\n        \"show\": \"false\",\n        \"value\": \"{{baseUrl}}\"\n      }\n    ]\n  },\n  \"eventNotification\": {\n    \"url\": \"{{_flow.DOCUSIGN_CONNECT_URL}}\",\n    \"loggingEnabled\": \"true\",\n    \"requireAcknowledgment\": \"true\",\n    \"useSoapInterface\": \"false\",\n    \"includeDocuments\": \"false\",\n    \"includeCertificateOfCompletion\": \"false\",\n    \"includeEnvelopeVoidReason\": \"true\",\n    \"includeTimeZone\": \"true\",\n    \"envelopeEvents\": [\n      {\n        \"envelopeEventStatusCode\": \"sent\"\n      },\n      {\n        \"envelopeEventStatusCode\": \"delivered\"\n      },\n      {\n        \"envelopeEventStatusCode\": \"completed\"\n      }\n    ],\n    \"eventData\": {\n      \"version\": \"restv2.1\",\n      \"format\": \"json\",\n      \"includeData\": [\n        \"custom_fields\",\n        \"recipients\"\n      ]\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.DOCUSIGN_BASE_URL}}/restapi/v2.1/accounts/{{_flow.DOCUSIGN_ACCOUNT_ID}}/envelopes",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "envelopeId",
+          "behavior": "SET",
+          "value": "$.response.data.envelopeId",
+          "instruction": ""
+        }
+      ],
+      "name": "Create DocuSign Envelope",
+      "id": "template:action:c671f1f7-97c8-406e-9b26-d1242b5040cb",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only send agreements from the configured Jira project"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS",
+              "description": "Only react to Jira issue updates"
+            },
+            {
+              "jsonPath": "$.jiraStatusChangedToSendForSignature",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "operator": "EQUALS",
+              "description": "Only send when the status becomes Send for Signature"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10203",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create an envelope when no envelopeId is stored on the Jira issue"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10201",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Customer signer email must be present"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10202",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Customer signer name must be present"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the DocuSign envelopeId and initial signature status back on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10203\": \"{{_flow.envelopeId}}\",\n    \"customfield_10204\": \"Sent\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:c671f1f7-97c8-406e-9b26-d1242b5040cb",
+      "flowVariables": [],
+      "name": "Store Envelope ID on Jira Issue",
+      "id": "template:action:6b26382d-a023-4171-afd9-60d41c6d7e93",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.envelopeId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "DocuSign must return an envelopeId"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add a Jira comment with the DocuSign envelopeId for traceability.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Agreement sent for signature. DocuSign envelopeId: {{_flow.envelopeId}}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:6b26382d-a023-4171-afd9-60d41c6d7e93",
+      "flowVariables": [],
+      "name": "Comment Envelope Sent",
+      "id": "template:action:c7e6997a-e796-4249-aa92-947bba525adc",
+      "order": 300
+    }
+  ],
+  "description": "Create a DocuSign envelope from a Jira issue and store the returned envelopeId on the issue",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "AGR",
+      "instruction": "Jira project key containing agreement issues. Only issues in this project are sent to DocuSign."
+    },
+    {
+      "name": "DOCUSIGN_BASE_URL",
+      "behavior": "SET",
+      "value": "https://demo.docusign.net",
+      "instruction": "DocuSign eSignature API host. Use https://demo.docusign.net for developer accounts; replace with the account base URI for production."
+    },
+    {
+      "name": "DOCUSIGN_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "DocuSign API Account ID GUID."
+    },
+    {
+      "name": "DOCUSIGN_TEMPLATE_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "DocuSign server template ID used to create the agreement envelope."
+    },
+    {
+      "name": "DOCUSIGN_SIGNER_ROLE_NAME",
+      "behavior": "SET",
+      "value": "Customer",
+      "instruction": "Role name in the DocuSign template for the customer signer."
+    },
+    {
+      "name": "DOCUSIGN_CONNECT_URL",
+      "behavior": "SET",
+      "value": "https://example.com/ihub/docusign-connect",
+      "instruction": "Paste the trigger URL from the DocuSign Incoming Status flow after it is created."
+    }
+  ],
+  "groupName": "DocuSign",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "DocuSign Outgoing Signature",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
