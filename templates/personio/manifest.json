@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "key": "personio",
+  "name": "Personio Employee Lifecycle",
+  "description": "Employee onboarding, offboarding, and mover templates for Personio, Jira Service Management, Jira work items, and Microsoft Entra",
+  "category": "Personio",
+  "flows": [
+    "personio_employee_onboarding.json",
+    "personio_employee_offboarding.json",
+    "personio_employee_mover.json"
+  ],
+  "icon": "personio.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "personio",
+    "hr",
+    "onboarding",
+    "offboarding",
+    "mover",
+    "jira-service-management",
+    "microsoft-entra"
+  ],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-personio-entra",
+      "name": "Microsoft Entra",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+          },
+          "grantType": "code",
+          "scope": "offline_access User.Read User.ReadWrite.All GroupMember.ReadWrite.All LicenseAssignment.ReadWrite.All",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": true,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

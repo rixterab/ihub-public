@@ -4,17 +4,10 @@
   "name": "Jira -> PandaDoc -> Jira Signature",
   "description": "Sends Jira agreements for PandaDoc signature and updates Jira from PandaDoc webhook status changes",
   "category": "PandaDoc",
-  "flows": [
-    "pandadoc_outgoing_signature.json",
-    "pandadoc_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["pandadoc_outgoing_signature.json", "pandadoc_incoming_status.json"],
+  "icon": "panda.png",
   "author": "Rixter AB",
-  "tags": [
-    "pandadoc",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["pandadoc", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {

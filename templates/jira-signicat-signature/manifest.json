@@ -4,17 +4,10 @@
   "name": "Jira -> Signicat -> Jira Signature",
   "description": "Sends Jira agreements for Signicat signature and updates Jira from Signicat webhook status changes",
   "category": "Signicat",
-  "flows": [
-    "signicat_outgoing_signature.json",
-    "signicat_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["signicat_outgoing_signature.json", "signicat_incoming_status.json"],
+  "icon": "signcat.png",
   "author": "Rixter AB",
-  "tags": [
-    "signicat",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["signicat", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {
