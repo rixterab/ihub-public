@@ -1,0 +1,608 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "XMLHttpRequest",
+          "key": "X-Requested-By"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a BMC Helix ITSM incident when a Jira issue without a linked BMC incident number is created.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-bmc-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"values\": {\n    \"First_Name\": \"{{_flow.BMC_FIRST_NAME}}\",\n    \"Last_Name\": \"{{_flow.BMC_LAST_NAME}}\",\n    \"Company\": \"{{_flow.BMC_COMPANY}}\",\n    \"Description\": \"{{{issue.fields.summary}}}\",\n    \"Detailed_Decription\": \"{{{adfToHTML issue.fields.description}}}\",\n    \"Impact\": \"{{_flow.BMC_IMPACT}}\",\n    \"Urgency\": \"{{_flow.BMC_URGENCY}}\",\n    \"Status\": \"{{_flow.BMC_CREATE_STATUS}}\",\n    \"Reported Source\": \"{{_flow.BMC_REPORTED_SOURCE}}\",\n    \"Service_Type\": \"{{_flow.BMC_SERVICE_TYPE}}\",\n    \"z1D_Action\": \"CREATE\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_CREATE_FORM}}?fields=values(Incident%20Number)",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "incidentNumber",
+          "behavior": "SET",
+          "value": "$['response']['data']['values']['Incident Number']",
+          "instruction": ""
+        },
+        {
+          "name": "incidentEntryUrl",
+          "behavior": "SET",
+          "value": "$['response']['data']['_links']['self'][0]['href']",
+          "instruction": ""
+        }
+      ],
+      "name": "Create BMC Incident",
+      "id": "template:action:a0de8afb-c205-44f7-8cf6-41e5f86f0834",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Check if a BMC incident number already exists on the Jira issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create BMC incidents for Jira issue created events"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Store the created BMC incident number on the Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.incidentNumber}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:a0de8afb-c205-44f7-8cf6-41e5f86f0834",
+      "flowVariables": [],
+      "name": "Store BMC Incident Number on Jira Issue",
+      "id": "template:action:427d3d94-2c7b-436a-ba86-1f8afe8ae3d2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only update the Jira issue after a create event"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "XMLHttpRequest",
+          "key": "X-Requested-By"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the Jira comment to the linked BMC incident as a work log entry.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-bmc-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"values\": {\n    \"Submitter\": \"{{_flow.BMC_WORK_LOG_SUBMITTER}}\",\n    \"Short Description\": \"Synced from Jira issue {{issue.key}}\",\n    \"Description\": \"Synced from Jira issue {{issue.key}} (status: {{issue.fields.status.name}})\",\n    \"Detailed Description\": \"{{{adfToHTML payload.comment.body}}}\",\n    \"Work Log Submitter\": \"{{_flow.BMC_WORK_LOG_SUBMITTER}}\",\n    \"Incident Number\": \"{{issue.fields.customfield_10153}}\",\n    \"Work Log Type\": \"{{_flow.BMC_WORK_LOG_TYPE}}\",\n    \"View Access\": \"{{_flow.BMC_WORK_LOG_VIEW_ACCESS}}\"\n  },\n  \"mergeOptions\": {\n      \"ignorePatterns\": false,\n      \"ignoreRequired\": false,\n      \"workflowEnabled\": false,\n      \"associationsEnabled\": false,\n      \"mergeType\": \"DUP_NEW_ID\",\n      \"multimatchOption\": 1\n  },\n  \"qualification\": \"'Incident Number' = \\\"{{issue.fields.customfield_10153}}\\\"\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.BMC_URL}}/api/arsys/v1/mergeEntry/{{_flow.BMC_WORK_LOG_FORM}}?fields=values(Request%20ID)",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "incidentNumber",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        },
+        {
+          "name": "workLogEntryId",
+          "behavior": "SET",
+          "value": "$['response']['data']['values']['Request ID']",
+          "instruction": ""
+        }
+      ],
+      "name": "Comment BMC Incident",
+      "id": "template:action:9729271c-218d-4b00-ac79-1381ec68570d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "User shall not be iHub"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Outgoing Comment ID",
+      "description": "Mark the Jira comment as synced to BMC to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:99065213-ae1a-4982-8e43-8d3d03bde00a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"jira\"\n}",
+      "parentId": "template:action:9729271c-218d-4b00-ac79-1381ec68570d",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{comment.id}}",
+      "order": 400
+    },
+    {
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "XMLHttpRequest",
+          "key": "X-Requested-By"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "description": "Update the linked BMC incident when the Jira issue is updated.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-bmc-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"values\": {\n    \"Description\": \"{{{issue.fields.summary}}}\",\n    \"Detailed_Decription\": \"{{{adfToHTML issue.fields.description}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_UPDATE_FORM}}/{{issue.fields.customfield_10153}}|{{issue.fields.customfield_10153}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "incidentNumber",
+          "behavior": "SET",
+          "value": "$.issue.fields.customfield_10153",
+          "instruction": ""
+        }
+      ],
+      "name": "Update BMC Incident",
+      "id": "template:action:0c76a7b8-bdc3-4d8d-abc7-6a702ee14217",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "XMLHttpRequest",
+          "key": "X-Requested-By"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a BMC work log entry with the Jira attachment on the linked incident.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-bmc-authorization"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"entry\": {\n    \"values\": {\n      \"Submitter\": \"{{_flow.BMC_WORK_LOG_SUBMITTER}}\",\n      \"Short Description\": \"Synced attachment from Jira issue {{issue.key}}\",\n      \"Description\": \"Synced attachment from Jira issue {{issue.key}}: {{filename}}\",\n      \"Detailed Description\": \"Synced attachment from Jira issue {{issue.key}}: {{filename}}\",\n      \"Work Log Submitter\": \"{{_flow.BMC_WORK_LOG_SUBMITTER}}\",\n      \"Incident Number\": \"{{issue.fields.customfield_10153}}\",\n      \"Work Log Type\": \"{{_flow.BMC_WORK_LOG_TYPE}}\",\n      \"View Access\": \"{{_flow.BMC_WORK_LOG_VIEW_ACCESS}}\",\n      \"{{_flow.BMC_WORK_LOG_ATTACHMENT_FIELD}}\": \"{{filename}}\"\n    },\n    \"mergeOptions\": {\n          \"ignorePatterns\": false,\n          \"ignoreRequired\": false,\n          \"workflowEnabled\": false,\n          \"associationsEnabled\": false,\n          \"mergeType\": \"DUP_NEW_ID\",\n          \"multimatchOption\": 1\n    },\n    \"qualification\": \"'Incident Number' = \\\"{{issue.fields.customfield_10153}}\\\"\"\n  },\n  \"attach-{{_flow.BMC_WORK_LOG_ATTACHMENT_FIELD}}\": \"{{attachments.unsentFile}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "",
+      "enabled": true,
+      "url": "{{_flow.BMC_URL}}/api/arsys/v1/mergeEntry/{{_flow.BMC_WORK_LOG_FORM}}?fields=values(Request%20ID)",
+      "iterator": "$.payload.issue.fields.attachment",
+      "flowVariables": [
+        {
+          "name": "attachmentWorkLogId",
+          "behavior": "SET",
+          "value": "$['response']['data']['values']['Request ID']",
+          "instruction": ""
+        }
+      ],
+      "name": "Upload Attachment to BMC Incident",
+      "id": "template:action:6b52b2c9-8a89-41ee-a6fb-81d5005a6fbf",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only upload attachments when the Jira issue has a BMC incident number"
+            },
+            {
+              "jsonPath": "$.payload.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Block attachments added by the iHub user"
+            }
+          ]
+        }
+      ],
+      "order": 600,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store BMC Attachment ID",
+      "description": "Store the BMC work log entry id on the Jira issue to prevent sync loops.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:86521914-3309-4b9e-be83-9430d21aa271",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{_flow.attachmentWorkLogId}}\",\n  \"status\": \"synced\",\n  \"source\": \"bmc\"\n}",
+      "parentId": "template:action:6b52b2c9-8a89-41ee-a6fb-81d5005a6fbf",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{_flow.attachmentWorkLogId}}",
+      "order": 700,
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.attachmentWorkLogId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only store the sync marker when BMC returns a work log entry id"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "description": "Sync Jira issues to BMC Helix ITSM incidents",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "BMC_URL",
+      "behavior": "SET",
+      "value": "https://your-company-restapi.onbmc.com",
+      "instruction": "BMC Helix ITSM / AR System REST API base URL, for example https://acme-restapi.onbmc.com or https://arserver.example.com:8008"
+    },
+    {
+      "name": "BMC_INCIDENT_CREATE_FORM",
+      "behavior": "SET",
+      "value": "HPD:IncidentInterface_Create",
+      "instruction": "BMC incident interface form used to create incidents"
+    },
+    {
+      "name": "BMC_INCIDENT_UPDATE_FORM",
+      "behavior": "SET",
+      "value": "HPD:IncidentInterface",
+      "instruction": "BMC incident interface form used to update incidents"
+    },
+    {
+      "name": "BMC_WORK_LOG_FORM",
+      "behavior": "SET",
+      "value": "HPD:WorkLog",
+      "instruction": "BMC work log form used for incident work information and attachments"
+    },
+    {
+      "name": "BMC_WORK_LOG_ATTACHMENT_FIELD",
+      "behavior": "SET",
+      "value": "Attachment",
+      "instruction": "Attachment field on the BMC work log form used for Jira attachment uploads"
+    },
+    {
+      "name": "BMC_FIRST_NAME",
+      "behavior": "SET",
+      "value": "Allen",
+      "instruction": "BMC requester first name used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_LAST_NAME",
+      "behavior": "SET",
+      "value": "Allbrook",
+      "instruction": "BMC requester last name used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_COMPANY",
+      "behavior": "SET",
+      "value": "Calbro Services",
+      "instruction": "BMC company value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_IMPACT",
+      "behavior": "SET",
+      "value": "3-Moderate/Limited",
+      "instruction": "BMC Impact value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_URGENCY",
+      "behavior": "SET",
+      "value": "3-Medium",
+      "instruction": "BMC Urgency value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_CREATE_STATUS",
+      "behavior": "SET",
+      "value": "Assigned",
+      "instruction": "BMC Status value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_REPORTED_SOURCE",
+      "behavior": "SET",
+      "value": "Direct Input",
+      "instruction": "BMC Reported Source value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_SERVICE_TYPE",
+      "behavior": "SET",
+      "value": "User Service Restoration",
+      "instruction": "BMC Service_Type value used on incidents created from Jira"
+    },
+    {
+      "name": "BMC_WORK_LOG_SUBMITTER",
+      "behavior": "SET",
+      "value": "Allen",
+      "instruction": "BMC submitter/login value used for work log entries created from Jira comments and attachments"
+    },
+    {
+      "name": "BMC_WORK_LOG_TYPE",
+      "behavior": "SET",
+      "value": "General Information",
+      "instruction": "BMC Work Log Type value used for synced Jira comments and attachments"
+    },
+    {
+      "name": "BMC_WORK_LOG_VIEW_ACCESS",
+      "behavior": "SET",
+      "value": "Internal",
+      "instruction": "BMC View Access value used for synced Jira comments and attachments"
+    }
+  ],
+  "groupName": "BMC",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "BMC Incident Outgoing Sync",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

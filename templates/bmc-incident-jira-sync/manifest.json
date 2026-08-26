@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "bmc-incident-jira-sync",
+  "name": "Sync BMC Incident <-> Jira Issue",
+  "description": "Two way sync for BMC Helix ITSM incidents and Jira issues",
+  "category": "BMC",
+  "flows": [
+    "bmc_incident_incoming_sync.json",
+    "bmc_incident_outgoing_sync.json"
+  ],
+  "icon": "bmc.svg",
+  "author": "Rixter AB",
+  "tags": ["bmc", "helix", "itsm", "incident", "sync", "work-items"],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-bmc-authorization",
+      "name": "BMC Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

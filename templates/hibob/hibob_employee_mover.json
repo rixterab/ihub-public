@@ -46,11 +46,6 @@
           "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const direct=read('displayName','display_name','fullName','full_name','name','employee.displayName','employee.display_name','employee.fullName','employee.full_name','data.employee.displayName','data.employee.full_name','worker.displayName','worker.descriptor','person.displayName','person.fullName','profile.displayName','about.displayName');if(direct)return direct;const name=[read('firstName','first_name','givenName','given_name','employee.firstName','employee.first_name','data.employee.firstName','data.employee.first_name','worker.firstName','worker.first_name','person.firstName','person.first_name','about.firstName'),read('lastName','last_name','surname','familyName','family_name','employee.lastName','employee.last_name','data.employee.lastName','data.employee.last_name','worker.lastName','worker.last_name','person.lastName','person.last_name','about.surname')].filter(Boolean).join(' ');return name||read('employeeId','employee_id','workerId','worker_id','personIdExternal','userId','employee.id','data.employee.id','worker.id','id')||'Employee';"
         },
         {
-          "name": "employeeEmail",
-          "uuid": "3a6e740a-5679-5f7c-b51c-e7134e879aaf",
-          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"email\",\"mail\",\"workEmail\",\"work_email\",\"businessEmail\",\"business_email\",\"primaryWorkEmail\",\"primary_work_email\",\"userPrincipalName\",\"user_principal_name\",\"employee.email\",\"employee.mail\",\"employee.workEmail\",\"employee.work_email\",\"employee.userPrincipalName\",\"data.employee.email\",\"data.employee.workEmail\",\"data.employee.work_email\",\"data.employee.userPrincipalName\",\"worker.email\",\"worker.primaryWorkEmail\",\"worker.primary_work_email\",\"work.email\",\"contact.email\",\"attributes.email.value\",\"attributes.work_email.value\",\"payload.employee.email\",\"payload.employee.work_email\");"
-        },
-        {
           "name": "effectiveDate",
           "uuid": "306e63e2-ca4a-5588-8102-de458d2c6637",
           "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"effectiveDate\",\"effective_date\",\"changeDate\",\"change_date\",\"event.effectiveDate\",\"event.effective_date\",\"changes.effectiveDate\",\"changes.effective_date\",\"employee.effectiveDate\",\"data.effectiveDate\",\"payload.effectiveDate\",\"startDate\",\"start_date\");"
@@ -59,11 +54,6 @@
           "name": "employeeManagerId",
           "uuid": "21c23f73-c68b-5104-9d09-16fb50769d24",
           "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"managerId\",\"manager_id\",\"supervisorId\",\"supervisor_id\",\"employee.managerId\",\"employee.manager_id\",\"data.employee.managerId\",\"data.employee.manager_id\",\"worker.managerId\",\"worker.manager_id\",\"manager.id\",\"manager.employeeId\",\"manager.employee_id\",\"manager.userId\",\"manager.user_id\",\"manager.email\",\"jobInfo.managerId\",\"employment.managerId\",\"reportsTo.id\",\"reports_to.id\",\"attributes.manager.value\");"
-        },
-        {
-          "name": "managerEntraUserId",
-          "uuid": "fab4e39c-7e58-5a06-8384-11de7c0fc527",
-          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"managerEntraUserId\",\"manager_entra_user_id\",\"managerUserPrincipalName\",\"manager_user_principal_name\",\"manager.upn\",\"manager.userPrincipalName\",\"manager.email\",\"entra.managerUserId\",\"entra.manager_user_id\",\"entra.managerUpn\",\"data.managerEntraUserId\");"
         },
         {
           "name": "employeeDepartment",
@@ -94,16 +84,6 @@
           "name": "previousManagerId",
           "uuid": "cd815b44-284c-58f0-95f6-281ed54accb2",
           "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"previousManagerId\",\"previous_manager_id\",\"oldManagerId\",\"old_manager_id\",\"previous.managerId\",\"previous.manager_id\",\"old.managerId\",\"from.managerId\",\"changes.manager.previous\",\"changes.managerId.previous\",\"changes.managerId.old\",\"previousValues.managerId\",\"data.previous.managerId\",\"payload.previous.managerId\");"
-        },
-        {
-          "name": "groupIdsToAdd",
-          "uuid": "6d9d679a-9f9b-565a-8fd5-f5e2ea6688c0",
-          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"groupsToAdd\",\"groupIdsToAdd\",\"entra.groupsToAdd\",\"entra.groupIdsToAdd\",\"access.groupsToAdd\",\"access.groupIdsToAdd\",\"employee.groupsToAdd\",\"data.groupsToAdd\",\"data.groupIdsToAdd\",\"payload.groupsToAdd\",\"payload.groupIdsToAdd\"),read(\"_flow.ENTRA_GROUP_IDS_TO_ADD\",\"flow.ENTRA_GROUP_IDS_TO_ADD\",\"flowVariables.ENTRA_GROUP_IDS_TO_ADD\",\"variables.ENTRA_GROUP_IDS_TO_ADD\",\"ENTRA_GROUP_IDS_TO_ADD\",\"_flow.ENTRA_ADDITIONAL_GROUP_IDS\",\"flow.ENTRA_ADDITIONAL_GROUP_IDS\",\"flowVariables.ENTRA_ADDITIONAL_GROUP_IDS\",\"variables.ENTRA_ADDITIONAL_GROUP_IDS\",\"ENTRA_ADDITIONAL_GROUP_IDS\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
-        },
-        {
-          "name": "groupIdsToRemove",
-          "uuid": "0fb473ed-bfc4-5b54-83aa-7f8fe2e97b00",
-          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"groupsToRemove\",\"groupIdsToRemove\",\"entra.groupsToRemove\",\"entra.groupIdsToRemove\",\"access.groupsToRemove\",\"access.groupIdsToRemove\",\"employee.groupsToRemove\",\"employee.groupIds\",\"data.groupsToRemove\",\"data.groupIdsToRemove\",\"payload.groupsToRemove\",\"payload.groupIdsToRemove\"),read(\"_flow.ENTRA_GROUP_IDS_TO_REMOVE\",\"flow.ENTRA_GROUP_IDS_TO_REMOVE\",\"flowVariables.ENTRA_GROUP_IDS_TO_REMOVE\",\"variables.ENTRA_GROUP_IDS_TO_REMOVE\",\"ENTRA_GROUP_IDS_TO_REMOVE\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
         }
       ],
       "credentialsReference": {
@@ -145,319 +125,6 @@
         }
       ],
       "order": 100
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        },
-        {
-          "value": "keep-alive",
-          "key": "Connection"
-        },
-        {
-          "value": "gzip, deflate, br",
-          "key": "Accept-Encoding"
-        },
-        {
-          "value": "IntegrationsHub/Cloud",
-          "key": "User-Agent"
-        },
-        {
-          "value": "no-cache",
-          "key": "Cache-Control"
-        }
-      ],
-      "method": "GET",
-      "description": "Resolve the Microsoft Entra user so mover group membership actions can use the object ID.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-hibob-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}?$select=id,displayName,userPrincipalName,accountEnabled",
-      "parentId": "template:action:b5a9f235-16d0-5799-a058-9628b3b444b0",
-      "flowVariables": [
-        {
-          "name": "entraUserId",
-          "behavior": "SET",
-          "value": "$.response.data.id",
-          "instruction": "Microsoft Entra object ID for the moved user."
-        },
-        {
-          "name": "entraUserPrincipalName",
-          "behavior": "SET",
-          "value": "$.response.data.userPrincipalName",
-          "instruction": "Microsoft Entra UPN for the moved user."
-        }
-      ],
-      "name": "Get Entra User",
-      "id": "template:action:60a2b899-1832-5557-bd7e-9b4b0407d1c9",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            }
-          ]
-        }
-      ],
-      "order": 200
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        },
-        {
-          "value": "keep-alive",
-          "key": "Connection"
-        },
-        {
-          "value": "gzip, deflate, br",
-          "key": "Accept-Encoding"
-        },
-        {
-          "value": "IntegrationsHub/Cloud",
-          "key": "User-Agent"
-        },
-        {
-          "value": "no-cache",
-          "key": "Cache-Control"
-        }
-      ],
-      "method": "PATCH",
-      "description": "Patch selected Microsoft Entra profile fields for the mover event.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-hibob-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"displayName\":\"{{employeeDisplayName}}\",\"jobTitle\":\"{{employeeJobTitle}}\",\"department\":\"{{employeeDepartment}}\",\"officeLocation\":\"{{employeeLocation}}\"}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users/{{_flow.entraUserId}}",
-      "parentId": "template:action:60a2b899-1832-5557-bd7e-9b4b0407d1c9",
-      "flowVariables": [],
-      "name": "Update Entra User Profile",
-      "id": "template:action:0aba6911-a7d6-5f6b-b5d3-d6d370e5d520",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            }
-          ]
-        }
-      ],
-      "order": 300
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        },
-        {
-          "value": "keep-alive",
-          "key": "Connection"
-        },
-        {
-          "value": "gzip, deflate, br",
-          "key": "Accept-Encoding"
-        },
-        {
-          "value": "IntegrationsHub/Cloud",
-          "key": "User-Agent"
-        },
-        {
-          "value": "no-cache",
-          "key": "Cache-Control"
-        }
-      ],
-      "method": "PUT",
-      "description": "Update the Microsoft Entra manager relationship when the event supplies a manager Entra object ID or UPN.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-hibob-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/users/{{managerEntraUserId}}\"}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users/{{_flow.entraUserId}}/manager/$ref",
-      "parentId": "template:action:60a2b899-1832-5557-bd7e-9b4b0407d1c9",
-      "flowVariables": [],
-      "name": "Update Entra Manager",
-      "id": "template:action:b405c3a3-e613-5877-9245-8162dbe8b4ce",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            },
-            {
-              "jsonPath": "$.managerEntraUserId",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            }
-          ]
-        }
-      ],
-      "order": 400
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        },
-        {
-          "value": "keep-alive",
-          "key": "Connection"
-        },
-        {
-          "value": "gzip, deflate, br",
-          "key": "Accept-Encoding"
-        },
-        {
-          "value": "IntegrationsHub/Cloud",
-          "key": "User-Agent"
-        },
-        {
-          "value": "no-cache",
-          "key": "Cache-Control"
-        }
-      ],
-      "method": "DELETE",
-      "description": "Remove Entra group memberships that no longer apply after the move.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-hibob-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/groups/{{{self}}}/members/{{_flow.entraUserId}}/$ref",
-      "parentId": "template:action:60a2b899-1832-5557-bd7e-9b4b0407d1c9",
-      "flowVariables": [],
-      "name": "Remove Old Entra Groups",
-      "id": "template:action:81c285da-03c4-5d34-baa3-bf53620ea9ff",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            },
-            {
-              "jsonPath": "$.groupIdsToRemove",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
-            }
-          ]
-        }
-      ],
-      "iterator": "$.groupIdsToRemove",
-      "order": 500
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        },
-        {
-          "value": "keep-alive",
-          "key": "Connection"
-        },
-        {
-          "value": "gzip, deflate, br",
-          "key": "Accept-Encoding"
-        },
-        {
-          "value": "IntegrationsHub/Cloud",
-          "key": "User-Agent"
-        },
-        {
-          "value": "no-cache",
-          "key": "Cache-Control"
-        }
-      ],
-      "method": "POST",
-      "description": "Add Entra group memberships that apply after the move.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-hibob-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/{{_flow.entraUserId}}\"}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/groups/{{{self}}}/members/$ref",
-      "parentId": "template:action:60a2b899-1832-5557-bd7e-9b4b0407d1c9",
-      "flowVariables": [],
-      "name": "Add New Entra Groups",
-      "id": "template:action:f74e930e-91c5-5f08-870b-dc24fcbb7c9a",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            },
-            {
-              "jsonPath": "$.groupIdsToAdd",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
-            }
-          ]
-        }
-      ],
-      "iterator": "$.groupIdsToAdd",
-      "order": 600
     },
     {
       "headers": [
@@ -589,7 +256,7 @@
       "order": 900
     }
   ],
-  "description": "Create a JSM mover request, patch Entra profile and manager data, adjust group memberships, and create access/hardware/software tasks from a HiBob department, manager, or location change.",
+  "description": "Create a JSM mover request and access/hardware/software review tasks from a HiBob department, manager, or location change.",
   "enabled": false,
   "flowVariables": [
     {
@@ -627,18 +294,6 @@
       "behavior": "SET",
       "value": "Sub-task",
       "instruction": "Issue type used for mover tasks. Use Task instead if the project does not support subtasks."
-    },
-    {
-      "name": "ENTRA_GROUP_IDS_TO_ADD",
-      "behavior": "SET",
-      "value": "[]",
-      "instruction": "Optional JSON array or comma-separated list of Entra group object IDs to add during mover changes."
-    },
-    {
-      "name": "ENTRA_GROUP_IDS_TO_REMOVE",
-      "behavior": "SET",
-      "value": "[]",
-      "instruction": "Optional JSON array or comma-separated list of Entra group object IDs to remove during mover changes."
     }
   ],
   "groupName": "HiBob",

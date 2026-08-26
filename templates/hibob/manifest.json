@@ -2,33 +2,22 @@
   "schemaVersion": 1,
   "key": "hibob",
   "name": "HiBob Employee Lifecycle",
-  "description": "Employee onboarding, offboarding, and mover templates for HiBob, Jira Service Management, Jira work items, and Microsoft Entra",
+  "description": "Employee onboarding, offboarding, and mover templates for HiBob, Jira Service Management, and Jira work items",
   "category": "HiBob",
-  "flows": ["hibob_employee_onboarding.json", "hibob_employee_offboarding.json", "hibob_employee_mover.json"],
+  "flows": [
+    "hibob_employee_onboarding.json",
+    "hibob_employee_offboarding.json",
+    "hibob_employee_mover.json"
+  ],
   "icon": "hibob.png",
   "author": "Rixter AB",
-  "tags": ["hibob", "hr", "onboarding", "offboarding", "mover", "jira-service-management", "microsoft-entra"],
-  "createdAt": "2026-08-26",
-  "credentialDefinitions": [
-    {
-      "key": "oauth2-hibob-entra",
-      "name": "Microsoft Entra",
-      "type": "OAUTH2",
-      "data": {
-        "config": {
-          "url": {
-            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
-            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
-          },
-          "grantType": "code",
-          "scope": "offline_access User.Read User.ReadWrite.All GroupMember.ReadWrite.All LicenseAssignment.ReadWrite.All",
-          "headerPrefix": "Bearer",
-          "includeState": true,
-          "includeScopeInAccessTokenReq": true,
-          "sendParamsAs": "x-www-form-urlencoded",
-          "urlEncode": false
-        }
-      }
-    }
-  ]
+  "tags": [
+    "hibob",
+    "hr",
+    "onboarding",
+    "offboarding",
+    "mover",
+    "jira-service-management"
+  ],
+  "createdAt": "2026-08-26"
 }

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "key": "sap-successfactors",
   "name": "SAP SuccessFactors",
-  "description": "Employee lifecycle templates for SuccessFactors, Jira Service Management, Jira Assets, and Microsoft Entra",
+  "description": "Employee lifecycle templates for SuccessFactors, Jira Service Management, and Jira Assets",
   "category": "SAP SuccessFactors",
   "flows": [
     "successfactors_employee_created.json",
@@ -17,8 +17,7 @@
     "successfactors",
     "hr",
     "onboarding",
-    "jira-assets",
-    "microsoft-entra"
+    "jira-assets"
   ],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
@@ -28,26 +27,6 @@
       "type": "BASIC_AUTH",
       "data": {
         "username": "integration@company"
-      }
-    },
-    {
-      "key": "oauth2-sap-successfactors-entra",
-      "name": "Microsoft Entra",
-      "type": "OAUTH2",
-      "data": {
-        "config": {
-          "url": {
-            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
-            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
-          },
-          "grantType": "code",
-          "scope": "offline_access User.Read User.ReadWrite.All Group.ReadWrite.All",
-          "headerPrefix": "Bearer",
-          "includeState": true,
-          "includeScopeInAccessTokenReq": true,
-          "sendParamsAs": "x-www-form-urlencoded",
-          "urlEncode": false
-        }
       }
     },
     {

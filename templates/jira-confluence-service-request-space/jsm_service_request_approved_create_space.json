@@ -1,0 +1,376 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Fetch the approved service request with its rendered description, reporter and project.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=summary,description,status,issuetype,reporter,project,customfield_10161&expand=renderedFields",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "requestSummary",
+          "behavior": "SET",
+          "value": "$.response.data.fields.summary",
+          "instruction": ""
+        },
+        {
+          "name": "requestDescriptionHtml",
+          "behavior": "SET",
+          "value": "$.response.data.renderedFields.description",
+          "instruction": ""
+        },
+        {
+          "name": "requesterDisplayName",
+          "behavior": "SET",
+          "value": "$.response.data.fields.reporter.displayName",
+          "instruction": ""
+        },
+        {
+          "name": "requesterEmail",
+          "behavior": "SET",
+          "value": "$.response.data.fields.reporter.emailAddress",
+          "instruction": ""
+        },
+        {
+          "name": "requestProjectKey",
+          "behavior": "SET",
+          "value": "$.response.data.fields.project.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Fetch Approved Service Request",
+      "id": "template:action:b2c3d4e5-1111-4a2b-9c3d-e4f5a6b7c8d9",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS",
+              "description": "Only run on Jira issue updated events"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "Service Request",
+              "operator": "EQUALS",
+              "description": "Only run for the service request issue type"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "Approved",
+              "operator": "EQUALS",
+              "description": "Only run once the service request has been approved"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10161",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Loop guard / dedupe: only run when no Confluence space has been linked yet"
+            },
+            {
+              "jsonPath": "$.user.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip updates made by the iHub integration user, including the space link write back"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a new Confluence space for the approved service request.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-confluence"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"key\": \"{{spaceKey}}\",\n  \"name\": \"{{issue.key}} - {{requestSummary}}\",\n  \"description\": {\n    \"plain\": {\n      \"value\": \"Space created by iHub for approved service request {{issue.key}}: {{requestSummary}}. Requested by {{requesterDisplayName}}.\",\n      \"representation\": \"plain\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.CONFLUENCE_URL}}/rest/api/space",
+      "parentId": "template:action:b2c3d4e5-1111-4a2b-9c3d-e4f5a6b7c8d9",
+      "scriptedVariables": [
+        {
+          "name": "spaceKey",
+          "uuid": "1793002001001",
+          "script": "const prefix = \"{{_flow.SPACE_KEY_PREFIX}}\";\nconst issueKey = \"{{issue.key}}\";\nconst cleaned = (prefix + issueKey).toUpperCase().replace(/[^A-Z0-9]/g, '');\nreturn cleaned.slice(0, 255);"
+        }
+      ],
+      "flowVariables": [
+        {
+          "name": "spaceId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        },
+        {
+          "name": "spaceKeyCreated",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        },
+        {
+          "name": "spaceBase",
+          "behavior": "SET",
+          "value": "$.response.data._links.base",
+          "instruction": ""
+        },
+        {
+          "name": "spaceWebui",
+          "behavior": "SET",
+          "value": "$.response.data._links.webui",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Confluence Space",
+      "id": "template:action:b2c3d4e5-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Write the new Confluence space URL back into the service request's link field. This also stops the flow from creating a second space on the next update.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10161\": \"{{_flow.spaceBase}}{{_flow.spaceWebui}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:b2c3d4e5-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "flowVariables": [],
+      "name": "Store Space Link on Service Request",
+      "id": "template:action:b2c3d4e5-3333-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira remote link so the new Confluence space shows up as a linked item on the service request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"object\": {\n    \"url\": \"{{_flow.spaceBase}}{{_flow.spaceWebui}}\",\n    \"title\": \"Confluence Space: {{spaceKeyCreated}}\",\n    \"icon\": { \"url16x16\": \"https://wac-cdn.atlassian.com/dam/jcr:e9c3c19e-6fc4-4e18-964d-1cd7b6c4a06d/Confluence-icon-blue.svg\" }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink",
+      "parentId": "template:action:b2c3d4e5-3333-4a2b-9c3d-e4f5a6b7c8d9",
+      "flowVariables": [],
+      "name": "Add Remote Link to Confluence Space",
+      "id": "template:action:b2c3d4e5-4444-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 350
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Let the requester know the space is ready by commenting on the service request with the Confluence space link.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          { \"type\": \"text\", \"text\": \"Confluence space \" },\n          { \"type\": \"text\", \"text\": \"{{spaceKeyCreated}}\", \"marks\": [{ \"type\": \"strong\" }] },\n          { \"type\": \"text\", \"text\": \" has been created for this request: \" },\n          { \"type\": \"text\", \"text\": \"{{_flow.spaceBase}}{{_flow.spaceWebui}}\", \"marks\": [{ \"type\": \"link\", \"attrs\": { \"href\": \"{{_flow.spaceBase}}{{_flow.spaceWebui}}\" } }] }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:b2c3d4e5-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "flowVariables": [],
+      "name": "Comment Confluence Space Link on Service Request",
+      "id": "template:action:b2c3d4e5-5555-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 400
+    }
+  ],
+  "description": "On service request approval in Jira Service Management, create a dedicated Confluence space and link it back to the request.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SERVICE_REQUEST_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Service Request",
+      "instruction": "Jira issue type name used for service requests. The same value is hard coded in the Fetch Approved Service Request action condition and must be replaced there too"
+    },
+    {
+      "name": "APPROVED_STATUS_NAME",
+      "behavior": "SET",
+      "value": "Approved",
+      "instruction": "Jira status name that marks the service request as approved. The same value is hard coded in the Fetch Approved Service Request action condition and must be replaced there too"
+    },
+    {
+      "name": "IHUB_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance. Loop prevention: updates authored by this account, including the space link write back, are skipped. The same value is hard coded in the Fetch Approved Service Request action condition and must be replaced there too"
+    },
+    {
+      "name": "CONFLUENCE_URL",
+      "behavior": "SET",
+      "value": "https://your-company.atlassian.net/wiki",
+      "instruction": "Base URL of the Confluence Cloud site that should receive the new space"
+    },
+    {
+      "name": "SPACE_KEY_PREFIX",
+      "behavior": "SET",
+      "value": "SR",
+      "instruction": "Optional prefix added before the issue key to build the Confluence space key, for example SR + PROJ-123 becomes SRPROJ123. Leave empty to use the issue key alone. Confluence space keys only allow letters and numbers"
+    }
+  ],
+  "groupName": "Jira",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "JSM Service Request Approved to Confluence Space",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

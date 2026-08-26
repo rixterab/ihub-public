@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-confluence-pir",
+  "name": "JSM Incident to Confluence PIR",
+  "description": "Create a Confluence post-incident report from a resolved Jira Service Management major incident and link it back to the issue",
+  "category": "Jira",
+  "flows": [
+    "jsm_incident_to_confluence_pir.json"
+  ],
+  "icon": "atlassian-jira-icon.png",
+  "author": "Rixter AB",
+  "tags": ["jira", "jsm", "confluence", "incident", "post-incident-report"],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-confluence",
+      "name": "Confluence",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "integration@your-company.com"
+      }
+    }
+  ]
+}

@@ -30,11 +30,6 @@
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('displayName','employee.displayName','userNav.displayName','person.displayName');if(direct)return direct;return [read('firstName','givenName','employee.firstName'),read('lastName','surname','employee.lastName')].filter(Boolean).join(' ')||read('employeeId','personIdExternal','userId')||'Employee';"
         },
         {
-          "name": "employeeEmail",
-          "uuid": "242c1e30-ac2b-4a47-b0e2-632fef7a2517",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('email','mail','userPrincipalName','employee.email','employee.mail','userNav.email','userNav.userPrincipalName');"
-        },
-        {
           "name": "employeeEndDate",
           "uuid": "7687d6f6-7a7a-4647-ab95-aaef7557bca2",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('endDate','terminationDate','lastDateWorked','employment.endDate','employee.endDate','termination.effectiveDate');"
@@ -91,46 +86,6 @@
           "key": "Content-Type"
         }
       ],
-      "method": "PATCH",
-      "description": "Disable the linked Microsoft Entra account.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-sap-successfactors-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"accountEnabled\":false}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}",
-      "parentId": "template:action:946485fa-afd5-48c4-a783-6730dffe942e",
-      "flowVariables": [],
-      "name": "Disable Entra User",
-      "id": "template:action:be98f172-6908-4064-9b57-9415e6cc7dbe",
-      "conditions": [
-        {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.employeeEmail",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
-            }
-          ]
-        }
-      ],
-      "order": 200
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        }
-      ],
       "method": "POST",
       "description": "Create the hardware recovery task under the offboarding request.",
       "credentialsReference": {
@@ -175,7 +130,7 @@
       "order": 400
     }
   ],
-  "description": "Create a JSM offboarding request, disable Entra access, and open recovery/revocation tasks from a SuccessFactors termination event.",
+  "description": "Create a JSM offboarding request and open recovery/revocation tasks from a SuccessFactors termination event.",
   "enabled": false,
   "flowVariables": [
     {

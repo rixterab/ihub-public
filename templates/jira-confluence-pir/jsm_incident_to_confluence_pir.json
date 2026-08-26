@@ -1,0 +1,458 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Fetch the resolved incident with rendered (HTML) description and key fields.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=summary,description,priority,status,assignee,reporter,issuetype,created,resolutiondate,customfield_10160&expand=renderedFields",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "incidentSummary",
+          "behavior": "SET",
+          "value": "$.response.data.fields.summary",
+          "instruction": ""
+        },
+        {
+          "name": "incidentDescriptionHtml",
+          "behavior": "SET",
+          "value": "$.response.data.renderedFields.description",
+          "instruction": ""
+        },
+        {
+          "name": "incidentPriority",
+          "behavior": "SET",
+          "value": "$.response.data.fields.priority.name",
+          "instruction": ""
+        },
+        {
+          "name": "incidentAssignee",
+          "behavior": "SET",
+          "value": "$.response.data.fields.assignee.displayName",
+          "instruction": ""
+        },
+        {
+          "name": "incidentReporter",
+          "behavior": "SET",
+          "value": "$.response.data.fields.reporter.displayName",
+          "instruction": ""
+        },
+        {
+          "name": "incidentCreated",
+          "behavior": "SET",
+          "value": "$.response.data.fields.created",
+          "instruction": ""
+        },
+        {
+          "name": "incidentResolved",
+          "behavior": "SET",
+          "value": "$.response.data.fields.resolutiondate",
+          "instruction": ""
+        }
+      ],
+      "name": "Fetch Resolved Incident",
+      "id": "template:action:a1b2c3d4-1111-4a2b-9c3d-e4f5a6b7c8d9",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "operator": "EQUALS",
+              "description": "Only run on Jira issue updated events"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "Incident",
+              "operator": "EQUALS",
+              "description": "Only run for the major incident issue type"
+            },
+            {
+              "jsonPath": "$.issue.fields.priority.name",
+              "type": "DATA_CONDITION",
+              "value": "Highest",
+              "operator": "EQUALS",
+              "description": "Only run for the priority used to mark a major incident"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "Resolved",
+              "operator": "EQUALS",
+              "description": "Only run once the incident has been resolved"
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10160",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Loop guard / dedupe: only run when no post-incident report has been linked yet"
+            },
+            {
+              "jsonPath": "$.user.accountId",
+              "type": "DATA_CONDITION",
+              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip updates made by the iHub integration user, including the report link write back"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create the post-incident report page in Confluence from the incident summary, metadata and description.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-confluence"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"type\": \"page\",\n  \"title\": \"PIR: {{issue.key}} - {{incidentSummary}}\",\n  \"space\": { \"key\": \"{{_flow.CONFLUENCE_SPACE_KEY}}\" },\n  \"ancestors\": {{{toJSON pirAncestors}}},\n  \"body\": {\n    \"storage\": {\n      \"value\": \"<h1>Post-Incident Report: {{issue.key}}</h1><p><strong>Summary:</strong> {{incidentSummary}}</p><table><tbody><tr><th>Priority</th><td>{{incidentPriority}}</td></tr><tr><th>Reporter</th><td>{{incidentReporter}}</td></tr><tr><th>Assignee</th><td>{{incidentAssignee}}</td></tr><tr><th>Created</th><td>{{incidentCreated}}</td></tr><tr><th>Resolved</th><td>{{incidentResolved}}</td></tr><tr><th>Jira Issue</th><td><a href=\\\"{{baseUrl}}/browse/{{issue.key}}\\\">{{issue.key}}</a></td></tr></tbody></table><h2>Incident Description</h2>{{{incidentDescriptionHtml}}}<h2>Timeline</h2><p>Comments from the Jira incident are attached to this page below.</p>\",\n      \"representation\": \"storage\"\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.CONFLUENCE_URL}}/rest/api/content",
+      "parentId": "template:action:a1b2c3d4-1111-4a2b-9c3d-e4f5a6b7c8d9",
+      "scriptedVariables": [
+        {
+          "name": "pirAncestors",
+          "uuid": "1793001001001",
+          "script": "const parentId = \"{{_flow.CONFLUENCE_PARENT_PAGE_ID}}\";\nreturn parentId ? JSON.stringify([{ id: parentId }]) : '[]';"
+        }
+      ],
+      "flowVariables": [
+        {
+          "name": "pirPageId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": ""
+        },
+        {
+          "name": "pirPageBase",
+          "behavior": "SET",
+          "value": "$.response.data._links.base",
+          "instruction": ""
+        },
+        {
+          "name": "pirPageWebui",
+          "behavior": "SET",
+          "value": "$.response.data._links.webui",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Confluence PIR Page",
+      "id": "template:action:a1b2c3d4-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Fetch every comment on the incident, rendered as HTML, so the incident timeline can be mirrored onto the PIR page.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "logNoIterationItemsFound": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment?expand=renderedBody&orderBy=created",
+      "parentId": "template:action:a1b2c3d4-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "iterator": "$.comments",
+      "scriptedVariables": [
+        {
+          "name": "commentAuthor",
+          "uuid": "1793001002001",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.author?.displayName || 'Unknown';"
+        },
+        {
+          "name": "commentCreated",
+          "uuid": "1793001002002",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.created || '';"
+        },
+        {
+          "name": "commentBodyHtml",
+          "uuid": "1793001002003",
+          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.renderedBody || '';"
+        }
+      ],
+      "name": "Fetch Incident Comments",
+      "id": "template:action:a1b2c3d4-3333-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 300,
+      "contextLogAppender": "{{eventType}}"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add each Jira incident comment as a Confluence comment on the PIR page, preserving the incident timeline.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-confluence"
+      },
+      "id": "template:action:a1b2c3d4-4444-4a2b-9c3d-e4f5a6b7c8d9",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"type\": \"comment\",\n  \"container\": { \"id\": \"{{_flow.pirPageId}}\", \"type\": \"page\" },\n  \"body\": {\n    \"storage\": {\n      \"value\": \"<p><strong>{{commentAuthor}}</strong> &mdash; {{commentCreated}}</p>{{{commentBodyHtml}}}\",\n      \"representation\": \"storage\"\n    }\n  }\n}",
+      "parentId": "template:action:a1b2c3d4-3333-4a2b-9c3d-e4f5a6b7c8d9",
+      "enabled": true,
+      "url": "{{_flow.CONFLUENCE_URL}}/rest/api/content/{{_flow.pirPageId}}/child/comment",
+      "order": 350,
+      "name": "Add Comment to Confluence Page"
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Write the Confluence PIR page URL back into the incident's link field. This also stops the flow from creating a second report on the next update.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10160\": \"{{_flow.pirPageBase}}{{_flow.pirPageWebui}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:a1b2c3d4-2222-4a2b-9c3d-e4f5a6b7c8d9",
+      "flowVariables": [],
+      "name": "Store PIR Link on Incident",
+      "id": "template:action:a1b2c3d4-5555-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira remote link so the PIR page shows up as a linked item on the incident, next to Confluence pages linked by hand.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"object\": {\n    \"url\": \"{{_flow.pirPageBase}}{{_flow.pirPageWebui}}\",\n    \"title\": \"PIR: {{issue.key}} - {{incidentSummary}}\",\n    \"icon\": { \"url16x16\": \"https://wac-cdn.atlassian.com/dam/jcr:e9c3c19e-6fc4-4e18-964d-1cd7b6c4a06d/Confluence-icon-blue.svg\" }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink",
+      "parentId": "template:action:a1b2c3d4-5555-4a2b-9c3d-e4f5a6b7c8d9",
+      "flowVariables": [],
+      "name": "Add Remote Link to PIR Page",
+      "id": "template:action:a1b2c3d4-6666-4a2b-9c3d-e4f5a6b7c8d9",
+      "order": 450
+    }
+  ],
+  "description": "On major incident resolution in Jira Service Management, create a Confluence post-incident report and link it back to the incident.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "MAJOR_INCIDENT_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Incident",
+      "instruction": "Jira issue type name that identifies a major incident. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+    },
+    {
+      "name": "MAJOR_INCIDENT_PRIORITY",
+      "behavior": "SET",
+      "value": "Highest",
+      "instruction": "Jira priority name that identifies a major incident. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+    },
+    {
+      "name": "RESOLVED_STATUS_NAME",
+      "behavior": "SET",
+      "value": "Resolved",
+      "instruction": "Jira status name that marks the incident as resolved. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+    },
+    {
+      "name": "IHUB_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance. Loop prevention: updates authored by this account, including the report link write back, are skipped. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+    },
+    {
+      "name": "CONFLUENCE_URL",
+      "behavior": "SET",
+      "value": "https://your-company.atlassian.net/wiki",
+      "instruction": "Base URL of the Confluence Cloud site that should receive the post-incident report"
+    },
+    {
+      "name": "CONFLUENCE_SPACE_KEY",
+      "behavior": "SET",
+      "value": "PIR",
+      "instruction": "Key of the Confluence space where post-incident report pages are created"
+    },
+    {
+      "name": "CONFLUENCE_PARENT_PAGE_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Optional Confluence page id to create every report under as a child page. Leave empty to create pages at the space root"
+    }
+  ],
+  "groupName": "Jira",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "JSM Incident to Confluence PIR",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

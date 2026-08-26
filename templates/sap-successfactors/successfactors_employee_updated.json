@@ -11,57 +11,84 @@
           "key": "Content-Type"
         }
       ],
-      "method": "PATCH",
-      "description": "Patch selected Microsoft Entra profile fields when SuccessFactors sends an employee-updated event.",
+      "method": "POST",
+      "description": "Create a Jira Service Management mover request when SuccessFactors sends a department, manager, or location change.",
       "scriptedVariables": [
         {
           "name": "sfEventType",
-          "uuid": "0d5cf655-0cfa-4881-bd57-c3f356eccf25",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const raw=String(read('eventType','event_type','type','action','operation','event.reason')||'').toLowerCase();if(raw.includes('update')||raw==='change'||raw==='employee.updated')return 'employee.updated';return raw;"
+          "uuid": "9851cfac-93d4-4392-b1e9-f6d21457a195",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const raw=String(read('eventType','event_type','type','action','operation','event.reason')||'').toLowerCase();if(raw.includes('move')||raw.includes('transfer')||raw==='employee.moved')return 'employee.moved';if(raw.includes('update')||raw==='change'||raw==='employee.updated')return 'employee.moved';return raw;"
         },
         {
           "name": "employeeId",
-          "uuid": "c7c09987-8c91-47be-acff-0191369e1f17",
+          "uuid": "e2885d18-e663-4fed-9506-07cf1da1a55d",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('employeeId','personIdExternal','userId','employee.employeeId','employee.personIdExternal','employment.personIdExternal');"
         },
         {
           "name": "employeeDisplayName",
-          "uuid": "a822b67f-53e0-4fe5-b565-5eb5d75a9492",
+          "uuid": "5c5ddfeb-6e11-4b79-b3d0-68dc3c55759d",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('displayName','employee.displayName','userNav.displayName','person.displayName');if(direct)return direct;return [read('firstName','givenName','employee.firstName'),read('lastName','surname','employee.lastName')].filter(Boolean).join(' ')||read('employeeId','personIdExternal','userId')||'Employee';"
         },
         {
-          "name": "employeeEmail",
-          "uuid": "691beb2e-2925-4fde-b34d-551ea8c855ed",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('email','mail','userPrincipalName','employee.email','employee.mail','userNav.email','userNav.userPrincipalName');"
+          "name": "effectiveDate",
+          "uuid": "8b1f7bea-c4f1-4cc3-a8a5-e7d7f00127e1",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('effectiveDate','changeDate','event.effectiveDate','changes.effectiveDate','employee.effectiveDate','startDate');"
         },
         {
-          "name": "employeeJobTitle",
-          "uuid": "9bbf3cb8-ec16-4b73-9b7a-8e36061d8718",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('jobTitle','title','employee.jobTitle','jobInfo.jobTitle','jobInfo.position');"
+          "name": "employeeManagerId",
+          "uuid": "bd72fbe2-e3e6-496f-8116-d37c8f5642d0",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('managerId','manager.userId','employee.managerId','jobInfo.managerId','employment.managerId');"
         },
         {
           "name": "employeeDepartment",
-          "uuid": "a2877c1b-ce7d-4b29-9f0c-2a219d7275ee",
+          "uuid": "c52bfa04-6b38-4afd-90b3-18ca20e951a2",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('department','departmentName','employee.department','jobInfo.department','jobInfo.departmentName');"
         },
         {
           "name": "employeeLocation",
-          "uuid": "3805345b-6ae6-4aff-8b87-942b7c72855f",
+          "uuid": "f361add9-90fb-419b-8c71-c14b6b5a9f8b",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('location','officeLocation','employee.location','jobInfo.location','jobInfo.officeLocation');"
+        },
+        {
+          "name": "employeeJobTitle",
+          "uuid": "ea6618ca-c131-42a1-b0c6-0ffd4c0c58b9",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('jobTitle','title','employee.jobTitle','jobInfo.jobTitle','jobInfo.position');"
+        },
+        {
+          "name": "previousDepartment",
+          "uuid": "c0fe612d-6cde-4af8-acea-7fc6c9d6b91e",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('previousDepartment','previous.department','changes.department.previous');"
+        },
+        {
+          "name": "previousLocation",
+          "uuid": "02b8c2e4-ca61-478b-995d-e2f30e37b33b",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('previousLocation','previous.location','changes.location.previous');"
+        },
+        {
+          "name": "previousManagerId",
+          "uuid": "6e52111a-7b14-4e87-87d1-5e173ed1ef91",
+          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('previousManagerId','previous.managerId','changes.managerId.previous');"
         }
       ],
       "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-sap-successfactors-entra"
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"displayName\":\"{{employeeDisplayName}}\",\"jobTitle\":\"{{employeeJobTitle}}\",\"department\":\"{{employeeDepartment}}\",\"officeLocation\":\"{{employeeLocation}}\"}",
+      "body": "{\"serviceDeskId\":\"{{_flow.JSM_SERVICE_DESK_ID}}\",\"requestTypeId\":\"{{_flow.JSM_MOVER_REQUEST_TYPE_ID}}\",\"requestFieldValues\":{\"summary\":\"Move {{employeeDisplayName}}\",\"description\":\"SuccessFactors employee {{employeeId}} changed role, department, manager, or location. Department: {{previousDepartment}} -> {{employeeDepartment}}. Location: {{previousLocation}} -> {{employeeLocation}}. Manager: {{previousManagerId}} -> {{employeeManagerId}}.\",\"{{_flow.JSM_EMPLOYEE_ID_FIELD}}\":\"{{employeeId}}\",\"{{_flow.JSM_EFFECTIVE_DATE_FIELD}}\":\"{{effectiveDate}}\"}}",
       "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}",
+      "url": "{{baseUrl}}/rest/servicedeskapi/request",
       "parentId": "",
-      "flowVariables": [],
-      "name": "Update Entra User Profile",
-      "id": "template:action:003deb7a-f92b-40bd-a388-850c343fb528",
+      "flowVariables": [
+        {
+          "name": "jsmIssueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issueKey",
+          "instruction": "JSM request issue key created for the mover case."
+        }
+      ],
+      "name": "Create Mover JSM Request",
+      "id": "template:action:a765b1e1-ecf3-49fc-a914-17b604a5ec6f",
       "conditions": [
         {
           "type": "COMBINED_CONDITION",
@@ -69,11 +96,11 @@
             {
               "jsonPath": "$.sfEventType",
               "type": "DATA_CONDITION",
-              "value": "employee.updated",
+              "value": "employee.moved",
               "operator": "EQUALS"
             },
             {
-              "jsonPath": "$.employeeEmail",
+              "jsonPath": "$.employeeId",
               "type": "DATA_CONDITION",
               "value": "",
               "operator": "NOT_EQUALS"
@@ -95,26 +122,19 @@
         }
       ],
       "method": "POST",
-      "description": "Find any Jira work item linked to this SuccessFactors employee ID.",
+      "description": "Create the access review task under the mover request.",
       "credentialsReference": {
         "type": "ATLASSIAN_TOKEN",
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"jql\":\"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{employeeId}}\\\" ORDER BY updated DESC\",\"maxResults\":10,\"fields\":[\"summary\",\"status\"]}",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Review mover access for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Review access for department, manager, job title, and location changes. Remove access from the previous role and grant access for the new role.\"}]}]}}}",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/search/jql",
-      "parentId": "template:action:003deb7a-f92b-40bd-a388-850c343fb528",
-      "flowVariables": [
-        {
-          "name": "issueKey",
-          "behavior": "SET",
-          "value": "$.response.data.issues[0].key",
-          "instruction": "Linked Jira issue key, if one exists."
-        }
-      ],
-      "name": "Find Linked Jira Issue",
-      "id": "template:action:9d569d8d-5bd6-4427-a5e1-c4ba19c59514",
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:a765b1e1-ecf3-49fc-a914-17b604a5ec6f",
+      "flowVariables": [],
+      "name": "Create Access Review Task",
+      "id": "template:action:73278e31-d96f-4756-a751-2d6d877e7c26",
       "order": 200
     },
     {
@@ -129,43 +149,87 @@
         }
       ],
       "method": "POST",
-      "description": "Add an internal Jira comment that records the SuccessFactors update.",
+      "description": "Create the hardware and location move task under the mover request.",
       "credentialsReference": {
         "type": "ATLASSIAN_TOKEN",
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"body\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"SuccessFactors updated {{employeeDisplayName}} ({{employeeId}}). Job title: {{employeeJobTitle}}. Department: {{employeeDepartment}}. Location: {{employeeLocation}}.\"}]}]},\"properties\":[{\"key\":\"sd.public.comment\",\"value\":{\"internal\":true}}]}",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Review hardware and location for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Review laptop, peripherals, desk setup, shipping, and local software needs for the location change from {{previousLocation}} to {{employeeLocation}}.\"}]}]}}}",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
-      "parentId": "template:action:9d569d8d-5bd6-4427-a5e1-c4ba19c59514",
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:a765b1e1-ecf3-49fc-a914-17b604a5ec6f",
       "flowVariables": [],
-      "name": "Comment Linked Jira Issue",
-      "id": "template:action:4c31ac48-2334-4eae-bdf6-2f02e9a20501",
-      "conditions": [
+      "name": "Create Hardware and Location Review Task",
+      "id": "template:action:7ecd9e64-6a56-4f07-85b5-eb43da0fc23e",
+      "order": 300
+    },
+    {
+      "headers": [
         {
-          "type": "COMBINED_CONDITION",
-          "conditions": [
-            {
-              "jsonPath": "$.response.data.issues",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
-            }
-          ]
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
         }
       ],
-      "order": 300
+      "method": "POST",
+      "description": "Create the software review task under the mover request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Review software for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Review software, subscriptions, and application roles required for {{employeeJobTitle}} in {{employeeDepartment}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:a765b1e1-ecf3-49fc-a914-17b604a5ec6f",
+      "flowVariables": [],
+      "name": "Create Software Review Task",
+      "id": "template:action:b89325de-c013-4201-932b-4ea938ead8d1",
+      "order": 400
     }
   ],
-  "description": "Patch Entra profile data and annotate linked Jira work when SuccessFactors employee details change.",
+  "description": "Create a JSM mover request and access/hardware/software review tasks from a SuccessFactors department, manager, or location change.",
   "enabled": false,
   "flowVariables": [
     {
-      "name": "SPACE",
+      "name": "JSM_SERVICE_DESK_ID",
+      "behavior": "SET",
+      "value": "1",
+      "instruction": "Jira Service Management service desk ID used for mover requests."
+    },
+    {
+      "name": "JSM_MOVER_REQUEST_TYPE_ID",
+      "behavior": "SET",
+      "value": "102",
+      "instruction": "JSM request type ID for employee mover changes."
+    },
+    {
+      "name": "JSM_EMPLOYEE_ID_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10153",
+      "instruction": "Request field/custom field that stores the SuccessFactors employee ID."
+    },
+    {
+      "name": "JSM_EFFECTIVE_DATE_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10156",
+      "instruction": "Request field/custom field that stores the mover effective date."
+    },
+    {
+      "name": "TASK_PROJECT",
       "behavior": "SET",
       "value": "HR",
-      "instruction": "Jira project key used when looking for linked employee issues."
+      "instruction": "Jira project key where mover subtasks are created."
+    },
+    {
+      "name": "TASK_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Sub-task",
+      "instruction": "Issue type used for mover tasks. Use Task instead if the project does not support subtasks."
     }
   ],
   "groupName": "SAP SuccessFactors",
