@@ -1,0 +1,529 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Jira Service Management offboarding request when HiBob sends an employee-termination event.",
+      "scriptedVariables": [
+        {
+          "name": "hrEventType",
+          "uuid": "95bbe31e-8510-591c-b939-936c2951af9a",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const raw=String(read('eventType','event_type','type','action','operation','topic','event','event.name','event.type','event.reason','webhook.event','webhookEvent','meta.event','data.event','data.eventType','payload.eventType','resource_event')||'').toLowerCase();const changed=read('changedFields','changed_fields','fieldsChanged','fields_changed','changes.changedFields','changes.fields','changes','data.changedFields','data.changes','payload.changedFields');const changedText=(Array.isArray(changed)?changed.join(','):typeof changed==='object'?JSON.stringify(changed):String(changed||'')).toLowerCase();if(raw.includes('hire')||raw.includes('joiner')||raw.includes('new_hire')||raw.includes('worker.created')||raw.includes('employee.created')||raw==='create'||raw==='created'||raw==='insert')return 'employee.created';if(raw.includes('terminate')||raw.includes('termination')||raw.includes('leaver')||raw.includes('offboard')||raw.includes('worker.terminated')||raw.includes('employee.terminated')||raw==='delete'||raw==='deleted')return 'employee.terminated';const moverField=/(department|manager|supervisor|location|office|site|costcenter|cost_center|job|title|position)/.test(changedText);if(raw.includes('move')||raw.includes('mover')||raw.includes('transfer')||raw.includes('worker.moved')||raw.includes('employee.moved')||((raw.includes('update')||raw.includes('change')||raw.includes('worker.updated')||raw.includes('employee.updated'))&&(!changedText||moverField)))return 'employee.moved';return raw;"
+        },
+        {
+          "name": "employeeId",
+          "uuid": "0e872339-756b-5a4d-8fd0-f2aec75df476",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"employeeId\",\"employee_id\",\"workerId\",\"worker_id\",\"personIdExternal\",\"person_id_external\",\"userId\",\"user_id\",\"employee.employeeId\",\"employee.employee_id\",\"employee.id\",\"employee.externalId\",\"employee.external_id\",\"data.employeeId\",\"data.employee_id\",\"data.employee.id\",\"data.employee.external_id\",\"data.id\",\"worker.id\",\"worker.employeeId\",\"worker.workerId\",\"employment.personIdExternal\",\"employment.employeeId\",\"payload.employeeId\",\"payload.employee.id\",\"id\");"
+        },
+        {
+          "name": "employeeDisplayName",
+          "uuid": "36e313f1-923e-516f-9de4-3bd441f43d9a",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const direct=read('displayName','display_name','fullName','full_name','name','employee.displayName','employee.display_name','employee.fullName','employee.full_name','data.employee.displayName','data.employee.full_name','worker.displayName','worker.descriptor','person.displayName','person.fullName','profile.displayName','about.displayName');if(direct)return direct;const name=[read('firstName','first_name','givenName','given_name','employee.firstName','employee.first_name','data.employee.firstName','data.employee.first_name','worker.firstName','worker.first_name','person.firstName','person.first_name','about.firstName'),read('lastName','last_name','surname','familyName','family_name','employee.lastName','employee.last_name','data.employee.lastName','data.employee.last_name','worker.lastName','worker.last_name','person.lastName','person.last_name','about.surname')].filter(Boolean).join(' ');return name||read('employeeId','employee_id','workerId','worker_id','personIdExternal','userId','employee.id','data.employee.id','worker.id','id')||'Employee';"
+        },
+        {
+          "name": "employeeEmail",
+          "uuid": "71880e55-adb1-56a6-a54b-a1912595a0ad",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"email\",\"mail\",\"workEmail\",\"work_email\",\"businessEmail\",\"business_email\",\"primaryWorkEmail\",\"primary_work_email\",\"userPrincipalName\",\"user_principal_name\",\"employee.email\",\"employee.mail\",\"employee.workEmail\",\"employee.work_email\",\"employee.userPrincipalName\",\"data.employee.email\",\"data.employee.workEmail\",\"data.employee.work_email\",\"data.employee.userPrincipalName\",\"worker.email\",\"worker.primaryWorkEmail\",\"worker.primary_work_email\",\"work.email\",\"contact.email\",\"attributes.email.value\",\"attributes.work_email.value\",\"payload.employee.email\",\"payload.employee.work_email\");"
+        },
+        {
+          "name": "employeeEndDate",
+          "uuid": "dd0f736a-35b6-54d4-a9e0-676de6dcf3e2",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"endDate\",\"end_date\",\"terminationDate\",\"termination_date\",\"lastDateWorked\",\"last_date_worked\",\"employmentEndDate\",\"employment_end_date\",\"contract.end_date\",\"contract.endDate\",\"employee.endDate\",\"employee.end_date\",\"employee.terminationDate\",\"employee.termination_date\",\"data.employee.endDate\",\"data.employee.termination_date\",\"worker.terminationDate\",\"worker.endDate\",\"employment.endDate\",\"termination.effectiveDate\",\"termination.effective_date\",\"attributes.termination_date.value\");"
+        },
+        {
+          "name": "groupIdsToRemove",
+          "uuid": "2d598735-04d7-5dc8-b756-bc37b9947126",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"groupsToRemove\",\"groupIdsToRemove\",\"entra.groupsToRemove\",\"entra.groupIdsToRemove\",\"access.groupsToRemove\",\"access.groupIdsToRemove\",\"employee.groupsToRemove\",\"employee.groupIds\",\"data.groupsToRemove\",\"data.groupIdsToRemove\",\"payload.groupsToRemove\",\"payload.groupIdsToRemove\"),read(\"_flow.ENTRA_GROUP_IDS_TO_REMOVE\",\"flow.ENTRA_GROUP_IDS_TO_REMOVE\",\"flowVariables.ENTRA_GROUP_IDS_TO_REMOVE\",\"variables.ENTRA_GROUP_IDS_TO_REMOVE\",\"ENTRA_GROUP_IDS_TO_REMOVE\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
+        },
+        {
+          "name": "licenseSkuIdsToRemove",
+          "uuid": "f4c4ff42-510d-5f75-8bf5-5ed32c76c383",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"licensesToRemove\",\"licenseSkuIdsToRemove\",\"license_sku_ids_to_remove\",\"entra.licensesToRemove\",\"entra.licenseSkuIdsToRemove\",\"software.licenseSkuIdsToRemove\",\"employee.licenseSkuIds\",\"data.licenseSkuIdsToRemove\",\"payload.licenseSkuIdsToRemove\"),read(\"_flow.ENTRA_LICENSE_SKU_IDS_TO_REMOVE\",\"flow.ENTRA_LICENSE_SKU_IDS_TO_REMOVE\",\"flowVariables.ENTRA_LICENSE_SKU_IDS_TO_REMOVE\",\"variables.ENTRA_LICENSE_SKU_IDS_TO_REMOVE\",\"ENTRA_LICENSE_SKU_IDS_TO_REMOVE\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"serviceDeskId\":\"{{_flow.JSM_SERVICE_DESK_ID}}\",\"requestTypeId\":\"{{_flow.JSM_OFFBOARDING_REQUEST_TYPE_ID}}\",\"requestFieldValues\":{\"summary\":\"Offboard {{employeeDisplayName}}\",\"description\":\"HiBob employee {{employeeId}} terminates {{employeeEndDate}}. Disable access, remove groups/licenses, recover hardware, and confirm completion.\",\"{{_flow.JSM_EMPLOYEE_ID_FIELD}}\":\"{{employeeId}}\",\"{{_flow.JSM_END_DATE_FIELD}}\":\"{{employeeEndDate}}\"}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/servicedeskapi/request",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "jsmIssueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issueKey",
+          "instruction": "JSM request issue key created for the offboarding case."
+        }
+      ],
+      "name": "Create Offboarding JSM Request",
+      "id": "template:action:b7f6c0ca-2376-56c4-a79b-c2f3b83ff7bd",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.hrEventType",
+              "type": "DATA_CONDITION",
+              "value": "employee.terminated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.employeeId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Resolve the Microsoft Entra user so follow-up cleanup actions can use the object ID.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-hibob-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{employeeEmail}}?$select=id,displayName,userPrincipalName,accountEnabled",
+      "parentId": "template:action:b7f6c0ca-2376-56c4-a79b-c2f3b83ff7bd",
+      "flowVariables": [
+        {
+          "name": "entraUserId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "Microsoft Entra object ID for the offboarded user."
+        },
+        {
+          "name": "entraUserPrincipalName",
+          "behavior": "SET",
+          "value": "$.response.data.userPrincipalName",
+          "instruction": "Microsoft Entra UPN for the offboarded user."
+        }
+      ],
+      "name": "Get Entra User",
+      "id": "template:action:36d8852b-c34d-594c-9d92-89e0cc4495c7",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.employeeEmail",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "description": "Disable the linked Microsoft Entra account.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-hibob-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"accountEnabled\":false}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{_flow.entraUserId}}",
+      "parentId": "template:action:36d8852b-c34d-594c-9d92-89e0cc4495c7",
+      "flowVariables": [],
+      "name": "Disable Entra User",
+      "id": "template:action:dce51868-22ee-5999-a0e4-beb8aa368f91",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "DELETE",
+      "description": "Remove the user from any Entra group IDs supplied by the HR event or configured flow variable.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-hibob-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{{self}}}/members/{{_flow.entraUserId}}/$ref",
+      "parentId": "template:action:36d8852b-c34d-594c-9d92-89e0cc4495c7",
+      "flowVariables": [],
+      "name": "Remove Entra Group Memberships",
+      "id": "template:action:b3515f56-1684-5f89-a6ed-d66eb86c577c",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.groupIdsToRemove",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "iterator": "$.groupIdsToRemove",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Remove any Microsoft Entra license SKU IDs supplied by the HR event or configured flow variable.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-hibob-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"addLicenses\":[],\"removeLicenses\":[\"{{{self}}}\"]}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{_flow.entraUserId}}/assignLicense",
+      "parentId": "template:action:36d8852b-c34d-594c-9d92-89e0cc4495c7",
+      "flowVariables": [],
+      "name": "Remove Entra Licenses",
+      "id": "template:action:55ca53ee-e3e7-5f81-9579-74cf534e7004",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.licenseSkuIdsToRemove",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "iterator": "$.licenseSkuIdsToRemove",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the equipment return task under the offboarding request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Equipment return for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Recover laptop, mobile devices, badges, accessories, and assigned assets for HiBob employee {{employeeId}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:b7f6c0ca-2376-56c4-a79b-c2f3b83ff7bd",
+      "flowVariables": [],
+      "name": "Create Equipment Return Task",
+      "id": "template:action:d96c9085-564f-592f-9861-3822c9982841",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the software and access revocation verification task under the offboarding request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Verify access and license removal for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Confirm Entra account disablement, group membership removals, license removals, shared mailbox access, and privileged access cleanup for {{employeeId}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:b7f6c0ca-2376-56c4-a79b-c2f3b83ff7bd",
+      "flowVariables": [],
+      "name": "Create Access Revocation Verification Task",
+      "id": "template:action:1a4c35cf-bc9a-5bab-ae32-21ecf8696e34",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the final offboarding completion confirmation task.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Confirm offboarding completion for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Confirm all offboarding tasks are complete before closing the Jira Service Management request.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:b7f6c0ca-2376-56c4-a79b-c2f3b83ff7bd",
+      "flowVariables": [],
+      "name": "Create Offboarding Completion Task",
+      "id": "template:action:c072ed14-efd1-599b-b10c-cdb67564bc12",
+      "order": 800
+    }
+  ],
+  "description": "Create a JSM offboarding workflow, disable Entra access, remove configured groups/licenses, open equipment-return tasks, and create a completion check from a HiBob termination event.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "JSM_SERVICE_DESK_ID",
+      "behavior": "SET",
+      "value": "1",
+      "instruction": "Jira Service Management service desk ID used for offboarding requests."
+    },
+    {
+      "name": "JSM_OFFBOARDING_REQUEST_TYPE_ID",
+      "behavior": "SET",
+      "value": "101",
+      "instruction": "JSM request type ID for employee offboarding."
+    },
+    {
+      "name": "JSM_EMPLOYEE_ID_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10153",
+      "instruction": "Request field/custom field that stores the HiBob employee ID."
+    },
+    {
+      "name": "JSM_END_DATE_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10155",
+      "instruction": "Request field/custom field that stores the employee end date."
+    },
+    {
+      "name": "TASK_PROJECT",
+      "behavior": "SET",
+      "value": "HR",
+      "instruction": "Jira project key where offboarding subtasks are created."
+    },
+    {
+      "name": "TASK_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Sub-task",
+      "instruction": "Issue type used for offboarding tasks. Use Task instead if the project does not support subtasks."
+    },
+    {
+      "name": "ENTRA_GROUP_IDS_TO_REMOVE",
+      "behavior": "SET",
+      "value": "[]",
+      "instruction": "Optional JSON array or comma-separated list of Entra group object IDs to remove during offboarding."
+    },
+    {
+      "name": "ENTRA_LICENSE_SKU_IDS_TO_REMOVE",
+      "behavior": "SET",
+      "value": "[]",
+      "instruction": "Optional JSON array or comma-separated list of Microsoft 365 license SKU IDs to remove during offboarding."
+    }
+  ],
+  "groupName": "HiBob",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "HiBob - Employee Offboarding",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

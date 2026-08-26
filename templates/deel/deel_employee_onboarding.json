@@ -1,0 +1,563 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Jira Service Management onboarding request when Deel sends a new-employee event.",
+      "scriptedVariables": [
+        {
+          "name": "hrEventType",
+          "uuid": "3f4b767a-1dea-542c-9c54-702a0a7caa12",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const raw=String(read('eventType','event_type','type','action','operation','topic','event','event.name','event.type','event.reason','webhook.event','webhookEvent','meta.event','data.event','data.eventType','payload.eventType','resource_event')||'').toLowerCase();const changed=read('changedFields','changed_fields','fieldsChanged','fields_changed','changes.changedFields','changes.fields','changes','data.changedFields','data.changes','payload.changedFields');const changedText=(Array.isArray(changed)?changed.join(','):typeof changed==='object'?JSON.stringify(changed):String(changed||'')).toLowerCase();if(raw.includes('hire')||raw.includes('joiner')||raw.includes('new_hire')||raw.includes('worker.created')||raw.includes('employee.created')||raw==='create'||raw==='created'||raw==='insert')return 'employee.created';if(raw.includes('terminate')||raw.includes('termination')||raw.includes('leaver')||raw.includes('offboard')||raw.includes('worker.terminated')||raw.includes('employee.terminated')||raw==='delete'||raw==='deleted')return 'employee.terminated';const moverField=/(department|manager|supervisor|location|office|site|costcenter|cost_center|job|title|position)/.test(changedText);if(raw.includes('move')||raw.includes('mover')||raw.includes('transfer')||raw.includes('worker.moved')||raw.includes('employee.moved')||((raw.includes('update')||raw.includes('change')||raw.includes('worker.updated')||raw.includes('employee.updated'))&&(!changedText||moverField)))return 'employee.moved';return raw;"
+        },
+        {
+          "name": "employeeId",
+          "uuid": "1223feb2-3a57-503d-88c2-c332fcc562f1",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"employeeId\",\"employee_id\",\"workerId\",\"worker_id\",\"personIdExternal\",\"person_id_external\",\"userId\",\"user_id\",\"employee.employeeId\",\"employee.employee_id\",\"employee.id\",\"employee.externalId\",\"employee.external_id\",\"data.employeeId\",\"data.employee_id\",\"data.employee.id\",\"data.employee.external_id\",\"data.id\",\"worker.id\",\"worker.employeeId\",\"worker.workerId\",\"employment.personIdExternal\",\"employment.employeeId\",\"payload.employeeId\",\"payload.employee.id\",\"id\");"
+        },
+        {
+          "name": "employeeFirstName",
+          "uuid": "0218dd55-7934-593d-84db-52c86786db95",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"firstName\",\"first_name\",\"givenName\",\"given_name\",\"employee.firstName\",\"employee.first_name\",\"data.employee.firstName\",\"data.employee.first_name\",\"worker.firstName\",\"worker.first_name\",\"person.firstName\",\"person.first_name\",\"personalInfo.firstName\",\"about.firstName\",\"attributes.first_name.value\");"
+        },
+        {
+          "name": "employeeLastName",
+          "uuid": "c899db24-d7f9-5ece-bfca-14b5913a55f7",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"lastName\",\"last_name\",\"surname\",\"familyName\",\"family_name\",\"employee.lastName\",\"employee.last_name\",\"data.employee.lastName\",\"data.employee.last_name\",\"worker.lastName\",\"worker.last_name\",\"person.lastName\",\"person.last_name\",\"personalInfo.lastName\",\"about.surname\",\"attributes.last_name.value\");"
+        },
+        {
+          "name": "employeeDisplayName",
+          "uuid": "e31c414c-967c-5d3b-9416-048cd70df66b",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const direct=read('displayName','display_name','fullName','full_name','name','employee.displayName','employee.display_name','employee.fullName','employee.full_name','data.employee.displayName','data.employee.full_name','worker.displayName','worker.descriptor','person.displayName','person.fullName','profile.displayName','about.displayName');if(direct)return direct;const name=[read('firstName','first_name','givenName','given_name','employee.firstName','employee.first_name','data.employee.firstName','data.employee.first_name','worker.firstName','worker.first_name','person.firstName','person.first_name','about.firstName'),read('lastName','last_name','surname','familyName','family_name','employee.lastName','employee.last_name','data.employee.lastName','data.employee.last_name','worker.lastName','worker.last_name','person.lastName','person.last_name','about.surname')].filter(Boolean).join(' ');return name||read('employeeId','employee_id','workerId','worker_id','personIdExternal','userId','employee.id','data.employee.id','worker.id','id')||'Employee';"
+        },
+        {
+          "name": "employeeEmail",
+          "uuid": "efff8d9f-1288-56e2-a5a5-6f4a248c9a7c",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"email\",\"mail\",\"workEmail\",\"work_email\",\"businessEmail\",\"business_email\",\"primaryWorkEmail\",\"primary_work_email\",\"userPrincipalName\",\"user_principal_name\",\"employee.email\",\"employee.mail\",\"employee.workEmail\",\"employee.work_email\",\"employee.userPrincipalName\",\"data.employee.email\",\"data.employee.workEmail\",\"data.employee.work_email\",\"data.employee.userPrincipalName\",\"worker.email\",\"worker.primaryWorkEmail\",\"worker.primary_work_email\",\"work.email\",\"contact.email\",\"attributes.email.value\",\"attributes.work_email.value\",\"payload.employee.email\",\"payload.employee.work_email\");"
+        },
+        {
+          "name": "employeeStartDate",
+          "uuid": "35b76a5c-ce95-5847-bba6-6f2e7e9646b3",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"startDate\",\"start_date\",\"hireDate\",\"hire_date\",\"employmentStartDate\",\"employment_start_date\",\"contract.start_date\",\"contract.startDate\",\"employee.startDate\",\"employee.start_date\",\"employee.hireDate\",\"employee.hire_date\",\"data.employee.startDate\",\"data.employee.start_date\",\"worker.hireDate\",\"worker.startDate\",\"employment.startDate\",\"jobInfo.startDate\",\"attributes.hire_date.value\");"
+        },
+        {
+          "name": "employeeManagerId",
+          "uuid": "52089537-6344-5a75-95d1-fc4fcace1951",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"managerId\",\"manager_id\",\"supervisorId\",\"supervisor_id\",\"employee.managerId\",\"employee.manager_id\",\"data.employee.managerId\",\"data.employee.manager_id\",\"worker.managerId\",\"worker.manager_id\",\"manager.id\",\"manager.employeeId\",\"manager.employee_id\",\"manager.userId\",\"manager.user_id\",\"manager.email\",\"jobInfo.managerId\",\"employment.managerId\",\"reportsTo.id\",\"reports_to.id\",\"attributes.manager.value\");"
+        },
+        {
+          "name": "employeeDepartment",
+          "uuid": "9da9fcea-92af-57d8-bd85-a38409e29cc5",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"department\",\"departmentName\",\"department_name\",\"team\",\"teamName\",\"costCenter\",\"cost_center\",\"employee.department\",\"employee.departmentName\",\"employee.department_name\",\"employee.team\",\"data.employee.department\",\"data.employee.departmentName\",\"data.employee.department_name\",\"worker.department\",\"worker.organization\",\"work.department\",\"jobInfo.department\",\"jobInfo.departmentName\",\"attributes.department.value\",\"attributes.team.value\");"
+        },
+        {
+          "name": "employeeLocation",
+          "uuid": "e2eecb31-e140-5553-a379-104e2da9f1cc",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"location\",\"officeLocation\",\"office_location\",\"site\",\"workLocation\",\"work_location\",\"country\",\"employee.location\",\"employee.officeLocation\",\"employee.office_location\",\"employee.site\",\"data.employee.location\",\"data.employee.officeLocation\",\"data.employee.office_location\",\"worker.location\",\"worker.officeLocation\",\"work.location\",\"work.site\",\"jobInfo.location\",\"jobInfo.officeLocation\",\"attributes.office.value\",\"attributes.location.value\");"
+        },
+        {
+          "name": "employeeJobTitle",
+          "uuid": "ff5c70bf-ed84-5e3c-9092-8aea34230675",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};return read(\"jobTitle\",\"job_title\",\"title\",\"position\",\"businessTitle\",\"business_title\",\"employee.jobTitle\",\"employee.job_title\",\"employee.title\",\"employee.position\",\"data.employee.jobTitle\",\"data.employee.job_title\",\"worker.jobTitle\",\"worker.businessTitle\",\"work.title\",\"jobInfo.jobTitle\",\"jobInfo.position\",\"attributes.position.value\");"
+        },
+        {
+          "name": "entraMailNickname",
+          "uuid": "fc1f88c7-df2a-5bf0-b8a3-d65f3be2bed0",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const email=read('email','mail','workEmail','work_email','businessEmail','business_email','primaryWorkEmail','primary_work_email','userPrincipalName','employee.email','employee.workEmail','employee.work_email','employee.userPrincipalName','data.employee.email','data.employee.work_email','worker.email','worker.primaryWorkEmail','work.email','attributes.email.value','attributes.work_email.value');const id=read('employeeId','employee_id','workerId','worker_id','personIdExternal','userId','employee.id','data.employee.id','worker.id','id')||'new.employee';return email&&String(email).includes('@')?String(email).split('@')[0]:String(id).replace(/[^A-Za-z0-9._-]/g,'.');"
+        },
+        {
+          "name": "groupIdsToAdd",
+          "uuid": "e1819e4f-5df7-53e3-8024-ff6b4c1a9fc9",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"groupsToAdd\",\"groupIdsToAdd\",\"entra.groupsToAdd\",\"entra.groupIdsToAdd\",\"access.groupsToAdd\",\"access.groupIdsToAdd\",\"employee.groupsToAdd\",\"data.groupsToAdd\",\"data.groupIdsToAdd\",\"payload.groupsToAdd\",\"payload.groupIdsToAdd\"),read(\"_flow.ENTRA_GROUP_IDS_TO_ADD\",\"flow.ENTRA_GROUP_IDS_TO_ADD\",\"flowVariables.ENTRA_GROUP_IDS_TO_ADD\",\"variables.ENTRA_GROUP_IDS_TO_ADD\",\"ENTRA_GROUP_IDS_TO_ADD\",\"_flow.ENTRA_ADDITIONAL_GROUP_IDS\",\"flow.ENTRA_ADDITIONAL_GROUP_IDS\",\"flowVariables.ENTRA_ADDITIONAL_GROUP_IDS\",\"variables.ENTRA_ADDITIONAL_GROUP_IDS\",\"ENTRA_ADDITIONAL_GROUP_IDS\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
+        },
+        {
+          "name": "licenseSkuIdsToAssign",
+          "uuid": "f1fddfba-ae23-5a8e-a9c6-1cb2e55137b1",
+          "script": "const sources=[scope?.payload&&typeof scope.payload==='object'?scope.payload:null,scope].filter(Boolean);const get=(obj,path)=>path.split('.').reduce((acc,key)=>{if(acc==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(acc))return acc[Number(key)];return acc[key];},obj);const read=(...paths)=>{for(const source of sources){for(const path of paths){const value=get(source,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}}return '';};const normalize=(value)=>{if(value===undefined||value===null||value==='')return[];if(Array.isArray(value))return value.flatMap(normalize);if(typeof value==='object'){if(Array.isArray(value.value))return normalize(value.value);if(value.id)return[String(value.id)];if(value.skuId)return[String(value.skuId)];if(value.groupId)return[String(value.groupId)];return[];}const text=String(value).trim();if(!text)return[];try{const parsed=JSON.parse(text);if(parsed!==value)return normalize(parsed);}catch(e){}return text.split(/[\\n,;]/).map((item)=>item.trim()).filter(Boolean);};const values=[read(\"licensesToAssign\",\"licenseSkuIdsToAssign\",\"license_sku_ids_to_assign\",\"entra.licensesToAssign\",\"entra.licenseSkuIdsToAssign\",\"software.licenseSkuIdsToAssign\",\"employee.licenseSkuIdsToAssign\",\"data.licenseSkuIdsToAssign\",\"payload.licenseSkuIdsToAssign\"),read(\"_flow.ENTRA_LICENSE_SKU_IDS_TO_ASSIGN\",\"flow.ENTRA_LICENSE_SKU_IDS_TO_ASSIGN\",\"flowVariables.ENTRA_LICENSE_SKU_IDS_TO_ASSIGN\",\"variables.ENTRA_LICENSE_SKU_IDS_TO_ASSIGN\",\"ENTRA_LICENSE_SKU_IDS_TO_ASSIGN\")];return [...new Set(values.flatMap(normalize).map((item)=>String(item).trim()).filter((item)=>item&&item!=='00000000-0000-0000-0000-000000000000'))];"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"serviceDeskId\":\"{{_flow.JSM_SERVICE_DESK_ID}}\",\"requestTypeId\":\"{{_flow.JSM_ONBOARDING_REQUEST_TYPE_ID}}\",\"requestFieldValues\":{\"summary\":\"Onboard {{employeeDisplayName}}\",\"description\":\"Deel employee {{employeeId}} starts {{employeeStartDate}}. Manager: {{employeeManagerId}}. Department: {{employeeDepartment}}. Location: {{employeeLocation}}.\",\"{{_flow.JSM_EMPLOYEE_ID_FIELD}}\":\"{{employeeId}}\",\"{{_flow.JSM_START_DATE_FIELD}}\":\"{{employeeStartDate}}\"}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/servicedeskapi/request",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "jsmIssueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issueKey",
+          "instruction": "JSM request issue key created for the onboarding case."
+        }
+      ],
+      "name": "Create Onboarding JSM Request",
+      "id": "template:action:0d850124-9aa8-5ffa-ab79-653a89101d06",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.hrEventType",
+              "type": "DATA_CONDITION",
+              "value": "employee.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.employeeId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the Microsoft Entra user for the new Deel employee.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-deel-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"accountEnabled\":true,\"displayName\":\"{{employeeDisplayName}}\",\"mailNickname\":\"{{entraMailNickname}}\",\"userPrincipalName\":\"{{#if employeeEmail}}{{employeeEmail}}{{else}}{{employeeId}}@{{_flow.ENTRA_DOMAIN}}{{/if}}\",\"givenName\":\"{{employeeFirstName}}\",\"surname\":\"{{employeeLastName}}\",\"jobTitle\":\"{{employeeJobTitle}}\",\"department\":\"{{employeeDepartment}}\",\"officeLocation\":\"{{employeeLocation}}\",\"passwordProfile\":{\"forceChangePasswordNextSignIn\":true,\"password\":\"{{_flow.ENTRA_TEMP_PASSWORD}}\"}}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users",
+      "parentId": "template:action:0d850124-9aa8-5ffa-ab79-653a89101d06",
+      "flowVariables": [
+        {
+          "name": "entraUserId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "Microsoft Entra object ID for the created user."
+        }
+      ],
+      "name": "Create Entra User",
+      "id": "template:action:aa212446-20c1-5edd-9970-1a0266ac5858",
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the created Entra user to the baseline onboarding/access group.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-deel-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/{{_flow.entraUserId}}\"}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{_flow.ENTRA_ONBOARDING_GROUP_ID}}/members/$ref",
+      "parentId": "template:action:aa212446-20c1-5edd-9970-1a0266ac5858",
+      "flowVariables": [],
+      "name": "Add User to Entra Onboarding Group",
+      "id": "template:action:39e060dc-177c-5ff8-8d4d-870a3b26693e",
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Add the created Entra user to any additional group IDs supplied by the HR event or configured flow variable.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-deel-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/{{_flow.entraUserId}}\"}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{{self}}}/members/$ref",
+      "parentId": "template:action:aa212446-20c1-5edd-9970-1a0266ac5858",
+      "flowVariables": [],
+      "name": "Add User to Additional Entra Groups",
+      "id": "template:action:e5aa6c9a-6c14-56af-a269-0af16d69e4c2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.groupIdsToAdd",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "iterator": "$.groupIdsToAdd",
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Assign any Microsoft Entra license SKU IDs supplied by the HR event or configured flow variable.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-deel-entra"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"addLicenses\":[{\"skuId\":\"{{{self}}}\",\"disabledPlans\":[]}],\"removeLicenses\":[]}",
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{_flow.entraUserId}}/assignLicense",
+      "parentId": "template:action:aa212446-20c1-5edd-9970-1a0266ac5858",
+      "flowVariables": [],
+      "name": "Assign Entra Licenses",
+      "id": "template:action:bbe17d4c-645a-5c6d-b394-18742d8b616a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.licenseSkuIdsToAssign",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "iterator": "$.licenseSkuIdsToAssign",
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the identity and access onboarding task under the JSM request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Identity setup for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Create Entra account, validate group membership, and confirm mailbox/licensing for Deel employee {{employeeId}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:0d850124-9aa8-5ffa-ab79-653a89101d06",
+      "flowVariables": [],
+      "name": "Create Identity Onboarding Task",
+      "id": "template:action:75e10d00-1f84-5b50-83e3-be406e44a21f",
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the hardware provisioning task under the JSM request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Hardware provisioning for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Prepare laptop, accessories, delivery, and asset assignment for {{employeeDisplayName}} in {{employeeLocation}} before {{employeeStartDate}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:0d850124-9aa8-5ffa-ab79-653a89101d06",
+      "flowVariables": [],
+      "name": "Create Hardware Provisioning Task",
+      "id": "template:action:f4d028e1-cab2-567c-961a-ecb31130256b",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create the software provisioning task under the JSM request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Software provisioning for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Provision baseline software and role-specific applications for {{employeeJobTitle}} in {{employeeDepartment}}.\"}]}]}}}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:0d850124-9aa8-5ffa-ab79-653a89101d06",
+      "flowVariables": [],
+      "name": "Create Software Provisioning Task",
+      "id": "template:action:1b57d3d5-2047-54ea-98f5-cdc9eb305f0b",
+      "order": 800
+    }
+  ],
+  "description": "Create a JSM onboarding request, IT tasks, an Entra user, group memberships, and optional license assignments from a Deel new-employee event.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "JSM_SERVICE_DESK_ID",
+      "behavior": "SET",
+      "value": "1",
+      "instruction": "Jira Service Management service desk ID used for onboarding requests."
+    },
+    {
+      "name": "JSM_ONBOARDING_REQUEST_TYPE_ID",
+      "behavior": "SET",
+      "value": "100",
+      "instruction": "JSM request type ID for employee onboarding."
+    },
+    {
+      "name": "JSM_EMPLOYEE_ID_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10153",
+      "instruction": "Request field/custom field that stores the Deel employee ID."
+    },
+    {
+      "name": "JSM_START_DATE_FIELD",
+      "behavior": "SET",
+      "value": "customfield_10154",
+      "instruction": "Request field/custom field that stores the employee start date."
+    },
+    {
+      "name": "TASK_PROJECT",
+      "behavior": "SET",
+      "value": "HR",
+      "instruction": "Jira project key where onboarding subtasks are created."
+    },
+    {
+      "name": "TASK_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Sub-task",
+      "instruction": "Issue type used for onboarding tasks. Use Task instead if the project does not support subtasks."
+    },
+    {
+      "name": "ENTRA_DOMAIN",
+      "behavior": "SET",
+      "value": "example.com",
+      "instruction": "Fallback Entra UPN domain used when the Deel event has no email address."
+    },
+    {
+      "name": "ENTRA_TEMP_PASSWORD",
+      "behavior": "SET",
+      "value": "ChangeMe-Replace-123!",
+      "instruction": "Temporary password for created Entra users. Replace before enabling the flow."
+    },
+    {
+      "name": "ENTRA_ONBOARDING_GROUP_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Microsoft Entra group object ID used for baseline onboarding access."
+    },
+    {
+      "name": "ENTRA_ADDITIONAL_GROUP_IDS",
+      "behavior": "SET",
+      "value": "[]",
+      "instruction": "Optional JSON array or comma-separated list of additional Entra group object IDs to add during onboarding."
+    },
+    {
+      "name": "ENTRA_LICENSE_SKU_IDS_TO_ASSIGN",
+      "behavior": "SET",
+      "value": "[]",
+      "instruction": "Optional JSON array or comma-separated list of Microsoft 365 license SKU IDs to assign during onboarding."
+    }
+  ],
+  "groupName": "Deel",
+  "logLevel": "VERBOSE",
+  "logRetention": 5,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Deel - Employee Onboarding",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

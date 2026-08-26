@@ -4,17 +4,10 @@
   "name": "Jira -> Scrive -> Jira Signature",
   "description": "Sends Jira agreements for Scrive signature and updates Jira from Scrive webhook status changes",
   "category": "Scrive",
-  "flows": [
-    "scrive_outgoing_signature.json",
-    "scrive_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["scrive_outgoing_signature.json", "scrive_incoming_status.json"],
+  "icon": "scrive.png",
   "author": "Rixter AB",
-  "tags": [
-    "scrive",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["scrive", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {

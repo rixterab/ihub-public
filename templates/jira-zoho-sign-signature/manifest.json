@@ -5,7 +5,7 @@
   "description": "Sends Jira agreements for Zoho Sign signature and updates Jira from Zoho Sign webhook status changes",
   "category": "Zoho Sign",
   "flows": ["zoho_sign_outgoing_signature.json", "zoho_sign_incoming_status.json"],
-  "icon": "zoho.svg",
+  "icon": "zoho.png",
   "author": "Rixter AB",
   "tags": ["zoho-sign", "signature", "agreement"],
   "createdAt": "2026-08-25",

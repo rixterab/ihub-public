@@ -4,17 +4,10 @@
   "name": "Jira -> SignNow -> Jira Signature",
   "description": "Sends Jira agreements for SignNow signature and updates Jira from SignNow webhook status changes",
   "category": "SignNow",
-  "flows": [
-    "signnow_outgoing_signature.json",
-    "signnow_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["signnow_outgoing_signature.json", "signnow_incoming_status.json"],
+  "icon": "signnow.png",
   "author": "Rixter AB",
-  "tags": [
-    "signnow",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["signnow", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {

@@ -4,17 +4,10 @@
   "name": "Jira -> Adobe Acrobat Sign -> Jira Signature",
   "description": "Sends Jira agreements for Adobe Acrobat Sign signature and updates Jira from Adobe Acrobat Sign webhook status changes",
   "category": "Adobe Acrobat Sign",
-  "flows": [
-    "adobe_acrobat_sign_outgoing_signature.json",
-    "adobe_acrobat_sign_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["adobe_acrobat_sign_outgoing_signature.json", "adobe_acrobat_sign_incoming_status.json"],
+  "icon": "sadobe-acrobat.svg",
   "author": "Rixter AB",
-  "tags": [
-    "adobe-acrobat-sign",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["adobe-acrobat-sign", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {

@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "key": "bamboohr",
+  "name": "BambooHR Employee Lifecycle",
+  "description": "Employee onboarding, offboarding, and mover templates for BambooHR, Jira Service Management, Jira work items, and Microsoft Entra",
+  "category": "BambooHR",
+  "flows": ["bamboohr_employee_onboarding.json", "bamboohr_employee_offboarding.json", "bamboohr_employee_mover.json"],
+  "icon": "bamboo.png",
+  "author": "Rixter AB",
+  "tags": ["bamboohr", "hr", "onboarding", "offboarding", "mover", "jira-service-management", "microsoft-entra"],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-bamboohr-entra",
+      "name": "Microsoft Entra",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+          },
+          "grantType": "code",
+          "scope": "offline_access User.Read User.ReadWrite.All GroupMember.ReadWrite.All LicenseAssignment.ReadWrite.All",
+          "headerPrefix": "Bearer",
+          "includeState": true,
+          "includeScopeInAccessTokenReq": true,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

@@ -4,17 +4,10 @@
   "name": "Jira -> Yousign -> Jira Signature",
   "description": "Sends Jira agreements for Yousign signature and updates Jira from Yousign webhook status changes",
   "category": "Yousign",
-  "flows": [
-    "yousign_outgoing_signature.json",
-    "yousign_incoming_status.json"
-  ],
-  "icon": "signature.svg",
+  "flows": ["yousign_outgoing_signature.json", "yousign_incoming_status.json"],
+  "icon": "yousign.webp",
   "author": "Rixter AB",
-  "tags": [
-    "yousign",
-    "signature",
-    "agreement"
-  ],
+  "tags": ["yousign", "signature", "agreement"],
   "createdAt": "2026-08-25",
   "credentialDefinitions": [
     {
