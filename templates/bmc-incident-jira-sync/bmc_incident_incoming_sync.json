@@ -1,0 +1,713 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "bmcEventType",
+          "uuid": "1787543521001",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('eventType', 'event_type', 'EventType', 'type', 'Type', 'action', 'Action', 'operation', 'event');\nif (eventType) {\n  const normalized = String(eventType).toLowerCase();\n  if (normalized.includes('attachment')) return 'incident.attachment.created';\n  if (normalized.includes('comment') || normalized.includes('worklog') || normalized.includes('work_log')) return 'incident.commented';\n  if (normalized === 'insert' || normalized === 'create' || normalized === 'created' || normalized === 'incident.create' || normalized === 'incident.created' || normalized === 'ticket.created') return 'incident.created';\n  if (normalized === 'update' || normalized === 'modify' || normalized === 'modified' || normalized === 'updated' || normalized === 'incident.update' || normalized === 'incident.updated' || normalized === 'ticket.updated') return 'incident.updated';\n  return eventType;\n}\nif (read('attachmentId', 'attachment_id', 'attachment.id', 'attachment.entryId', 'attachmentEntryId', 'attachment_entry_id')) return 'incident.attachment.created';\nif (read('commentId', 'comment_id', 'workLogId', 'work_log_id', 'workInfoId', 'work_info_id', 'comment.id', 'workLog.id')) return 'incident.commented';\nif (read('incidentNumber', 'incident_number', 'IncidentNumber', 'Incident Number', 'Incident_Number', 'number', 'Number', 'values.Incident Number')) return 'incident.created';\nreturn '';"
+        },
+        {
+          "name": "bmcIncidentNumber",
+          "uuid": "1787543521002",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('incidentNumber', 'incident_number', 'IncidentNumber', 'Incident Number', 'Incident_Number', 'number', 'Number', 'id', 'Id', 'incident.number', 'incident.id', 'incident.Incident Number', 'values.Incident Number', 'values.Incident_Number');"
+        },
+        {
+          "name": "bmcEntryId",
+          "uuid": "1787543521003",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('entryId', 'entry_id', 'requestId', 'request_id', 'Request ID', 'Request_ID', 'values.Request ID', 'incident.entryId', 'incident.requestId') || read('incidentNumber', 'incident_number', 'Incident Number', 'number', 'values.Incident Number');"
+        },
+        {
+          "name": "bmcSummary",
+          "uuid": "1787543521004",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst number = read('incidentNumber', 'incident_number', 'Incident Number', 'number', 'values.Incident Number');\nconst summary = read('summary', 'title', 'shortDescription', 'short_description', 'Short Description', 'Description', 'values.Description', 'incident.summary', 'incident.Description');\nif (summary) return summary;\nreturn number ? 'BMC incident ' + number : 'BMC incident';"
+        },
+        {
+          "name": "bmcDescription",
+          "uuid": "1787543521005",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('description', 'details', 'notes', 'Detailed_Decription', 'Detailed Description', 'Detailed_Description', 'values.Detailed_Decription', 'values.Detailed Description', 'values.Detailed_Description', 'incident.description', 'incident.Detailed_Decription') || read('Description', 'values.Description');"
+        },
+        {
+          "name": "bmcCommentId",
+          "uuid": "1787543521006",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentId', 'comment_id', 'CommentId', 'workLogId', 'work_log_id', 'workInfoId', 'work_info_id', 'Work Log ID', 'Entry ID', 'Request ID', 'comment.id', 'workLog.id', 'worklog.id', 'values.Request ID');"
+        },
+        {
+          "name": "bmcCommentBody",
+          "uuid": "1787543521007",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('commentBody', 'comment_body', 'CommentBody', 'comment.body', 'comment.value', 'workLog.body', 'workLog.Description', 'workLog.Detailed Description', 'worklog.body', 'Detailed Description', 'Detailed_Decription', 'Description', 'values.Detailed Description', 'values.Detailed_Decription', 'values.Description');"
+        },
+        {
+          "name": "bmcAttachmentId",
+          "uuid": "1787543521008",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('attachmentId', 'attachment_id', 'AttachmentId', 'attachment.id', 'attachment.entryId', 'attachmentEntryId', 'attachment_entry_id', 'workLogId', 'work_log_id', 'workInfoId', 'work_info_id', 'values.Request ID');"
+        },
+        {
+          "name": "bmcAttachmentEntryId",
+          "uuid": "1787543521009",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('attachmentEntryId', 'attachment_entry_id', 'workLogEntryId', 'work_log_entry_id', 'workLogId', 'work_log_id', 'workInfoId', 'work_info_id', 'entryId', 'entry_id', 'Request ID', 'values.Request ID', 'attachment.entryId');"
+        },
+        {
+          "name": "bmcAttachmentFieldName",
+          "uuid": "1787543521010",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('attachmentFieldName', 'attachment_field_name', 'fieldName', 'field_name', 'attachment.fieldName', 'attachment.field_name') || 'Attachment';"
+        },
+        {
+          "name": "bmcFileName",
+          "uuid": "1787543521011",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst atPath = (obj, path) => {\n  if (obj == null || !path) return undefined;\n  if (Object.prototype.hasOwnProperty.call(obj, path)) return obj[path];\n  return path.split('.').reduce((current, key) => {\n    if (current == null) return undefined;\n    if (/^\\d+$/.test(key) && Array.isArray(current)) return current[Number(key)];\n    return current[key];\n  }, obj);\n};\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = atPath(root, path);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('fileName', 'file_name', 'FileName', 'filename', 'attachment.fileName', 'attachment.file_name', 'attachment.filename', 'values.File Name') || 'bmc-file';"
+        }
+      ],
+      "description": "Search for a Jira issue whose BMC incident number custom field matches the incoming incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{bmcIncidentNumber}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by BMC Incident Number",
+      "id": "template:action:c6f19f34-f13c-42c0-93df-3d890e08d73d",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.bmcIncidentNumber",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC payload must include an incident number"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming BMC incident.created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{bmcSummary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{bmcIncidentNumber}}\",\n    \"description\": {{{htmlToADF bmcDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:c6f19f34-f13c-42c0-93df-3d890e08d73d",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue from BMC Incident",
+      "id": "template:action:5aef6b8e-11fc-4b66-8f56-78227c0955e6",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.bmcEventType",
+              "type": "DATA_CONDITION",
+              "value": "incident.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the linked Jira issue when the BMC incident is updated.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{bmcSummary}}\",\n    \"description\": {{{htmlToADF bmcDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:c6f19f34-f13c-42c0-93df-3d890e08d73d",
+      "flowVariables": [],
+      "name": "Update Jira Issue from BMC Incident",
+      "id": "template:action:5ca75a6a-4677-444c-a7a0-02f4fc762727",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.bmcEventType",
+              "type": "DATA_CONDITION",
+              "value": "incident.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the BMC work log entry id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{bmcCommentId}}",
+      "parentId": "template:action:c6f19f34-f13c-42c0-93df-3d890e08d73d",
+      "name": "Get BMC Comment ID Property",
+      "id": "template:action:111e0612-a76c-43d1-9e32-e11704266a44",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.bmcEventType",
+              "type": "DATA_CONDITION",
+              "value": "incident.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.bmcCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC comment payload must include a work log entry id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add the BMC work log comment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF bmcCommentBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:111e0612-a76c-43d1-9e32-e11704266a44",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add BMC Comment to Jira",
+      "id": "template:action:47082678-0d4c-4c30-905d-ee7ec027439a",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.bmcCommentBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC comment payload must include comment text"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming BMC Comment ID",
+      "description": "Store the BMC work log entry id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:684f7d61-e66a-4128-a42f-5a1ce4d1f1f6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{bmcCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"bmc\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{bmcCommentId}}",
+      "parentId": "template:action:47082678-0d4c-4c30-905d-ee7ec027439a",
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Get a Jira issue property for the BMC attachment id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "template:action:c6f19f34-f13c-42c0-93df-3d890e08d73d",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{bmcAttachmentId}}",
+      "name": "Get BMC Attachment ID Property",
+      "id": "template:action:48e20b13-8246-4b37-b744-27f28fd830da",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.bmcEventType",
+              "type": "DATA_CONDITION",
+              "value": "incident.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.bmcAttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC attachment payload must include an attachment id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{bmcFileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the BMC attachment binary from the AR System attachment endpoint.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-bmc-authorization"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_WORK_LOG_FORM}}/{{bmcAttachmentEntryId}}/attach/{{bmcAttachmentFieldName}}",
+      "parentId": "template:action:48e20b13-8246-4b37-b744-27f28fd830da",
+      "name": "Download BMC Attachment",
+      "id": "template:action:72fcd803-49a6-4dc2-95d6-df1013c5e6f1",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.bmcAttachmentEntryId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC attachment payload must include the work log entry id that holds the attachment"
+            },
+            {
+              "jsonPath": "$.bmcAttachmentFieldName",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming BMC attachment payload must include the attachment field name, or use the default Attachment field"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded BMC attachment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:72fcd803-49a6-4dc2-95d6-df1013c5e6f1",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add BMC Attachment to Jira",
+      "id": "template:action:66898312-e315-4efd-85b3-87ee0d9856da",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming BMC Attachment ID",
+      "description": "Store the BMC attachment id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:d6970abb-fd39-4122-91aa-509120f2b38d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{bmcAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"bmc\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{bmcAttachmentId}}",
+      "parentId": "template:action:66898312-e315-4efd-85b3-87ee0d9856da",
+      "order": 800
+    }
+  ],
+  "description": "Sync BMC Helix ITSM incident webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "BMC",
+      "instruction": "Jira project key used for BMC-created incidents"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new BMC incidents"
+    },
+    {
+      "name": "BMC_URL",
+      "behavior": "SET",
+      "value": "https://your-company-restapi.onbmc.com",
+      "instruction": "BMC Helix ITSM / AR System REST API base URL, for example https://acme-restapi.onbmc.com or https://arserver.example.com:8008"
+    },
+    {
+      "name": "BMC_WORK_LOG_FORM",
+      "behavior": "SET",
+      "value": "HPD:WorkLog",
+      "instruction": "BMC work log form used for incident work information and attachments"
+    },
+    {
+      "name": "BMC_WORK_LOG_ATTACHMENT_FIELD",
+      "behavior": "SET",
+      "value": "Attachment",
+      "instruction": "Default BMC work log attachment field name. Incoming webhook payloads can override this with attachmentFieldName."
+    }
+  ],
+  "groupName": "BMC",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "BMC Incident Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

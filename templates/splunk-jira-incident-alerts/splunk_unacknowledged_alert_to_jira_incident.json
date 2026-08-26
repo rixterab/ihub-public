@@ -1,0 +1,347 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "splunkAlertId",
+          "uuid": "1800002001001",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return String(read('search_name','searchName','result.search_name','result.searchName','alertId','alert_id','result.alertId','result.alert_id','rule','result.rule','sid','result.sid','search_id','result.search_id')).trim();"
+        },
+        {
+          "name": "splunkAlertIdJql",
+          "uuid": "1800002001002",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return String(read('search_name','searchName','result.search_name','result.searchName','alertId','alert_id','result.alertId','result.alert_id','rule','result.rule','sid','result.sid','search_id','result.search_id')).replace(/[\"\\\\]+/g,' ').replace(/\\s+/g,' ').trim();"
+        },
+        {
+          "name": "splunkSid",
+          "uuid": "1800002001003",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return String(read('sid','result.sid','search_id','result.search_id')).trim();"
+        },
+        {
+          "name": "splunkSearchName",
+          "uuid": "1800002001004",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return String(read('search_name','searchName','result.search_name','result.searchName')).trim();"
+        },
+        {
+          "name": "splunkResultsLink",
+          "uuid": "1800002001005",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return String(read('results_link','resultsLink','result.results_link','result.resultsLink','link','url','result.link','result.url')).trim();"
+        },
+        {
+          "name": "splunkAlertSummary",
+          "uuid": "1800002001006",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const summary=read('result.title','result.summary','result.message','result.description','title','summary','message','description','search_name','searchName');return String(summary||'Splunk alert').replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();"
+        },
+        {
+          "name": "splunkAckState",
+          "uuid": "1800002001007",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const ack=String(read('acknowledged','is_acknowledged','ack','acked','result.acknowledged','result.is_acknowledged','result.ack','result.acked')).toLowerCase();if(['true','1','yes','y'].includes(ack))return 'acknowledged';if(['false','0','no','n'].includes(ack))return 'unacknowledged';const status=String(read('ack_status','ackStatus','status','state','result.ack_status','result.ackStatus','result.status','result.state')).toLowerCase();if(status.includes('acknowledged')||status==='ack'||status==='acked')return 'acknowledged';if(status.includes('closed')||status.includes('resolved')||status.includes('cleared'))return 'closed';if(status.includes('unack')||['new','open','active','firing','triggered'].includes(status))return 'unacknowledged';return status||'unacknowledged';"
+        },
+        {
+          "name": "splunkAgeMinutes",
+          "uuid": "1800002001008",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const parseTime=(value)=>{if(value===undefined||value===null||String(value).trim()==='')return NaN;const text=String(value).trim();if(/^\\d+(\\.\\d+)?$/.test(text)){const n=Number(text);return n>100000000000?n:n*1000;}const parsed=Date.parse(text);return Number.isNaN(parsed)?NaN:parsed;};const direct=read('ageMinutes','age_minutes','minutesOpen','minutes_open','alert_age_minutes','result.ageMinutes','result.age_minutes','result.minutesOpen','result.minutes_open','result.alert_age_minutes');if(direct!==''&&!Number.isNaN(Number(direct)))return String(Math.max(0,Math.floor(Number(direct))));const triggeredAt=read('firstTriggeredAt','first_triggered_at','triggeredAt','triggered_at','triggerTime','trigger_time','trigger_time_epoch','result.firstTriggeredAt','result.first_triggered_at','result.triggeredAt','result.triggered_at','result.triggerTime','result.trigger_time','result.trigger_time_epoch','result._time','_time');const ms=parseTime(triggeredAt);if(Number.isNaN(ms))return '';return String(Math.max(0,Math.floor((Date.now()-ms)/60000)));"
+        },
+        {
+          "name": "splunkShouldCreateIncident",
+          "uuid": "1800002001009",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const parseTime=(value)=>{if(value===undefined||value===null||String(value).trim()==='')return NaN;const text=String(value).trim();if(/^\\d+(\\.\\d+)?$/.test(text)){const n=Number(text);return n>100000000000?n:n*1000;}const parsed=Date.parse(text);return Number.isNaN(parsed)?NaN:parsed;};const ack=String(read('acknowledged','is_acknowledged','ack','acked','result.acknowledged','result.is_acknowledged','result.ack','result.acked')).toLowerCase();if(['true','1','yes','y'].includes(ack))return 'false';const status=String(read('ack_status','ackStatus','status','state','result.ack_status','result.ackStatus','result.status','result.state')).toLowerCase();if(status.includes('acknowledged')||status==='ack'||status==='acked'||status.includes('closed')||status.includes('resolved')||status.includes('cleared'))return 'false';const direct=read('ageMinutes','age_minutes','minutesOpen','minutes_open','alert_age_minutes','result.ageMinutes','result.age_minutes','result.minutesOpen','result.minutes_open','result.alert_age_minutes');let ageMinutes=NaN;if(direct!==''&&!Number.isNaN(Number(direct)))ageMinutes=Number(direct);if(Number.isNaN(ageMinutes)){const triggeredAt=read('firstTriggeredAt','first_triggered_at','triggeredAt','triggered_at','triggerTime','trigger_time','trigger_time_epoch','result.firstTriggeredAt','result.first_triggered_at','result.triggeredAt','result.triggered_at','result.triggerTime','result.trigger_time','result.trigger_time_epoch','result._time','_time');const ms=parseTime(triggeredAt);if(!Number.isNaN(ms))ageMinutes=Math.max(0,Math.floor((Date.now()-ms)/60000));}if(Number.isNaN(ageMinutes))return 'true';const threshold=Number({{{toJSON _flow.ACK_TIMEOUT_MINUTES}}})||15;return ageMinutes>=threshold?'true':'false';"
+        },
+        {
+          "name": "splunkDescriptionHtml",
+          "uuid": "1800002001010",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(obj,path)=>{if(obj==null||!path)return undefined;if(Object.prototype.hasOwnProperty.call(obj,path))return obj[path];return path.split('.').reduce((current,key)=>{if(current==null)return undefined;if(/^\\d+$/.test(key)&&Array.isArray(current))return current[Number(key)];return current[key];},obj);};const read=(...paths)=>{for(const path of paths){const value=at(root,path);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const esc=(value)=>String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const result=root&&typeof root.result==='object'?root.result:{};const fieldRows=Object.keys(result).slice(0,20).map((key)=>'<li><strong>'+esc(key)+':</strong> '+esc(result[key])+'</li>').join('');const title=read('result.title','result.summary','result.message','result.description','title','summary','message','description','search_name','searchName')||'Splunk alert';const sid=read('sid','result.sid','search_id','result.search_id');const searchName=read('search_name','searchName','result.search_name','result.searchName');const link=read('results_link','resultsLink','result.results_link','result.resultsLink','link','url','result.link','result.url');const owner=read('owner','result.owner');const app=read('app','result.app');return '<p>Source: Splunk alert webhook</p><p>Alert: '+esc(title)+'</p><p>Search: '+esc(searchName)+'</p><p>SID: '+esc(sid)+'</p><p>Owner/App: '+esc(owner)+' / '+esc(app)+'</p><p>Results link: '+esc(link)+'</p>'+(fieldRows?'<p>First result fields:</p><ul>'+fieldRows+'</ul>':'');"
+        }
+      ],
+      "description": "Search Jira for an open incident already linked to the incoming Splunk alert key.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10155]\\\" ~ \\\"{{splunkAlertIdJql}}\\\" AND statusCategory != Done ORDER BY created DESC\",\n  \"maxResults\": 10,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"issuetype\",\n    \"customfield_10155\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Existing Jira incident key for this Splunk alert, if one exists."
+        }
+      ],
+      "name": "Find Jira Incident by Splunk Alert Key",
+      "id": "template:action:79f75026-fd5f-463d-b599-afab978e29a8",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.splunkAlertId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Splunk webhook must include a search name, alert id or SID."
+            },
+            {
+              "jsonPath": "$.splunkShouldCreateIncident",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "operator": "EQUALS",
+              "description": "Only create or update Jira when the Splunk alert is still unacknowledged past the configured threshold."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira incident for a Splunk alert that is still unacknowledged after the configured threshold.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"Splunk alert not acknowledged: {{splunkAlertSummary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10155\": \"{{splunkAlertId}}\",\n    \"description\": {{{htmlToADF splunkDescriptionHtml}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:79f75026-fd5f-463d-b599-afab978e29a8",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": "Jira incident key created for the Splunk alert."
+        }
+      ],
+      "name": "Create Jira Incident from Splunk Alert",
+      "id": "template:action:2ab04624-9b75-4a59-8d9b-4ad69ca83166",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "Only create a Jira incident when no open incident is already linked to this Splunk alert."
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add an internal comment when the same unacknowledged Splunk alert is received again for an existing Jira incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Splunk alert is still unacknowledged. Alert key: {{splunkAlertId}}. State: {{splunkAckState}}. Age minutes: {{splunkAgeMinutes}}. SID: {{splunkSid}}. Results: {{splunkResultsLink}}\"\n          }\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": true\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:79f75026-fd5f-463d-b599-afab978e29a8",
+      "flowVariables": [],
+      "name": "Comment Existing Jira Incident",
+      "id": "template:action:e435cd3f-628b-44f7-8726-b90dd1476c27",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only comment when an open linked Jira incident already exists."
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add a Jira remote link to the Splunk search results when the webhook payload includes a results URL.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"object\": {\n    \"url\": \"{{splunkResultsLink}}\",\n    \"title\": \"Splunk results: {{splunkAlertSummary}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/remotelink",
+      "parentId": "template:action:2ab04624-9b75-4a59-8d9b-4ad69ca83166",
+      "flowVariables": [],
+      "name": "Link Splunk Results on Jira Incident",
+      "id": "template:action:1fed7d93-f19c-48d6-90e5-b981f632013e",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.splunkResultsLink",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only create a remote link when Splunk sent a results_link."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    }
+  ],
+  "description": "Create a Jira incident when Splunk reports an alert that has not been acknowledged in time.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "OPS",
+      "instruction": "Jira project key where Splunk-created incidents should be created and searched."
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Incident",
+      "instruction": "Jira issue type to create for unacknowledged Splunk alerts."
+    },
+    {
+      "name": "ACK_TIMEOUT_MINUTES",
+      "behavior": "SET",
+      "value": "15",
+      "instruction": "Minimum unacknowledged age before a Jira incident is created when the Splunk webhook sends age or trigger-time fields. If the payload has no age fields, the flow assumes Splunk already filtered for stale unacknowledged alerts."
+    }
+  ],
+  "groupName": "Splunk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Splunk Unacknowledged Alert to Jira Incident",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

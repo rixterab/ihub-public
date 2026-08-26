@@ -41,24 +41,9 @@
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('employeeId','personIdExternal','userId','employee.employeeId','employee.personIdExternal','employment.personIdExternal','payload.employeeId');"
         },
         {
-          "name": "employeeFirstName",
-          "uuid": "01d0dcff-73c2-42b1-af48-5f70cc72a770",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('firstName','givenName','employee.firstName','employee.givenName','person.firstName','personalInfo.firstName');"
-        },
-        {
-          "name": "employeeLastName",
-          "uuid": "c72f835d-0e96-4b19-a341-ca323bab1c3a",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('lastName','surname','familyName','employee.lastName','employee.surname','person.lastName','personalInfo.lastName');"
-        },
-        {
           "name": "employeeDisplayName",
           "uuid": "b8843998-98b5-4993-99f9-680d440480fd",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const direct=read('displayName','employee.displayName','userNav.displayName','person.displayName');if(direct)return direct;const name=[read('firstName','givenName','employee.firstName'),read('lastName','surname','employee.lastName')].filter(Boolean).join(' ');return name||read('employeeId','personIdExternal','userId')||'New employee';"
-        },
-        {
-          "name": "employeeEmail",
-          "uuid": "8e038233-cbd6-4cad-a4e2-cc5067566973",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('email','mail','userPrincipalName','employee.email','employee.mail','userNav.email','userNav.userPrincipalName');"
         },
         {
           "name": "employeeStartDate",
@@ -84,11 +69,6 @@
           "name": "employeeJobTitle",
           "uuid": "f430c6f1-0e2b-4941-9b3c-877d1b06c246",
           "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};return read('jobTitle','title','employee.jobTitle','jobInfo.jobTitle','jobInfo.position');"
-        },
-        {
-          "name": "entraMailNickname",
-          "uuid": "b415011b-f13b-4060-833f-d5ef08bd7e9f",
-          "script": "const root=scope?.payload&&typeof scope.payload==='object'?scope.payload:scope;const read=(...paths)=>{for(const path of paths){const value=path.split('.').reduce((obj,key)=>obj==null?undefined:obj[key],root);if(value!==undefined&&value!==null&&String(value).trim()!=='')return value;}return '';};const email=read('email','mail','userPrincipalName','employee.email','userNav.email');return email&&String(email).includes('@')?String(email).split('@')[0]:read('employeeId','personIdExternal','userId')||'new.employee';"
         }
       ],
       "credentialsReference": {
@@ -143,74 +123,13 @@
         }
       ],
       "method": "POST",
-      "description": "Create the Microsoft Entra user for the new employee.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-sap-successfactors-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"accountEnabled\":true,\"displayName\":\"{{employeeDisplayName}}\",\"mailNickname\":\"{{entraMailNickname}}\",\"userPrincipalName\":\"{{#if employeeEmail}}{{employeeEmail}}{{else}}{{employeeId}}@{{_flow.ENTRA_DOMAIN}}{{/if}}\",\"givenName\":\"{{employeeFirstName}}\",\"surname\":\"{{employeeLastName}}\",\"jobTitle\":\"{{employeeJobTitle}}\",\"department\":\"{{employeeDepartment}}\",\"officeLocation\":\"{{employeeLocation}}\",\"passwordProfile\":{\"forceChangePasswordNextSignIn\":true,\"password\":\"{{_flow.ENTRA_TEMP_PASSWORD}}\"}}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/users",
-      "parentId": "template:action:0b1df417-f4a6-4823-93a6-d8fda1723715",
-      "flowVariables": [
-        {
-          "name": "entraUserId",
-          "behavior": "SET",
-          "value": "$.response.data.id",
-          "instruction": "Microsoft Entra object ID for the created user."
-        }
-      ],
-      "name": "Create Entra User",
-      "id": "template:action:25bf7e0a-fa2d-4525-8f43-ac14c69895e5",
-      "order": 200
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        }
-      ],
-      "method": "POST",
-      "description": "Add the created Entra user to the default onboarding/access group.",
-      "credentialsReference": {
-        "type": "DATABASE_REF",
-        "value": "template:oauth2-sap-successfactors-entra"
-      },
-      "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"@odata.id\":\"https://graph.microsoft.com/v1.0/directoryObjects/{{_flow.entraUserId}}\"}",
-      "enabled": true,
-      "url": "https://graph.microsoft.com/v1.0/groups/{{_flow.ENTRA_ONBOARDING_GROUP_ID}}/members/$ref",
-      "parentId": "template:action:25bf7e0a-fa2d-4525-8f43-ac14c69895e5",
-      "flowVariables": [],
-      "name": "Add User to Entra Onboarding Group",
-      "id": "template:action:226efd97-5cac-43a4-9965-afe5b6fb72b1",
-      "order": 300
-    },
-    {
-      "headers": [
-        {
-          "value": "application/json",
-          "key": "Accept"
-        },
-        {
-          "value": "application/json",
-          "key": "Content-Type"
-        }
-      ],
-      "method": "POST",
       "description": "Create the identity and access onboarding task under the JSM request.",
       "credentialsReference": {
         "type": "ATLASSIAN_TOKEN",
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Identity setup for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Create Entra account, validate group membership, and confirm mailbox/licensing for SuccessFactors employee {{employeeId}}.\"}]}]}}}",
+      "body": "{\"fields\":{\"project\":{\"key\":\"{{_flow.TASK_PROJECT}}\"},\"summary\":\"Identity setup for {{employeeDisplayName}}\",\"issuetype\":{\"name\":\"{{_flow.TASK_ISSUE_TYPE}}\"},\"parent\":{\"key\":\"{{_flow.jsmIssueKey}}\"},\"description\":{\"type\":\"doc\",\"version\":1,\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Create the user account, validate group membership, and confirm mailbox/licensing for SuccessFactors employee {{employeeId}}.\"}]}]}}}",
       "enabled": true,
       "url": "{{baseUrl}}/rest/api/3/issue",
       "parentId": "template:action:0b1df417-f4a6-4823-93a6-d8fda1723715",
@@ -274,7 +193,7 @@
       "order": 600
     }
   ],
-  "description": "Create a JSM onboarding request, onboarding tasks, an Entra user, and default Entra group membership from a SuccessFactors employee-created event.",
+  "description": "Create a JSM onboarding request and onboarding tasks from a SuccessFactors employee-created event.",
   "enabled": false,
   "flowVariables": [
     {
@@ -312,24 +231,6 @@
       "behavior": "SET",
       "value": "Sub-task",
       "instruction": "Issue type used for onboarding tasks. Use Task instead if the project does not support subtasks."
-    },
-    {
-      "name": "ENTRA_DOMAIN",
-      "behavior": "SET",
-      "value": "example.com",
-      "instruction": "Fallback Entra UPN domain used when the SuccessFactors event has no email address."
-    },
-    {
-      "name": "ENTRA_TEMP_PASSWORD",
-      "behavior": "SET",
-      "value": "ChangeMe-Replace-123!",
-      "instruction": "Temporary password for created Entra users. Replace before enabling the flow."
-    },
-    {
-      "name": "ENTRA_ONBOARDING_GROUP_ID",
-      "behavior": "SET",
-      "value": "00000000-0000-0000-0000-000000000000",
-      "instruction": "Microsoft Entra group object ID used for baseline onboarding access."
     }
   ],
   "groupName": "SAP SuccessFactors",

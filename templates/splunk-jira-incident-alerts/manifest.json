@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "key": "splunk-jira-incident-alerts",
+  "name": "Splunk <-> Jira Incident Alerts",
+  "description": "Create Splunk alerts from Jira incidents and create Jira incidents from unacknowledged Splunk alerts",
+  "category": "Splunk",
+  "flows": [
+    "jira_incident_to_splunk_alert.json",
+    "splunk_unacknowledged_alert_to_jira_incident.json"
+  ],
+  "icon": "splunk.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "splunk",
+    "jira",
+    "incident",
+    "alert",
+    "webhook"
+  ],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-splunk-authorization",
+      "name": "Splunk Authorization Header",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

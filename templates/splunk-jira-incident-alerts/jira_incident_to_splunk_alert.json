@@ -1,0 +1,275 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/x-www-form-urlencoded",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "splunkSavedSearchName",
+          "uuid": "1800001001001",
+          "script": "const issue=(scope&&scope.issue)||(scope&&scope.payload&&scope.payload.issue)||{};const fields=issue.fields||{};const clean=(value)=>String(value||'').replace(/[\\r\\n\\t]+/g,' ').replace(/[\"\\\\]+/g,'').replace(/\\s+/g,' ').trim();const issueKey=issue.key||'incident';const summary=clean(fields.summary||issueKey)||'Jira incident';return clean('Jira '+issueKey+' - '+summary).slice(0,140);"
+        },
+        {
+          "name": "splunkCreateAlertBody",
+          "uuid": "1800001001002",
+          "script": "const issue=(scope&&scope.issue)||(scope&&scope.payload&&scope.payload.issue)||{};const fields=issue.fields||{};const clean=(value)=>String(value||'').replace(/[\\r\\n\\t]+/g,' ').replace(/[\"\\\\]+/g,'').replace(/\\s+/g,' ').trim();const value=(configured,defaultValue)=>configured===undefined||configured===null||String(configured).trim()===''?defaultValue:String(configured);const issueKey=issue.key||'incident';const summary=clean(fields.summary||issueKey)||'Jira incident';const alertName=clean('Jira '+issueKey+' - '+summary).slice(0,140);const searchTemplate={{{toJSON _flow.SPLUNK_DEFAULT_SEARCH}}};const jiraBaseUrl='{{baseUrl}}';const search=String(searchTemplate||'search index=main (error OR failure) | head 100').replace(/\\$\\{JIRA_ISSUE_KEY\\}/g,issueKey).replace(/\\$\\{JIRA_SUMMARY\\}/g,summary);const description='Created from Jira incident '+issueKey+' - '+summary+'. Jira URL: '+jiraBaseUrl+'/browse/'+issueKey;const pairs=[['name',alertName],['search',search],['description',description],['is_scheduled','1'],['enableSched','1'],['disabled','0'],['cron_schedule',value({{{toJSON _flow.SPLUNK_CRON_SCHEDULE}}},'*/5 * * * *')],['dispatch.earliest_time',value({{{toJSON _flow.SPLUNK_DISPATCH_EARLIEST_TIME}}},'-15m')],['dispatch.latest_time',value({{{toJSON _flow.SPLUNK_DISPATCH_LATEST_TIME}}},'now')],['alert_type','number of events'],['alert_comparator','greater than'],['alert_threshold','0'],['alert.digest_mode','1'],['alert.track','1'],['alert.severity',value({{{toJSON _flow.SPLUNK_ALERT_SEVERITY}}},'4')],['alert.expires',value({{{toJSON _flow.SPLUNK_ALERT_EXPIRES}}},'24h'),],['alert.suppress','1'],['alert.suppress.period',value({{{toJSON _flow.SPLUNK_ALERT_SUPPRESS_PERIOD}}},'30m')],['request.ui_dispatch_app',value({{{toJSON _flow.SPLUNK_APP}}},'search')],['request.ui_dispatch_view','search']];const webhookUrl=value({{{toJSON _flow.SPLUNK_CREATED_ALERT_WEBHOOK_URL}}},'');if(webhookUrl&&!webhookUrl.startsWith('https://your-')){pairs.push(['actions','webhook'],['action.webhook','1'],['action.webhook.param.url',webhookUrl]);}else{pairs.push(['actions','']);}const encode=(input)=>encodeURIComponent(input===undefined||input===null?'':String(input));return pairs.map(([key,val])=>encodeURIComponent(key)+'='+encode(val)).join('&');"
+        }
+      ],
+      "description": "Create a scheduled Splunk saved-search alert when a Jira incident is created.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-splunk-authorization"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{{{splunkCreateAlertBody}}}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.SPLUNK_URL}}/servicesNS/{{_flow.SPLUNK_OWNER}}/{{_flow.SPLUNK_APP}}/saved/searches?output_mode=json",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "splunkCreatedSavedSearchName",
+          "behavior": "SET",
+          "value": "$.response.data.entry[0].name",
+          "instruction": "Saved-search alert name returned by Splunk."
+        },
+        {
+          "name": "splunkCreatedSavedSearchId",
+          "behavior": "SET",
+          "value": "$.response.data.entry[0].id",
+          "instruction": "Splunk REST resource id for the created saved-search alert."
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 1,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "name": "Create Splunk Saved Search Alert",
+      "id": "template:action:0c8cf9d2-4e03-45d8-9b8c-5c711f01a001",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only create Splunk alerts from Jira issue created events."
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only create Splunk alerts for the configured Jira project."
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.INCIDENT_ISSUE_TYPE}}",
+              "operator": "EQUALS",
+              "description": "Only create Splunk alerts for Jira incidents."
+            },
+            {
+              "jsonPath": "$.issue.fields.customfield_10155",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Do not create another Splunk alert if this Jira incident already has a Splunk alert key."
+            },
+            {
+              "jsonPath": "$.issue.fields.creator.accountId",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.IHUB_JIRA_ACCOUNT_ID}}",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip Jira incidents created by the iHub integration user."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Store the Splunk saved-search alert name on the Jira incident and add an internal audit comment.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10155\": \"{{splunkSavedSearchName}}\"\n  },\n  \"update\": {\n    \"comment\": [\n      {\n        \"add\": {\n          \"body\": {\n            \"type\": \"doc\",\n            \"version\": 1,\n            \"content\": [\n              {\n                \"type\": \"paragraph\",\n                \"content\": [\n                  {\n                    \"type\": \"text\",\n                    \"text\": \"Splunk saved-search alert created: {{splunkSavedSearchName}}\"\n                  }\n                ]\n              }\n            ]\n          },\n          \"properties\": [\n            {\n              \"key\": \"sd.public.comment\",\n              \"value\": {\n                \"internal\": true\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:0c8cf9d2-4e03-45d8-9b8c-5c711f01a001",
+      "flowVariables": [],
+      "name": "Store Splunk Alert Key on Jira Incident",
+      "id": "template:action:9f375202-3870-404e-bd69-5b3becf87458",
+      "order": 200
+    }
+  ],
+  "description": "Create a Splunk saved-search alert when a Jira incident is created.",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "OPS",
+      "instruction": "Jira project key containing incidents that should create Splunk alerts."
+    },
+    {
+      "name": "INCIDENT_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Incident",
+      "instruction": "Jira issue type that represents incidents in the configured project."
+    },
+    {
+      "name": "IHUB_JIRA_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "instruction": "Atlassian accountId used by the iHub integration user. Used to prevent Jira/Splunk loops."
+    },
+    {
+      "name": "SPLUNK_URL",
+      "behavior": "SET",
+      "value": "https://your-splunk-host:8089",
+      "instruction": "Splunk management API base URL, including port 8089 for Splunk Enterprise or Splunk Cloud REST API access."
+    },
+    {
+      "name": "SPLUNK_OWNER",
+      "behavior": "SET",
+      "value": "nobody",
+      "instruction": "Splunk namespace owner used in /servicesNS/{owner}/{app}/saved/searches."
+    },
+    {
+      "name": "SPLUNK_APP",
+      "behavior": "SET",
+      "value": "search",
+      "instruction": "Splunk app namespace that should own the saved-search alert."
+    },
+    {
+      "name": "SPLUNK_DEFAULT_SEARCH",
+      "behavior": "SET",
+      "value": "search index=main (error OR failure) | head 100",
+      "instruction": "SPL used for alerts created from Jira. The tokens ${JIRA_ISSUE_KEY} and ${JIRA_SUMMARY} are replaced before the alert is created."
+    },
+    {
+      "name": "SPLUNK_CRON_SCHEDULE",
+      "behavior": "SET",
+      "value": "*/5 * * * *",
+      "instruction": "Cron schedule for the created Splunk saved-search alert."
+    },
+    {
+      "name": "SPLUNK_DISPATCH_EARLIEST_TIME",
+      "behavior": "SET",
+      "value": "-15m",
+      "instruction": "Earliest dispatch time for the saved search."
+    },
+    {
+      "name": "SPLUNK_DISPATCH_LATEST_TIME",
+      "behavior": "SET",
+      "value": "now",
+      "instruction": "Latest dispatch time for the saved search."
+    },
+    {
+      "name": "SPLUNK_ALERT_SEVERITY",
+      "behavior": "SET",
+      "value": "4",
+      "instruction": "Splunk alert severity. Splunk uses 1 DEBUG, 2 INFO, 3 WARN, 4 ERROR, 5 SEVERE, 6 FATAL."
+    },
+    {
+      "name": "SPLUNK_ALERT_EXPIRES",
+      "behavior": "SET",
+      "value": "24h",
+      "instruction": "How long the triggered alert remains visible in Splunk."
+    },
+    {
+      "name": "SPLUNK_ALERT_SUPPRESS_PERIOD",
+      "behavior": "SET",
+      "value": "30m",
+      "instruction": "Splunk suppression period for repeated results from the created alert."
+    },
+    {
+      "name": "SPLUNK_CREATED_ALERT_WEBHOOK_URL",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Optional webhook URL to attach to the created Splunk alert. Leave empty to create a tracked Splunk alert without a webhook action."
+    }
+  ],
+  "groupName": "Splunk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jira Incident to Splunk Alert",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-confluence-service-request-space",
+  "name": "JSM Service Request Approved to Confluence Space",
+  "description": "Create a dedicated Confluence space when a Jira Service Management service request is approved and link it back to the request",
+  "category": "Jira",
+  "flows": [
+    "jsm_service_request_approved_create_space.json"
+  ],
+  "icon": "atlassian-jira-icon.png",
+  "author": "Rixter AB",
+  "tags": ["jira", "jsm", "confluence", "service-request", "space", "provisioning"],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-confluence",
+      "name": "Confluence",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "integration@your-company.com"
+      }
+    }
+  ]
+}

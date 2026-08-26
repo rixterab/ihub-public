@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "key": "factorial",
   "name": "Factorial Employee Lifecycle",
-  "description": "Employee onboarding, offboarding, and mover templates for Factorial, Jira Service Management, Jira work items, and Microsoft Entra",
+  "description": "Employee onboarding, offboarding, and mover templates for Factorial, Jira Service Management, and Jira work items",
   "category": "Factorial",
   "flows": [
     "factorial_employee_onboarding.json",
@@ -17,30 +17,7 @@
     "onboarding",
     "offboarding",
     "mover",
-    "jira-service-management",
-    "microsoft-entra"
+    "jira-service-management"
   ],
-  "createdAt": "2026-08-26",
-  "credentialDefinitions": [
-    {
-      "key": "oauth2-factorial-entra",
-      "name": "Microsoft Entra",
-      "type": "OAUTH2",
-      "data": {
-        "config": {
-          "url": {
-            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
-            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
-          },
-          "grantType": "code",
-          "scope": "offline_access User.Read User.ReadWrite.All GroupMember.ReadWrite.All LicenseAssignment.ReadWrite.All",
-          "headerPrefix": "Bearer",
-          "includeState": true,
-          "includeScopeInAccessTokenReq": true,
-          "sendParamsAs": "x-www-form-urlencoded",
-          "urlEncode": false
-        }
-      }
-    }
-  ]
+  "createdAt": "2026-08-26"
 }
