@@ -1,0 +1,690 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "scriptedVariables": [
+        {
+          "name": "matrix42EventType",
+          "uuid": "1787643421001",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('eventType', 'EventType', 'event_type', 'type', 'Type', 'action', 'Action', 'operation', 'Operation');\nif (eventType) {\n  const normalized = String(eventType).toLowerCase();\n  if (normalized === 'insert' || normalized === 'create' || normalized === 'created') return 'ticket.created';\n  if (normalized === 'update' || normalized === 'updated') return 'ticket.updated';\n  return eventType;\n}\nif (read('noteId', 'NoteId', 'note.Id', 'commentId', 'CommentId')) return 'ticket.commented';\nif (read('attachmentId', 'AttachmentId', 'attachment.Id')) return 'ticket.attachment.created';\nif (read('ticketId', 'TicketId', 'Id', 'ticket.Id', 'entity.Id')) return 'ticket.created';\nreturn '';"
+        },
+        {
+          "name": "matrix42TicketId",
+          "uuid": "1787643421002",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('ticketId', 'TicketId', 'Id', 'ticket.Id', 'entity.Id', 'ObjectId', 'objectId');"
+        },
+        {
+          "name": "matrix42DisplayName",
+          "uuid": "1787643421003",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('displayName', 'DisplayName', 'ticket.DisplayName', 'entity.DisplayName', 'number', 'Number');"
+        },
+        {
+          "name": "matrix42Subject",
+          "uuid": "1787643421004",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst subject = read('subject', 'Subject', 'title', 'Title', 'ticket.Subject', 'entity.Subject');\nif (subject) return subject;\nconst displayName = read('displayName', 'DisplayName', 'number', 'Number');\nconst ticketId = read('ticketId', 'TicketId', 'Id', 'ticket.Id', 'entity.Id');\nif (displayName) return 'Matrix42 ' + displayName;\nreturn ticketId ? 'Matrix42 ticket ' + ticketId : 'Matrix42 ticket';"
+        },
+        {
+          "name": "matrix42Description",
+          "uuid": "1787643421005",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('description', 'Description', 'ticket.Description', 'entity.Description');"
+        },
+        {
+          "name": "matrix42NoteId",
+          "uuid": "1787643421006",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('noteId', 'NoteId', 'note.Id', 'commentId', 'CommentId', 'comment.Id');"
+        },
+        {
+          "name": "matrix42NoteBody",
+          "uuid": "1787643421007",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('noteBody', 'NoteBody', 'note.Text', 'note.Body', 'commentBody', 'CommentBody', 'comment.Text', 'text', 'Text');"
+        },
+        {
+          "name": "matrix42AttachmentId",
+          "uuid": "1787643421008",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('attachmentId', 'AttachmentId', 'attachment.Id');"
+        },
+        {
+          "name": "matrix42FileName",
+          "uuid": "1787643421009",
+          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('fileName', 'FileName', 'attachment.FileName') || 'matrix42-file';"
+        }
+      ],
+      "description": "Search for a Jira issue whose Matrix42 ticket id custom field matches the incoming ticket.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{matrix42TicketId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Find Jira Issue by Matrix42 Ticket Id",
+      "id": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.matrix42TicketId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Matrix42 payload must include a ticket id"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming Matrix42 ticket.created event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{matrix42Subject}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{matrix42TicketId}}\",\n    \"description\": {{{htmlToADF matrix42Description}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue",
+      "id": "template:action:6b9e2c17-5f44-4a19-8c73-2d8f1a9b4c62",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.matrix42EventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "PUT",
+      "description": "Update the linked Jira issue when the Matrix42 ticket is updated.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{matrix42Subject}}\",\n    \"description\": {{{htmlToADF matrix42Description}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "flowVariables": [],
+      "name": "Update Jira Issue",
+      "id": "template:action:1d7c8a53-3b62-45f7-9e18-7c4b2f6d9a31",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.matrix42EventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.updated",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 250
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the Matrix42 note (comment) id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{matrix42NoteId}}",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "name": "Get Matrix42 Note ID Property",
+      "id": "template:action:9a3f6e21-7d58-4c93-b1a4-5e2c8d7f0b46",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.matrix42EventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.commented",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.matrix42NoteId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Matrix42 note payload must include a note id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "POST",
+      "description": "Add the Matrix42 note to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF matrix42NoteBody}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:9a3f6e21-7d58-4c93-b1a4-5e2c8d7f0b46",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add Matrix42 Note to Jira",
+      "id": "template:action:4e8b1c72-2a95-4f16-8d37-6b9a0c3e5d18",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.matrix42NoteBody",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Matrix42 note payload must include note text"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Matrix42 Note ID",
+      "description": "Store the Matrix42 note id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7c2d9f48-6e13-4b57-a92c-1f8e4d6b0a53",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{matrix42NoteId}}\",\n  \"status\": \"synced\",\n  \"source\": \"matrix42\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{matrix42NoteId}}",
+      "parentId": "template:action:4e8b1c72-2a95-4f16-8d37-6b9a0c3e5d18",
+      "order": 450
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "variables": [],
+      "method": "GET",
+      "description": "Get a Jira issue property for the Matrix42 attachment id.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "parentId": "template:action:2f1a7d64-9c31-4b8e-9a02-4a1d5c7b3e10",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{matrix42AttachmentId}}",
+      "name": "Get Matrix42 Attachment ID Property",
+      "id": "template:action:3b6e4a19-8c27-4d51-9f63-0a5c7e2b8d94",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.matrix42EventType",
+              "type": "DATA_CONDITION",
+              "value": "ticket.attachment.created",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.matrix42AttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Matrix42 attachment payload must include an attachment id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "*/*",
+          "key": "Accept"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "{{matrix42FileName}}",
+        "enabled": true,
+        "target": "INPUT_FILES"
+      },
+      "method": "GET",
+      "description": "Download the Matrix42 attachment binary content.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-matrix42"
+      },
+      "logNoIterationItemsFound": false,
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "enabled": true,
+      "url": "{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Attachments({{matrix42AttachmentId}})/$value",
+      "parentId": "template:action:3b6e4a19-8c27-4d51-9f63-0a5c7e2b8d94",
+      "name": "Download Matrix42 Attachment",
+      "id": "template:action:8f0c5d37-1b49-42a6-8e75-9d3a6c1f4b27",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.matrix42AttachmentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming Matrix42 attachment payload must include an attachment id"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "multipart/form-data",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "no-check",
+          "key": "X-Atlassian-Token"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "responseFileConfig": {
+        "fileNameTemplate": "",
+        "enabled": false,
+        "target": "INPUT_FILES"
+      },
+      "method": "POST",
+      "description": "Upload the downloaded Matrix42 attachment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"file\": \"{{input.files}}\"\n}",
+      "logConditionsNotMet": false,
+      "parentId": "template:action:8f0c5d37-1b49-42a6-8e75-9d3a6c1f4b27",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments",
+      "name": "Add Matrix42 Attachment to Jira",
+      "id": "template:action:5a9d3b62-4f18-4e73-b0c9-2e7f8a1d6c35",
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming Matrix42 Attachment ID",
+      "description": "Store the Matrix42 attachment id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0e4f7c85-9a26-4318-b7d4-3c6b5e9a2f70",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{matrix42AttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"matrix42\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{matrix42AttachmentId}}",
+      "parentId": "template:action:5a9d3b62-4f18-4e73-b0c9-2e7f8a1d6c35",
+      "order": 800
+    }
+  ],
+  "description": "Sync Matrix42 workflow events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "M42",
+      "instruction": "Jira project key used for Matrix42 created tickets"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new Matrix42 tickets"
+    },
+    {
+      "name": "M42_URL",
+      "behavior": "SET",
+      "value": "https://your-instance.matrix42.cloud",
+      "instruction": "Matrix42 instance base URL"
+    },
+    {
+      "name": "M42_API_PATH",
+      "behavior": "SET",
+      "value": "M42Services/api/odata/v3",
+      "instruction": "Matrix42 OData API path, confirm against the tenant's $metadata document"
+    }
+  ],
+  "groupName": "Matrix42",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Matrix42 Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

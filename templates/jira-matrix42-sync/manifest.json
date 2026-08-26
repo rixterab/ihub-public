@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-matrix42-sync",
+  "name": "Jira <-> Matrix42 Sync",
+  "description": "Two way sync for Matrix42 tickets and Jira issues",
+  "category": "Matrix42",
+  "flows": [
+    "matrix42_incoming_sync.json",
+    "matrix42_outgoing_sync.json"
+  ],
+  "icon": "matrix42.svg",
+  "author": "Rixter AB",
+  "tags": ["matrix42", "sync", "work-items"],
+  "createdAt": "2026-08-26",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-matrix42",
+      "name": "Matrix42",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "integration@company"
+      }
+    }
+  ]
+}
