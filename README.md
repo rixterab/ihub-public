@@ -36,5 +36,9 @@ To contribute a template:
 
 Good templates should be easy for another iHub user to understand, import, configure, and adapt.
 
+See [AGENTS.md](AGENTS.md) for a working guide to building a template: the conventions
+used across `templates/`, which existing template to copy for each integration shape,
+the templating and idempotency rules, and a pre-commit checklist.
+
 Doc in Confluence
 https://rixter.atlassian.net/wiki/spaces/RIFJ/pages/2995617793/iHub+Use+Templates
