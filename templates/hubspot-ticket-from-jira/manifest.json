@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "key": "hubspot-ticket-from-jira",
+  "name": "HubSpot - Create Ticket from Jira",
+  "description": "Create a HubSpot ticket when a Jira work item is created",
+  "category": "HubSpot",
+  "flows": [
+    "hubspot_ticket_from_jira.json"
+  ],
+  "icon": "hubspot.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "hubspot",
+    "crm",
+    "tickets",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "token-hubspot",
+      "name": "HubSpot Private App Token",
+      "type": "TOKEN"
+    }
+  ]
+}

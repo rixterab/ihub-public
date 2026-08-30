@@ -1,0 +1,135 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Grafana OnCall alert for a high-priority Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-grafana-oncall-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n  \"message\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\",\n  \"state\": \"alerting\",\n  \"severity\": \"{{{issue.fields.priority.name}}}\",\n  \"jira_issue_key\": \"{{issue.key}}\",\n  \"jira_project_key\": \"{{issue.fields.project.key}}\"\n}",
+      "enabled": true,
+      "url": "{{_flow.GRAFANA_ONCALL_URL}}/integrations/v1/{{_flow.GRAFANA_ONCALL_INTEGRATION_ID}}/",
+      "parentId": "",
+      "name": "Create Grafana OnCall Alert",
+      "id": "template:action:335df919-d722-454f-9655-87b23adad656",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            },
+            {
+              "jsonPath": "$.issue.fields.priority.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.GRAFANA_TRIGGER_PRIORITY}}",
+              "operator": "EQUALS",
+              "description": "Only alert for the Jira priority configured in GRAFANA_TRIGGER_PRIORITY"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100,
+      "logConditionsNotMet": false
+    }
+  ],
+  "description": "Create a Grafana OnCall alert when a high-priority Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "GRAFANA",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "GRAFANA_TRIGGER_PRIORITY",
+      "behavior": "SET",
+      "value": "High",
+      "instruction": "Jira priority name that should raise an alert."
+    },
+    {
+      "name": "GRAFANA_ONCALL_URL",
+      "behavior": "SET",
+      "value": "https://oncall-prod-us-central-0.grafana.net",
+      "instruction": "Grafana OnCall API base URL."
+    },
+    {
+      "name": "GRAFANA_ONCALL_INTEGRATION_ID",
+      "behavior": "SET",
+      "value": "ABC123",
+      "instruction": "Grafana OnCall inbound integration ID."
+    },
+    {
+      "name": "GRAFANA_SEVERITY",
+      "behavior": "SET",
+      "value": "critical",
+      "instruction": "Severity sent to Grafana OnCall. Use a value your OnCall route template understands; Jira priority names are not Grafana severities and are sent separately as jira_priority."
+    }
+  ],
+  "groupName": "Grafana",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Grafana OnCall - Create Alert from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "alertmanager-silence-from-jira",
+  "name": "Alertmanager - Create Silence from Jira",
+  "description": "Create a Prometheus Alertmanager silence when a Jira change work item is created",
+  "category": "Prometheus Alertmanager",
+  "flows": [
+    "alertmanager_silence_from_jira.json"
+  ],
+  "icon": "prometheus.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "prometheus",
+    "alertmanager",
+    "monitoring",
+    "change-management"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-alertmanager-auth",
+      "name": "Alertmanager Authorization",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

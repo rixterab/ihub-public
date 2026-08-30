@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "bitbucket-issue-from-jira",
+  "name": "Bitbucket - Create Issue from Jira",
+  "description": "Create a Bitbucket Cloud issue when a Jira work item is created",
+  "category": "Bitbucket",
+  "flows": [
+    "bitbucket_issue_from_jira.json"
+  ],
+  "icon": "bitbucket.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "bitbucket",
+    "devops",
+    "issues",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-bitbucket",
+      "name": "Bitbucket Cloud",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "bitbucket-user@example.com"
+      }
+    }
+  ]
+}

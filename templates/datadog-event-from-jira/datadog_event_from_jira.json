@@ -1,0 +1,122 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Post a Jira work item created event to Datadog.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-datadog-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"Jira work item created: {{issue.key}}\",\n  \"text\": \"{{{issue.fields.summary}}}\\n\\n{{baseUrl}}/browse/{{issue.key}}\",\n  \"alert_type\": \"info\",\n  \"source_type_name\": \"jira\",\n  \"tags\": [\"source:{{_flow.DATADOG_TAG_SOURCE}}\", \"team:{{_flow.DATADOG_TAG_TEAM}}\", \"jira_project:{{issue.fields.project.key}}\", \"jira_issue:{{issue.key}}\"]\n}",
+      "enabled": true,
+      "url": "{{_flow.DATADOG_API_URL}}/api/v1/events",
+      "parentId": "",
+      "name": "Post Datadog Event",
+      "id": "template:action:6a60c53e-08c5-449a-af8a-a39993c4fe74",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100,
+      "logConditionsNotMet": false
+    }
+  ],
+  "description": "Post a Datadog event when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "DATADOG",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "DATADOG_API_URL",
+      "behavior": "SET",
+      "value": "https://api.datadoghq.com",
+      "instruction": "Datadog site API URL."
+    },
+    {
+      "name": "DATADOG_TAG_SOURCE",
+      "behavior": "SET",
+      "value": "ihub",
+      "instruction": "Value of the source: tag on the Datadog event. Datadog tags are one string each; add further entries to the tags array in the action body if you need more."
+    },
+    {
+      "name": "DATADOG_TAG_TEAM",
+      "behavior": "SET",
+      "value": "platform",
+      "instruction": "Value of the team: tag on the Datadog event."
+    }
+  ],
+  "groupName": "Datadog",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Datadog - Post Event from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

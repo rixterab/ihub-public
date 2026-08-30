@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "grafana-oncall-alert-from-jira",
+  "name": "Grafana OnCall - Create Alert from Jira",
+  "description": "Create a Grafana OnCall alert when a high-priority Jira work item is created",
+  "category": "Grafana",
+  "flows": [
+    "grafana_oncall_alert_from_jira.json"
+  ],
+  "icon": "grafana.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "grafana",
+    "on-call",
+    "incident",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-grafana-oncall-token",
+      "name": "Grafana OnCall Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

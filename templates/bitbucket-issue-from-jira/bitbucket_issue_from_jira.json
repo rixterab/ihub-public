@@ -1,0 +1,189 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Bitbucket Cloud issue from a Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-bitbucket"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n  \"content\": {\n    \"raw\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nType: {{issue.fields.issuetype.name}}\\nPriority: {{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\\n\\n{{{adfToHTML issue.fields.description}}}\",\n    \"markup\": \"html\"\n  },\n  \"kind\": \"bug\",\n  \"priority\": \"major\"\n}",
+      "enabled": true,
+      "url": "https://api.bitbucket.org/2.0/repositories/{{_flow.BITBUCKET_WORKSPACE}}/{{_flow.BITBUCKET_REPO_SLUG}}/issues",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "bitbucketIssueId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "ID of the created Bitbucket issue."
+        }
+      ],
+      "name": "Create Bitbucket Issue",
+      "id": "template:action:a3e24b01-baa5-4e95-aee3-7df4ed79c611",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create when the Jira work item is not already linked to a Bitbucket issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100,
+      "logConditionsNotMet": false
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Bitbucket Issue ID on Jira Issue",
+      "description": "Stores the linked Bitbucket issue ID on the Jira work item so it is never created twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7a0c5e19-4f31-4d8b-8a52-6e2b90c1d774",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.bitbucketIssueId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:a3e24b01-baa5-4e95-aee3-7df4ed79c611",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.bitbucketIssueId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when the create call returned an identifier"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    }
+  ],
+  "description": "Create a Bitbucket Cloud issue when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "BITBUCKET",
+      "instruction": "Jira project key to sync from."
+    },
+    {
+      "name": "BITBUCKET_WORKSPACE",
+      "behavior": "SET",
+      "value": "workspace-id",
+      "instruction": "Bitbucket workspace slug."
+    },
+    {
+      "name": "BITBUCKET_REPO_SLUG",
+      "behavior": "SET",
+      "value": "repository-slug",
+      "instruction": "Bitbucket repository slug."
+    }
+  ],
+  "groupName": "Bitbucket",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Bitbucket - Create Issue from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

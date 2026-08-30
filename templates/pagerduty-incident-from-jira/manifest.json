@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "pagerduty-incident-from-jira",
+  "name": "PagerDuty - Create Incident from Jira",
+  "description": "Create a PagerDuty incident when a high-priority Jira work item is created",
+  "category": "PagerDuty",
+  "flows": [
+    "pagerduty_incident_from_jira.json"
+  ],
+  "icon": "pagerduty.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "pagerduty",
+    "incident",
+    "on-call",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-pagerduty-token",
+      "name": "PagerDuty API Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

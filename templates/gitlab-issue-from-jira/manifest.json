@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "gitlab-issue-from-jira",
+  "name": "GitLab - Create Issue from Jira",
+  "description": "Create a GitLab issue when a Jira work item is created",
+  "category": "GitLab",
+  "flows": [
+    "gitlab_issue_from_jira.json"
+  ],
+  "icon": "gitlab.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "gitlab",
+    "devops",
+    "issues",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-gitlab-token",
+      "name": "GitLab Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "PRIVATE-TOKEN"
+          }
+        ]
+      }
+    }
+  ]
+}
