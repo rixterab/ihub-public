@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "dynamics-365-case-from-jira",
+  "name": "Dynamics 365 - Create Case from Jira",
+  "description": "Create a Microsoft Dynamics 365 case when a Jira work item is created",
+  "category": "Microsoft Dynamics 365",
+  "flows": [
+    "dynamics_365_case_from_jira.json"
+  ],
+  "icon": "dynamics-365.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "dynamics-365",
+    "crm",
+    "cases",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-dynamics-365-token",
+      "name": "Dynamics 365 Authorization",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

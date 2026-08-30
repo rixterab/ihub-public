@@ -1,0 +1,117 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a GitLab issue from a Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-gitlab-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nProject: {{issue.fields.project.key}}\\nType: {{issue.fields.issuetype.name}}\\nPriority: {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\\n\\n{{issue.fields.description}}\",\n  \"labels\": \"{{_flow.GITLAB_LABELS}}\"\n}",
+      "enabled": true,
+      "url": "{{_flow.GITLAB_API_URL}}/projects/{{_flow.GITLAB_PROJECT_ID}}/issues",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "gitlabIssueUrl",
+          "behavior": "SET",
+          "value": "$.response.data.web_url",
+          "instruction": "URL of the created GitLab issue."
+        }
+      ],
+      "name": "Create GitLab Issue",
+      "id": "template:action:4e0b9371-6a9d-4c31-b908-9bc5d10f50a1",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Create a GitLab issue when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "GITLAB",
+      "instruction": "Jira project key to sync from."
+    },
+    {
+      "name": "GITLAB_API_URL",
+      "behavior": "SET",
+      "value": "https://gitlab.com/api/v4",
+      "instruction": "GitLab API base URL. Change for self-managed GitLab."
+    },
+    {
+      "name": "GITLAB_PROJECT_ID",
+      "behavior": "SET",
+      "value": "12345678",
+      "instruction": "GitLab project ID or URL-encoded namespace/project path."
+    },
+    {
+      "name": "GITLAB_LABELS",
+      "behavior": "SET",
+      "value": "jira",
+      "instruction": "Comma-separated labels to apply in GitLab."
+    }
+  ],
+  "groupName": "GitLab",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "GitLab - Create Issue from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

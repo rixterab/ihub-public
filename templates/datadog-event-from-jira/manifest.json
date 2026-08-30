@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "datadog-event-from-jira",
+  "name": "Datadog - Post Event from Jira",
+  "description": "Post a Datadog event when a Jira work item is created",
+  "category": "Datadog",
+  "flows": [
+    "datadog_event_from_jira.json"
+  ],
+  "icon": "datadog.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "datadog",
+    "observability",
+    "events",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-datadog-api-key",
+      "name": "Datadog API Key",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "DD-API-KEY"
+          }
+        ]
+      }
+    }
+  ]
+}

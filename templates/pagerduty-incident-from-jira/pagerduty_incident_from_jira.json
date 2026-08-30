@@ -1,0 +1,116 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/vnd.pagerduty+json;version=2",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.PAGERDUTY_FROM_EMAIL}}",
+          "key": "From"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a PagerDuty incident for a critical Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-pagerduty-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"incident\": {\n    \"type\": \"incident\",\n    \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n    \"service\": {\n      \"id\": \"{{_flow.PAGERDUTY_SERVICE_ID}}\",\n      \"type\": \"service_reference\"\n    },\n    \"body\": {\n      \"type\": \"incident_body\",\n      \"details\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\nPriority: {{issue.fields.priority.name}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\"\n    },\n    \"urgency\": \"high\"\n  }\n}",
+      "enabled": true,
+      "url": "https://api.pagerduty.com/incidents",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "pagerDutyIncidentId",
+          "behavior": "SET",
+          "value": "$.response.data.incident.id",
+          "instruction": "ID of the created PagerDuty incident."
+        }
+      ],
+      "name": "Create PagerDuty Incident",
+      "id": "template:action:08a7f65d-4c83-4480-9d1b-c976d79fc4f2",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.priority.name",
+              "type": "DATA_CONDITION",
+              "value": "Critical",
+              "operator": "EQUALS",
+              "description": "Only page for critical work items by default"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 5,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Create a PagerDuty incident when a high-priority Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "PAGERDUTY",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "PAGERDUTY_SERVICE_ID",
+      "behavior": "SET",
+      "value": "P123456",
+      "instruction": "PagerDuty service ID."
+    },
+    {
+      "name": "PAGERDUTY_FROM_EMAIL",
+      "behavior": "SET",
+      "value": "integration@company.com",
+      "instruction": "Email required by PagerDuty API for account attribution."
+    }
+  ],
+  "groupName": "PagerDuty",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "PagerDuty - Create Incident from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

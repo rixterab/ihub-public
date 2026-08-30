@@ -1,0 +1,117 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Trigger a CircleCI pipeline with Jira work item metadata.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-circleci-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"branch\": \"{{_flow.CIRCLECI_BRANCH}}\",\n  \"parameters\": {\n    \"jira_issue_key\": \"{{issue.key}}\",\n    \"jira_issue_url\": \"{{baseUrl}}/browse/{{issue.key}}\",\n    \"jira_summary\": \"{{issue.fields.summary}}\"\n  }\n}",
+      "enabled": true,
+      "url": "https://circleci.com/api/v2/project/{{_flow.CIRCLECI_VCS}}/{{_flow.CIRCLECI_ORG}}/{{_flow.CIRCLECI_REPO}}/pipeline",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "circleciPipelineId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "ID of the triggered CircleCI pipeline."
+        }
+      ],
+      "name": "Trigger CircleCI Pipeline",
+      "id": "template:action:b54236b8-2397-4967-a9b6-92906cb7357f",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Trigger a CircleCI pipeline when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "CIRCLECI",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "CIRCLECI_VCS",
+      "behavior": "SET",
+      "value": "gh",
+      "instruction": "CircleCI VCS slug, usually gh or bb."
+    },
+    {
+      "name": "CIRCLECI_ORG",
+      "behavior": "SET",
+      "value": "organization",
+      "instruction": "VCS organization or workspace."
+    },
+    {
+      "name": "CIRCLECI_REPO",
+      "behavior": "SET",
+      "value": "repository",
+      "instruction": "Repository name."
+    },
+    {
+      "name": "CIRCLECI_BRANCH",
+      "behavior": "SET",
+      "value": "main",
+      "instruction": "Branch to trigger."
+    }
+  ],
+  "groupName": "CircleCI",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "CircleCI - Trigger Pipeline from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

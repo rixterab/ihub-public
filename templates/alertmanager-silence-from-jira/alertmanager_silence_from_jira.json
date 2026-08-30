@@ -1,0 +1,129 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        }
+      ],
+      "method": "POST",
+      "description": "Create an Alertmanager silence for an approved Jira change window.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-alertmanager-auth"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"matchers\": [\n    {\n      \"name\": \"{{_flow.ALERTMANAGER_MATCHER_NAME}}\",\n      \"value\": \"{{_flow.ALERTMANAGER_MATCHER_VALUE}}\",\n      \"isRegex\": false\n    }\n  ],\n  \"startsAt\": \"{{_flow.SILENCE_STARTS_AT}}\",\n  \"endsAt\": \"{{_flow.SILENCE_ENDS_AT}}\",\n  \"createdBy\": \"iHub\",\n  \"comment\": \"Jira change {{issue.key}}: {{issue.fields.summary}} - {{baseUrl}}/browse/{{issue.key}}\"\n}",
+      "enabled": true,
+      "url": "{{_flow.ALERTMANAGER_URL}}/api/v2/silences",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "alertmanagerSilenceId",
+          "behavior": "SET",
+          "value": "$.response.data.silenceID",
+          "instruction": "ID of the created Alertmanager silence."
+        }
+      ],
+      "name": "Create Alertmanager Silence",
+      "id": "template:action:a0facade-4197-4089-b1aa-49d57b9d8c62",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "Change",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 5,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Create a Prometheus Alertmanager silence when a Jira change work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "CHANGE",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "ALERTMANAGER_URL",
+      "behavior": "SET",
+      "value": "https://alertmanager.example.com",
+      "instruction": "Alertmanager base URL."
+    },
+    {
+      "name": "ALERTMANAGER_MATCHER_NAME",
+      "behavior": "SET",
+      "value": "service",
+      "instruction": "Alert label matcher name."
+    },
+    {
+      "name": "ALERTMANAGER_MATCHER_VALUE",
+      "behavior": "SET",
+      "value": "example-service",
+      "instruction": "Alert label matcher value."
+    },
+    {
+      "name": "SILENCE_STARTS_AT",
+      "behavior": "SET",
+      "value": "2027-01-01T00:00:00Z",
+      "instruction": "Silence start time. Map this from a Jira change-window custom field for production."
+    },
+    {
+      "name": "SILENCE_ENDS_AT",
+      "behavior": "SET",
+      "value": "2027-01-01T02:00:00Z",
+      "instruction": "Silence end time. Map this from a Jira change-window custom field for production."
+    }
+  ],
+  "groupName": "Prometheus Alertmanager",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Alertmanager - Create Silence from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

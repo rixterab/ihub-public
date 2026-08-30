@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "new-relic-event-from-jira",
+  "name": "New Relic - Post Event from Jira",
+  "description": "Post a Jira work item event into New Relic as a custom event",
+  "category": "New Relic",
+  "flows": [
+    "new_relic_event_from_jira.json"
+  ],
+  "icon": "new-relic.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "new-relic",
+    "observability",
+    "events",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-new-relic-insert-key",
+      "name": "New Relic Insert Key",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "X-Insert-Key"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "return=representation",
+          "key": "Prefer"
+        }
+      ],
+      "method": "POST",
+      "description": "Create a Dynamics 365 case from a Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-dynamics-365-token"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nPriority: {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\",\n  \"ticketnumber\": \"{{issue.key}}\"\n}",
+      "enabled": true,
+      "url": "{{_flow.DYNAMICS_365_URL}}/api/data/v9.2/incidents",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "dynamicsCaseId",
+          "behavior": "SET",
+          "value": "$.response.data.incidentid",
+          "instruction": "ID of the created Dynamics case."
+        }
+      ],
+      "name": "Create Dynamics 365 Case",
+      "id": "template:action:f3fe5b18-ea4c-4bb7-bfdc-7394cc103a28",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Create a Microsoft Dynamics 365 case when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "DYNAMICS",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "DYNAMICS_365_URL",
+      "behavior": "SET",
+      "value": "https://your-org.crm.dynamics.com",
+      "instruction": "Dynamics 365 environment base URL."
+    }
+  ],
+  "groupName": "Microsoft Dynamics 365",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Dynamics 365 - Create Case from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
