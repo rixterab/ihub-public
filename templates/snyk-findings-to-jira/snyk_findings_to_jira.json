@@ -30,7 +30,7 @@
       "pagination": {
         "variable": {
           "name": "PAGE_URL",
-          "script": "const _jsonResponsePath=\"$['response']['data']['links']['next']\";\nconst _base=\"{{_flow.SNYK_API_URL}}\";\nconst _defaultValue=_base+\"/rest/orgs/{{_flow.SNYK_ORG_ID}}/issues?version={{_flow.SNYK_API_VERSION}}&limit=100&status=open\";\nconst _next = path(jsonContext, _jsonResponsePath);\nreturn _next !== undefined ? (String(_next).indexOf(\"http\")===0 ? _next : _base+_next) : _defaultValue;"
+          "script": "const _jsonResponsePath=\"$['response']['data']['links']['next']\";\nconst _base=\"{{_flow.SNYK_API_URL}}\";\nconst _defaultValue=_base+\"/rest/orgs/{{_flow.SNYK_ORG_ID}}/issues?version={{_flow.SNYK_API_VERSION}}&limit=100&status=open&{{_flow.SNYK_SEVERITY_FILTER}}\";\nconst _next = path(jsonContext, _jsonResponsePath);\nreturn _next !== undefined ? (String(_next).indexOf(\"http\")===0 ? _next : _base+_next) : _defaultValue;"
         },
         "breakJsonPath": "$['response']['data']['links']['next']",
         "type": "RESPONSE_BASED",
@@ -122,13 +122,6 @@
         {
           "type": "COMBINED_CONDITION",
           "conditions": [
-            {
-              "jsonPath": "$.attributes.effective_severity_level",
-              "type": "DATA_CONDITION",
-              "value": "{{_flow.SNYK_SEVERITIES}}",
-              "operator": "IN",
-              "description": "Only raise Jira issues for the severity levels listed in SNYK_SEVERITIES."
-            },
             {
               "jsonPath": "$.id",
               "type": "DATA_CONDITION",
@@ -246,10 +239,10 @@
       "instruction": "Snyk REST API version date. Snyk requires this on every request."
     },
     {
-      "name": "SNYK_SEVERITIES",
+      "name": "SNYK_SEVERITY_FILTER",
       "behavior": "SET",
-      "value": "critical,high",
-      "instruction": "Comma-separated Snyk severity levels that should raise a Jira issue."
+      "value": "effective_severity_level=critical&effective_severity_level=high",
+      "instruction": "Snyk query fragment selecting which severities to pull. Snyk repeats the parameter once per level, e.g. effective_severity_level=critical&effective_severity_level=high. Start with critical only on a mature codebase."
     }
   ],
   "groupName": "Snyk",

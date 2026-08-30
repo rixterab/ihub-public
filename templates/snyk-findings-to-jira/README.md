@@ -14,7 +14,7 @@ This is the repository's first security template. It is a poll rather than a web
 | 200 | Find Jira Issue for Snyk Finding | Iterates `$.payload.data` and searches Jira per finding |
 | 300 | Create Jira Issue from Snyk Finding | Creates when the search came back empty |
 
-Action 200 carries the iterator, so 300 runs once per finding. Findings whose severity is not listed in `SNYK_SEVERITIES` are dropped at 200 and never reach 300.
+Action 200 carries the iterator, so 300 runs once per finding. Severity filtering happens in the Snyk query at action 100, not in a condition, so unwanted severities are never fetched in the first place.
 
 Created issues are labelled `snyk` and `snyk-<severity>`, and carry the Snyk issue ID in a custom field, which is what makes the run idempotent: a finding that already has an open Jira issue is skipped on every later run.
 
@@ -22,7 +22,7 @@ Created issues are labelled `snyk` and `snyk-<severity>`, and carry the Snyk iss
 
 | Action | Method | Endpoint |
 | --- | --- | --- |
-| Fetch Open Snyk Issues | `GET` | `{{_flow.SNYK_API_URL}}/rest/orgs/{{_flow.SNYK_ORG_ID}}/issues?version={{_flow.SNYK_API_VERSION}}&limit=100&status=open` |
+| Fetch Open Snyk Issues | `GET` | `{{_flow.SNYK_API_URL}}/rest/orgs/{{_flow.SNYK_ORG_ID}}/issues?version={{_flow.SNYK_API_VERSION}}&limit=100&status=open&{{_flow.SNYK_SEVERITY_FILTER}}` |
 
 Two things about the Snyk REST API shape the flow:
 
@@ -54,11 +54,11 @@ Create a Jira custom field of type single-line text to hold the Snyk issue ID. T
 | `00000000-…` | `SNYK_ORG_ID` flow variable | Replace with the Snyk organization UUID. |
 | `your-org` | `SNYK_ORG_SLUG` flow variable | Replace with the Snyk organization slug used in web links. |
 | `2024-10-15` | `SNYK_API_VERSION` flow variable | Bump only deliberately; re-verify the field paths afterwards. |
-| `critical,high` | `SNYK_SEVERITIES` flow variable | Replace with the severities that should raise a Jira issue. |
+| `effective_severity_level=critical&effective_severity_level=high` | `SNYK_SEVERITY_FILTER` flow variable | Replace with the severities to pull. Snyk repeats the parameter once per level. |
 | `customfield_10156` / `cf[10156]` | Flow JSON, two places | Replace with the customer's Jira custom field key and numeric ID. |
 | `snyk.svg` | Template folder | Placeholder mark, not the Snyk logo. Replace with the official asset before publishing. |
 
-Start with `critical` only. An organization enabling this against a mature codebase at `critical,high` can open hundreds of Jira issues on the first run; the flow has no cap.
+Start with `effective_severity_level=critical` only. An organization enabling this against a mature codebase at critical plus high can open hundreds of Jira issues on the first run; the flow has no cap.
 
 ## Limitations
 
@@ -66,4 +66,4 @@ Start with `critical` only. An organization enabling this against a mature codeb
 - **Org-scoped.** One Snyk organization per flow. Install once per org, or add a second fetch action.
 - **No project grouping.** Every finding becomes its own Jira issue. Teams that prefer one issue per project per scan need a different shape.
 - The Snyk link in the description is built from `coordinates[0]` and is best-effort; findings with an unusual coordinate shape get a link that does not resolve. The Snyk issue ID in the custom field is the reliable identifier.
-- No first-run guard. See the note about `SNYK_SEVERITIES` above.
+- No first-run guard. See the note about `SNYK_SEVERITY_FILTER` above.
