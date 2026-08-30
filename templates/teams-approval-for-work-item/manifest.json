@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "teams-approval-for-work-item",
+  "name": "Microsoft Teams Approvals for Work Items",
+  "description": "Post an Adaptive Card approval request to Microsoft Teams for a Jira work item",
+  "category": "Microsoft Teams",
+  "flows": [
+    "teams_request_approval.json"
+  ],
+  "icon": "microsoft-teams.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "microsoft-teams",
+    "approval",
+    "change-management",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-teams-workflow",
+      "name": "Teams Workflow Authorization",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

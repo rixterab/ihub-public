@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "jamf-asset-import",
+  "name": "Jamf Asset Import",
+  "description": "Import Jamf Pro computer inventory into Jira Assets",
+  "category": "Jamf",
+  "flows": [
+    "jamf_computer_asset_import.json"
+  ],
+  "icon": "jamf.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "jamf",
+    "assets",
+    "mdm",
+    "devices",
+    "import"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "token-jamf-asset-import-token",
+      "name": "Jamf Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "oauth2-jamf-pro",
+      "name": "Jamf Pro API Client",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "accessTokenUrl": "https://{instance}.jamfcloud.com/api/oauth/token"
+          },
+          "grantType": "client_credentials",
+          "headerPrefix": "Bearer",
+          "includeState": false,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,407 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "alertKey",
+          "uuid": "1900000000001",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('alert_id','monitor_id','alertId','id'));"
+        },
+        {
+          "name": "alertKeyJql",
+          "uuid": "1900000000002",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('alert_id','monitor_id','alertId','id')).replace(/[\"\\\\]+/g,' ');"
+        },
+        {
+          "name": "alertTitle",
+          "uuid": "1900000000003",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('alert_title','event_title','title','alert_metric'))||'Datadog alert';"
+        },
+        {
+          "name": "alertLink",
+          "uuid": "1900000000004",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('link','event_url','url'));"
+        },
+        {
+          "name": "alertState",
+          "uuid": "1900000000005",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();const t=String(read('alert_transition','alert_status','transition','status')).toLowerCase();if(t.includes('recover')||t.includes('resolve')||t.includes('ok')||t.includes('success'))return 'resolved';if(t.includes('warn'))return 'warning';if(t.includes('no data')||t.includes('nodata'))return 'no_data';return 'firing';"
+        },
+        {
+          "name": "alertDescriptionHtml",
+          "uuid": "1900000000006",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();const rows=[['Monitor',read('monitor_id','alert_id')],['Priority',read('priority')],['Transition',read('alert_transition','alert_status')],['Host',read('hostname','host')],['Tags',read('tags')],['Org',read('org','org_name')],['Fired at',read('date','last_updated')]].map(([l,v])=>v?'<li><strong>'+esc(l)+':</strong> '+esc(v)+'</li>':'').join('');return '<p>Source: Datadog monitor webhook</p>'+(rows?'<ul>'+rows+'</ul>':'')+'<p>'+esc(one(read('body','event_msg','message','text')))+'</p>'+(read('link','event_url')?'<p>Datadog: '+esc(read('link','event_url'))+'</p>':'');"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Incident by Datadog Alert Key",
+      "description": "Search Jira for an open incident already linked to the incoming Datadog alert.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:3f1a7c25-9d64-4b18-a0e7-51c8b2d6e903",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10155]\\\" ~ \\\"{{alertKeyJql}}\\\" AND statusCategory != Done ORDER BY created DESC\",\n  \"maxResults\": 10,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10155\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Existing Jira incident key for this Datadog alert, if one exists."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.alertKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The incoming webhook must carry an alert identifier, otherwise nothing can be deduplicated."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Incident from Datadog Alert",
+      "description": "Create a Jira incident for a firing Datadog alert that has no open linked incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:6b2d4e81-0c37-49f5-bd12-8a4e7f30c1a6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"Datadog: {{alertTitle}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10155\": \"{{alertKey}}\",\n    \"description\": {{{htmlToADF alertDescriptionHtml}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:3f1a7c25-9d64-4b18-a0e7-51c8b2d6e903",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": "Jira incident key created for the Datadog alert."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "Only create when no open incident is already linked to this alert."
+            },
+            {
+              "jsonPath": "$.alertState",
+              "type": "DATA_CONDITION",
+              "value": "resolved",
+              "operator": "NOT_EQUALS",
+              "description": "Never open a Jira incident from a resolve or recovery event."
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Existing Jira Incident",
+      "description": "Add an internal comment when Datadog re-notifies for an alert that already has an open Jira incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:c94f0a53-7e18-42db-9163-2d5b8e04af71",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Datadog sent another notification for this alert. Key: {{alertKey}}. State: {{alertState}}. {{alertLink}}\"\n          }\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": true\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:3f1a7c25-9d64-4b18-a0e7-51c8b2d6e903",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only comment when an open linked Jira incident already exists."
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Link Datadog Alert on Jira Incident",
+      "description": "Add a Jira remote link back to the Datadog alert.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:18e6c3b9-4a25-4f07-8c93-b7d1e520fa64",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"object\": {\n    \"url\": \"{{alertLink}}\",\n    \"title\": \"Datadog: {{alertTitle}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/remotelink",
+      "parentId": "template:action:6b2d4e81-0c37-49f5-bd12-8a4e7f30c1a6",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.alertLink",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only create a remote link when the payload carried an alert URL."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Transition Jira Incident on Alert Resolve",
+      "description": "Transition the linked Jira incident when Datadog reports the alert resolved. Disabled until a transition ID is set.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:a527d1f0-63be-4c84-9e15-0f8a3c7b64d2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.RESOLVE_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/transitions",
+      "parentId": "template:action:3f1a7c25-9d64-4b18-a0e7-51c8b2d6e903",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only transition an incident that already exists."
+            },
+            {
+              "jsonPath": "$.alertState",
+              "type": "DATA_CONDITION",
+              "value": "resolved",
+              "operator": "EQUALS",
+              "description": "Only transition on a resolve or recovery event."
+            },
+            {
+              "jsonPath": "$._flow.RESOLVE_TRANSITION_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Skip entirely until the customer sets a transition ID for their workflow."
+            }
+          ]
+        }
+      ],
+      "order": 500
+    }
+  ],
+  "description": "Create a Jira incident when Datadog notifies a monitor alert",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "OPS",
+      "instruction": "Jira project key where Datadog incidents are created and searched."
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Incident",
+      "instruction": "Jira issue type to create for Datadog alerts."
+    },
+    {
+      "name": "RESOLVE_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira workflow transition ID used when the alert resolves. Leave empty to skip the transition action; read the IDs from GET /rest/api/3/issue/{key}/transitions."
+    }
+  ],
+  "groupName": "Datadog",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jira Incident from Datadog Alert",
+  "trigger": {
+    "config": {
+      "response": {
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}",
+        "mode": "custom"
+      }
+    },
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "jenkins-build-from-jira",
+  "name": "Jenkins - Trigger Job from Jira",
+  "description": "Trigger a Jenkins job when a Jira work item is created",
+  "category": "Jenkins",
+  "flows": [
+    "jenkins_build_from_jira.json"
+  ],
+  "icon": "jenkins.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "jenkins",
+    "ci-cd",
+    "build",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "basic-auth-jenkins",
+      "name": "Jenkins User and API Token",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "jenkins-user"
+      }
+    }
+  ]
+}

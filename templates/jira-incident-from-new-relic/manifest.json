@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-incident-from-new-relic",
+  "name": "New Relic - Create Jira Incident from Alert",
+  "description": "Create a Jira incident when New Relic notifies an alert",
+  "category": "New Relic",
+  "flows": [
+    "jira_incident_from_new_relic.json"
+  ],
+  "icon": "new-relic.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "new-relic",
+    "incident",
+    "alerting",
+    "observability"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": []
+}

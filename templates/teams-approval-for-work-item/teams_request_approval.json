@@ -1,0 +1,130 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Post Approval Card to Microsoft Teams",
+      "description": "Post an Adaptive Card asking for a decision on a Jira work item, with links into Jira and the customer portal.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-teams-workflow"
+      },
+      "id": "template:action:3c81f0a7-6b45-4d29-9e70-8a2f51c63bd4",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"type\": \"message\",\n  \"attachments\": [\n    {\n      \"contentType\": \"application/vnd.microsoft.card.adaptive\",\n      \"contentUrl\": null,\n      \"content\": {\n        \"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n        \"type\": \"AdaptiveCard\",\n        \"version\": \"1.4\",\n        \"body\": [\n          {\n            \"type\": \"TextBlock\",\n            \"size\": \"Medium\",\n            \"weight\": \"Bolder\",\n            \"text\": \"Approval requested: {{issue.key}}\",\n            \"wrap\": true\n          },\n          {\n            \"type\": \"TextBlock\",\n            \"text\": \"{{issue.fields.summary}}\",\n            \"wrap\": true\n          },\n          {\n            \"type\": \"FactSet\",\n            \"facts\": [\n              {\n                \"title\": \"Type\",\n                \"value\": \"{{issue.fields.issuetype.name}}\"\n              },\n              {\n                \"title\": \"Priority\",\n                \"value\": \"{{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\"\n              },\n              {\n                \"title\": \"Reporter\",\n                \"value\": \"{{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\"\n              },\n              {\n                \"title\": \"Project\",\n                \"value\": \"{{issue.fields.project.name}}\"\n              }\n            ]\n          }\n        ],\n        \"actions\": [\n          {\n            \"type\": \"Action.OpenUrl\",\n            \"title\": \"Approve or decline in the portal\",\n            \"url\": \"{{_flow.JSM_PORTAL_URL}}/browse/{{issue.key}}\"\n          },\n          {\n            \"type\": \"Action.OpenUrl\",\n            \"title\": \"Open in Jira\",\n            \"url\": \"{{baseUrl}}/browse/{{issue.key}}\"\n          }\n        ]\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.TEAMS_WORKFLOW_URL}}",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVAL_ISSUE_TYPE}}",
+              "operator": "EQUALS",
+              "description": "Only request approval for the configured Jira issue type"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Post an Adaptive Card approval request to Teams when a Jira work item needs approval",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "APPROVE",
+      "instruction": "Jira project key that should request approvals in Teams."
+    },
+    {
+      "name": "APPROVAL_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Change",
+      "instruction": "Jira issue type that requires approval."
+    },
+    {
+      "name": "TEAMS_WORKFLOW_URL",
+      "behavior": "SET",
+      "value": "https://prod-00.westeurope.logic.azure.com:443/workflows/REPLACE_ME/triggers/manual/paths/invoke",
+      "instruction": "Teams Workflows (Power Automate) HTTP request URL for the target channel. Treat it as a credential."
+    },
+    {
+      "name": "JSM_PORTAL_URL",
+      "behavior": "SET",
+      "value": "https://your-site.atlassian.net/servicedesk/customer/portal/1",
+      "instruction": "Jira Service Management customer portal URL where approvers act on the request."
+    }
+  ],
+  "groupName": "Microsoft Teams",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Microsoft Teams - Request Approval for Work Item",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

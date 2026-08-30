@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "key": "slack-approval-for-work-item",
+  "name": "Slack Approvals for Work Items",
+  "description": "Request approval in Slack with buttons and transition the Jira work item on the decision",
+  "category": "Slack",
+  "flows": [
+    "slack_request_approval.json",
+    "slack_apply_approval_decision.json"
+  ],
+  "icon": "slack.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "slack",
+    "approval",
+    "change-management",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-slack-bot-token",
+      "name": "Slack Bot Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,344 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "slackIssueKey",
+          "uuid": "1960000000001",
+          "script": "let root=scope;if(root&&typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){root={};}}else if(root&&typeof root.payload==='object'&&root.payload!==null){root=root.payload;if(typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){}}}const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};return String(read('actions.0.value','actions.0.block_id','callback_id')).trim();"
+        },
+        {
+          "name": "slackDecision",
+          "uuid": "1960000000002",
+          "script": "let root=scope;if(root&&typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){root={};}}else if(root&&typeof root.payload==='object'&&root.payload!==null){root=root.payload;if(typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){}}}const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const a=String(read('actions.0.action_id','actions.0.name')).toLowerCase();if(a.includes('approve'))return 'approve';if(a.includes('reject')||a.includes('deny'))return 'reject';return '';"
+        },
+        {
+          "name": "slackUser",
+          "uuid": "1960000000003",
+          "script": "let root=scope;if(root&&typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){root={};}}else if(root&&typeof root.payload==='object'&&root.payload!==null){root=root.payload;if(typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){}}}const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};return String(read('user.name','user.username','user.real_name','user.id')).trim();"
+        },
+        {
+          "name": "slackResponseUrl",
+          "uuid": "1960000000004",
+          "script": "let root=scope;if(root&&typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){root={};}}else if(root&&typeof root.payload==='object'&&root.payload!==null){root=root.payload;if(typeof root.payload==='string'){try{root=JSON.parse(root.payload);}catch(e){}}}const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};return String(read('response_url','response_urls.0.response_url')).trim();"
+        }
+      ],
+      "method": "POST",
+      "name": "Approve Jira Work Item",
+      "description": "Run the approval transition when someone clicks Approve in Slack.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:6a0e93d4-7c21-4b58-9f36-de5107b28a49",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.APPROVE_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{slackIssueKey}}/transitions",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.slackDecision",
+              "type": "DATA_CONDITION",
+              "value": "approve",
+              "operator": "EQUALS",
+              "description": "Only run for the Approve button."
+            },
+            {
+              "jsonPath": "$.slackIssueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The button value must carry a Jira work item key."
+            },
+            {
+              "jsonPath": "$._flow.APPROVE_TRANSITION_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Skip until the approval transition ID is set."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Reject Jira Work Item",
+      "description": "Run the rejection transition when someone clicks Reject in Slack.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0b74c1e6-9d38-4a02-b7e5-31f8206ca9d7",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.REJECT_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{slackIssueKey}}/transitions",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.slackDecision",
+              "type": "DATA_CONDITION",
+              "value": "reject",
+              "operator": "EQUALS",
+              "description": "Only run for the Reject button."
+            },
+            {
+              "jsonPath": "$.slackIssueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The button value must carry a Jira work item key."
+            },
+            {
+              "jsonPath": "$._flow.REJECT_TRANSITION_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Skip until the rejection transition ID is set."
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Record Slack Decision on Jira Work Item",
+      "description": "Add an internal Jira comment naming the Slack user who approved or rejected.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:af35082b-14e7-4c69-8d10-b26593ea7f0c",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"Decision {{slackDecision}} recorded from Slack by {{slackUser}}.\"\n          }\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": true\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{slackIssueKey}}/comment",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.slackDecision",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only comment when a decision was recognised."
+            },
+            {
+              "jsonPath": "$.slackIssueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The button value must carry a Jira work item key."
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json; charset=utf-8",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Replace Slack Message with Outcome",
+      "description": "Replace the original Slack message so the buttons cannot be clicked twice.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-slack-bot-token"
+      },
+      "id": "template:action:72d9b408-5e13-4f87-a0c6-9b174e35d820",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"replace_original\": true,\n  \"text\": \"{{slackIssueKey}} was {{slackDecision}}d by {{slackUser}}.\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*{{slackIssueKey}}* was *{{slackDecision}}d* by {{slackUser}}.\"\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{slackResponseUrl}}",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.slackResponseUrl",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only replace when Slack sent a response_url."
+            },
+            {
+              "jsonPath": "$.slackDecision",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only replace when a decision was recognised."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    }
+  ],
+  "description": "Transition a Jira work item when someone clicks Approve or Reject in Slack",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "APPROVE_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira workflow transition ID used when Approve is clicked. Read the IDs from GET /rest/api/3/issue/{key}/transitions."
+    },
+    {
+      "name": "REJECT_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira workflow transition ID used when Reject is clicked."
+    }
+  ],
+  "groupName": "Slack",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Slack - Apply Approval Decision to Jira",
+  "trigger": {
+    "config": {
+      "response": {
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}",
+        "mode": "custom"
+      }
+    },
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

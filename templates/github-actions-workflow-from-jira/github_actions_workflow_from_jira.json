@@ -1,0 +1,158 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "{{_flow.GITHUB_API_VERSION}}",
+          "key": "X-GitHub-Api-Version"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Dispatch GitHub Actions Workflow",
+      "description": "Trigger a workflow_dispatch run with Jira work item metadata as inputs.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-github-actions"
+      },
+      "id": "template:action:b95e7413-08da-4c26-9f31-6a20e5d78bc4",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"ref\": \"{{_flow.GITHUB_REF}}\",\n  \"inputs\": {\n    \"jira_issue_key\": \"{{issue.key}}\",\n    \"jira_issue_url\": \"{{baseUrl}}/browse/{{issue.key}}\",\n    \"jira_summary\": \"{{{issue.fields.summary}}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/actions/workflows/{{_flow.GITHUB_WORKFLOW}}/dispatches",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.TRIGGER_ISSUE_TYPE}}",
+              "operator": "EQUALS",
+              "description": "Only dispatch for the configured Jira issue type"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Dispatch a GitHub Actions workflow when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "GHA",
+      "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "TRIGGER_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type that should dispatch a workflow."
+    },
+    {
+      "name": "GITHUB_API_URL",
+      "behavior": "SET",
+      "value": "https://api.github.com",
+      "instruction": "GitHub API URL. For GitHub Enterprise Server use https://github.example.com/api/v3."
+    },
+    {
+      "name": "GITHUB_API_VERSION",
+      "behavior": "SET",
+      "value": "2026-03-10",
+      "instruction": "GitHub REST API version sent in the X-GitHub-Api-Version header."
+    },
+    {
+      "name": "GITHUB_OWNER",
+      "behavior": "SET",
+      "value": "your-org",
+      "instruction": "GitHub repository owner or organization."
+    },
+    {
+      "name": "GITHUB_REPO",
+      "behavior": "SET",
+      "value": "your-repo",
+      "instruction": "GitHub repository name."
+    },
+    {
+      "name": "GITHUB_WORKFLOW",
+      "behavior": "SET",
+      "value": "jira-triggered.yml",
+      "instruction": "Workflow file name or numeric workflow ID."
+    },
+    {
+      "name": "GITHUB_REF",
+      "behavior": "SET",
+      "value": "main",
+      "instruction": "Git ref the workflow runs against."
+    }
+  ],
+  "groupName": "GitHub Actions",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "GitHub Actions - Dispatch Workflow from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}
