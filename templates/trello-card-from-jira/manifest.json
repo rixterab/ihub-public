@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "key": "trello-card-from-jira",
+  "name": "Trello - Create Card from Jira",
+  "description": "Create a Trello card when a Jira work item is created",
+  "category": "Trello",
+  "flows": [
+    "trello_card_from_jira.json"
+  ],
+  "icon": "trello.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "trello",
+    "boards",
+    "cards",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-trello-auth",
+      "name": "Trello Key and Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

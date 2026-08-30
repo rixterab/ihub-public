@@ -1,0 +1,261 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Trello Card",
+      "description": "Create a Trello card from a Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-trello-auth"
+      },
+      "id": "template:action:1e6a48d2-b073-4c95-8f21-9d0e57b3ca64",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"idList\": \"{{_flow.TRELLO_LIST_ID}}\",\n  \"name\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n  \"desc\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nType: {{issue.fields.issuetype.name}}\\nPriority: {{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\\n\\n{{{adfToHTML issue.fields.description}}}\",\n  \"pos\": \"top\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.trello.com/1/cards",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "trelloCardId",
+          "behavior": "SET",
+          "value": "$.response.data.id",
+          "instruction": "ID of the created Trello card."
+        },
+        {
+          "name": "trelloCardUrl",
+          "behavior": "SET",
+          "value": "$.response.data.shortUrl",
+          "instruction": "Short URL of the created Trello card."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create when the Jira work item is not already linked to a Trello card"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Trello Card ID on Jira Issue",
+      "description": "Stores the linked Trello card ID on the Jira work item so it is never created twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:c40b7e91-2f58-4d36-a7c0-8b15e39d6f27",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.trelloCardId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:1e6a48d2-b073-4c95-8f21-9d0e57b3ca64",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.trelloCardId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when Trello returned a card ID"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Attach Jira Link to Trello Card",
+      "description": "Add the Jira work item URL as a Trello attachment, which is how Trello links external resources.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-trello-auth"
+      },
+      "id": "template:action:9d38f5a0-6c14-4b72-93e8-025af716bd39",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"url\": \"{{baseUrl}}/browse/{{issue.key}}\",\n  \"name\": \"Jira {{issue.key}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.trello.com/1/cards/{{_flow.trelloCardId}}/attachments",
+      "parentId": "template:action:1e6a48d2-b073-4c95-8f21-9d0e57b3ca64",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.trelloCardId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only attach when a Trello card was created"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 300
+    }
+  ],
+  "description": "Create a Trello card when a Jira work item is created",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "TRELLO",
+      "instruction": "Jira project key that should create Trello cards."
+    },
+    {
+      "name": "TRELLO_LIST_ID",
+      "behavior": "SET",
+      "value": "000000000000000000000000",
+      "instruction": "Trello list ID that new cards are created in."
+    }
+  ],
+  "groupName": "Trello",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Trello - Create Card from Jira",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

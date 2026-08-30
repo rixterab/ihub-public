@@ -1,0 +1,147 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "application/json; charset=utf-8",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Post Approval Request to Slack",
+      "description": "Post a Block Kit approval request with Approve and Reject buttons for a Jira work item.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-slack-bot-token"
+      },
+      "id": "template:action:d51c8f27-3b94-4e06-a2d8-6017cb9e34f5",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"channel\": \"{{_flow.SLACK_CHANNEL}}\",\n  \"text\": \"Approval requested for {{issue.key}}: {{issue.fields.summary}}\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Approval requested*\\n<{{baseUrl}}/browse/{{issue.key}}|{{issue.key}}> {{issue.fields.summary}}\"\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Type*\\n{{issue.fields.issuetype.name}}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Priority*\\n{{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Reporter*\\n{{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\"\n        },\n        {\n          \"type\": \"mrkdwn\",\n          \"text\": \"*Project*\\n{{issue.fields.project.name}}\"\n        }\n      ]\n    },\n    {\n      \"type\": \"actions\",\n      \"block_id\": \"jira_approval\",\n      \"elements\": [\n        {\n          \"type\": \"button\",\n          \"action_id\": \"jira_approve\",\n          \"style\": \"primary\",\n          \"text\": {\n            \"type\": \"plain_text\",\n            \"text\": \"Approve\"\n          },\n          \"value\": \"{{issue.key}}\",\n          \"confirm\": {\n            \"title\": {\n              \"type\": \"plain_text\",\n              \"text\": \"Approve {{issue.key}}?\"\n            },\n            \"text\": {\n              \"type\": \"mrkdwn\",\n              \"text\": \"This transitions the Jira work item and cannot be undone from Slack.\"\n            },\n            \"confirm\": {\n              \"type\": \"plain_text\",\n              \"text\": \"Approve\"\n            },\n            \"deny\": {\n              \"type\": \"plain_text\",\n              \"text\": \"Cancel\"\n            }\n          }\n        },\n        {\n          \"type\": \"button\",\n          \"action_id\": \"jira_reject\",\n          \"style\": \"danger\",\n          \"text\": {\n            \"type\": \"plain_text\",\n            \"text\": \"Reject\"\n          },\n          \"value\": \"{{issue.key}}\"\n        }\n      ]\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://slack.com/api/chat.postMessage",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "slackOk",
+          "behavior": "SET",
+          "value": "$.response.data.ok",
+          "instruction": "Slack returns HTTP 200 even on failure; check this instead of the status code."
+        },
+        {
+          "name": "slackError",
+          "behavior": "SET",
+          "value": "$.response.data.error",
+          "instruction": "Slack error code when ok is false."
+        },
+        {
+          "name": "slackMessageTs",
+          "behavior": "SET",
+          "value": "$.response.data.ts",
+          "instruction": "Timestamp of the posted approval message."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:created:issue",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVAL_ISSUE_TYPE}}",
+              "operator": "EQUALS",
+              "description": "Only request approval for the configured Jira issue type"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    }
+  ],
+  "description": "Post an approve/reject request to Slack when a Jira work item needs approval",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "APPROVE",
+      "instruction": "Jira project key that should request approvals in Slack."
+    },
+    {
+      "name": "APPROVAL_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Change",
+      "instruction": "Jira issue type that requires approval."
+    },
+    {
+      "name": "SLACK_CHANNEL",
+      "behavior": "SET",
+      "value": "C01234567",
+      "instruction": "Slack channel ID that approval requests are posted to."
+    }
+  ],
+  "groupName": "Slack",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Slack - Request Approval for Work Item",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

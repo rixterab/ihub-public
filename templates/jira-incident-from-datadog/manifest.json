@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-incident-from-datadog",
+  "name": "Datadog - Create Jira Incident from Alert",
+  "description": "Create a Jira incident when Datadog notifies an alert",
+  "category": "Datadog",
+  "flows": [
+    "jira_incident_from_datadog.json"
+  ],
+  "icon": "datadog.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "datadog",
+    "incident",
+    "alerting",
+    "monitoring"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": []
+}

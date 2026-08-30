@@ -1,0 +1,407 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "alertKey",
+          "uuid": "1900000000019",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('event.data.id','data.id','incident.id','id'));"
+        },
+        {
+          "name": "alertKeyJql",
+          "uuid": "1900000000020",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('event.data.id','data.id','incident.id','id')).replace(/[\"\\\\]+/g,' ');"
+        },
+        {
+          "name": "alertTitle",
+          "uuid": "1900000000021",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('event.data.title','data.title','incident.title','title'))||'PagerDuty alert';"
+        },
+        {
+          "name": "alertLink",
+          "uuid": "1900000000022",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();return one(read('event.data.html_url','data.html_url','incident.html_url','html_url'));"
+        },
+        {
+          "name": "alertState",
+          "uuid": "1900000000023",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();const t=String(read('event.event_type','event_type','event.data.status','data.status','status')).toLowerCase();if(t.includes('resolve'))return 'resolved';if(t.includes('acknowledg'))return 'acknowledged';if(t.includes('reopen')||t.includes('trigger'))return 'firing';return 'firing';"
+        },
+        {
+          "name": "alertDescriptionHtml",
+          "uuid": "1900000000024",
+          "script": "const root=scope&&scope.payload&&typeof scope.payload==='object'?scope.payload:scope;const at=(o,p)=>{if(o==null||!p)return undefined;if(Object.prototype.hasOwnProperty.call(o,p))return o[p];return p.split('.').reduce((c,k)=>{if(c==null)return undefined;if(/^\\d+$/.test(k)&&Array.isArray(c))return c[Number(k)];return c[k];},o);};const read=(...ps)=>{for(const p of ps){const v=at(root,p);if(v!==undefined&&v!==null&&String(v).trim()!=='')return v;}return '';};const esc=(v)=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');const one=(v)=>String(v==null?'':v).replace(/[\\r\\n\\t]+/g,' ').replace(/\\s+/g,' ').trim();const rows=[['Incident',read('event.data.number','data.number')],['Event type',read('event.event_type','event_type')],['Status',read('event.data.status','data.status')],['Urgency',read('event.data.urgency','data.urgency')],['Priority',read('event.data.priority.summary','data.priority.summary')],['Service',read('event.data.service.summary','data.service.summary')],['Assignees',read('event.data.assignees.0.summary','data.assignees.0.summary')]].map(([l,v])=>v?'<li><strong>'+esc(l)+':</strong> '+esc(v)+'</li>':'').join('');return '<p>Source: PagerDuty v3 webhook</p>'+(rows?'<ul>'+rows+'</ul>':'')+(read('event.data.html_url','data.html_url')?'<p>PagerDuty: '+esc(read('event.data.html_url','data.html_url'))+'</p>':'');"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Incident by PagerDuty Alert Key",
+      "description": "Search Jira for an open incident already linked to the incoming PagerDuty alert.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:c17f4a92-8b60-4d35-a9e1-2f704c86b53d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10155]\\\" ~ \\\"{{alertKeyJql}}\\\" AND statusCategory != Done ORDER BY created DESC\",\n  \"maxResults\": 10,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10155\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Existing Jira incident key for this PagerDuty alert, if one exists."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.alertKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "The incoming webhook must carry an alert identifier, otherwise nothing can be deduplicated."
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Incident from PagerDuty Alert",
+      "description": "Create a Jira incident for a firing PagerDuty alert that has no open linked incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:9a3e50d7-1c48-4f92-b063-85d1a7e4029f",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"PagerDuty: {{alertTitle}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10155\": \"{{alertKey}}\",\n    \"description\": {{{htmlToADF alertDescriptionHtml}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:c17f4a92-8b60-4d35-a9e1-2f704c86b53d",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": "Jira incident key created for the PagerDuty alert."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "Only create when no open incident is already linked to this alert."
+            },
+            {
+              "jsonPath": "$.alertState",
+              "type": "DATA_CONDITION",
+              "value": "resolved",
+              "operator": "NOT_EQUALS",
+              "description": "Never open a Jira incident from a resolve or recovery event."
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Existing Jira Incident",
+      "description": "Add an internal comment when PagerDuty re-notifies for an alert that already has an open Jira incident.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:4e8b2c61-7d05-49a3-8b17-c630f95e14da",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"PagerDuty sent another notification for this alert. Key: {{alertKey}}. State: {{alertState}}. {{alertLink}}\"\n          }\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": true\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "parentId": "template:action:c17f4a92-8b60-4d35-a9e1-2f704c86b53d",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only comment when an open linked Jira incident already exists."
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Link PagerDuty Alert on Jira Incident",
+      "description": "Add a Jira remote link back to the PagerDuty alert.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:f2760b48-3a91-4e57-9d2c-08b47e163a95",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"object\": {\n    \"url\": \"{{alertLink}}\",\n    \"title\": \"PagerDuty: {{alertTitle}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/remotelink",
+      "parentId": "template:action:9a3e50d7-1c48-4f92-b063-85d1a7e4029f",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.alertLink",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only create a remote link when the payload carried an alert URL."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Transition Jira Incident on Alert Resolve",
+      "description": "Transition the linked Jira incident when PagerDuty reports the alert resolved. Disabled until a transition ID is set.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:1b5d9e34-c076-4285-a3f9-51e082bd7c46",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"transition\": {\n    \"id\": \"{{_flow.RESOLVE_TRANSITION_ID}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/transitions",
+      "parentId": "template:action:c17f4a92-8b60-4d35-a9e1-2f704c86b53d",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only transition an incident that already exists."
+            },
+            {
+              "jsonPath": "$.alertState",
+              "type": "DATA_CONDITION",
+              "value": "resolved",
+              "operator": "EQUALS",
+              "description": "Only transition on a resolve or recovery event."
+            },
+            {
+              "jsonPath": "$._flow.RESOLVE_TRANSITION_ID",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Skip entirely until the customer sets a transition ID for their workflow."
+            }
+          ]
+        }
+      ],
+      "order": 500
+    }
+  ],
+  "description": "Create a Jira incident when PagerDuty triggers an incident",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "OPS",
+      "instruction": "Jira project key where PagerDuty incidents are created and searched."
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Incident",
+      "instruction": "Jira issue type to create for PagerDuty alerts."
+    },
+    {
+      "name": "RESOLVE_TRANSITION_ID",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira workflow transition ID used when the alert resolves. Leave empty to skip the transition action; read the IDs from GET /rest/api/3/issue/{key}/transitions."
+    }
+  ],
+  "groupName": "PagerDuty",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jira Incident from PagerDuty Incident",
+  "trigger": {
+    "config": {
+      "response": {
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}",
+        "mode": "custom"
+      }
+    },
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

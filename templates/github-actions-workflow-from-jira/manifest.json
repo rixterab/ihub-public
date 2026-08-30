@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "key": "github-actions-workflow-from-jira",
+  "name": "GitHub Actions - Dispatch Workflow from Jira",
+  "description": "Dispatch a GitHub Actions workflow when a Jira work item is created",
+  "category": "GitHub Actions",
+  "flows": [
+    "github_actions_workflow_from_jira.json"
+  ],
+  "icon": "github.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "github",
+    "github-actions",
+    "ci-cd",
+    "workflow",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "token-github-actions",
+      "name": "GitHub PAT",
+      "type": "TOKEN"
+    }
+  ]
+}

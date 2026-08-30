@@ -1,0 +1,391 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"7a25e9d3-04c1-4f87-b3e6-8d95207caf12\";"
+        }
+      ],
+      "method": "PATCH",
+      "name": "Update Import Mapping",
+      "description": "Create or refresh the Jira Assets external import source schema and field mapping.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:5e0c37a9-b184-4d62-9a37-c8f10e254bd6",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Operating System\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Compliance State\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Managed Devices\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"deviceName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"azureADDeviceId\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"serialNumber\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"model\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"manufacturer\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"osVersion\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"managedDeviceOwnerType\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"managementState\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"enrolledDateTime\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"lastSyncDateTime\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"userPrincipalName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"emailAddress\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"userDisplayName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"isEncrypted\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"jailBroken\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"totalStorageSpaceInBytes\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"freeStorageSpaceInBytes\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"operatingSystem\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Operating System\"\n            },\n            {\n              \"name\": \"complianceState\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Compliance State\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Operating System\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"operatingSystem\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Compliance State\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"complianceState\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Managed Devices\",\n        \"selector\": \"value\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"deviceName\",\n            \"attributeLocators\": [\n              \"deviceName\"\n            ]\n          },\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"azureADDeviceId\",\n            \"attributeLocators\": [\n              \"azureADDeviceId\"\n            ]\n          },\n          {\n            \"attributeName\": \"serialNumber\",\n            \"attributeLocators\": [\n              \"serialNumber\"\n            ]\n          },\n          {\n            \"attributeName\": \"model\",\n            \"attributeLocators\": [\n              \"model\"\n            ]\n          },\n          {\n            \"attributeName\": \"manufacturer\",\n            \"attributeLocators\": [\n              \"manufacturer\"\n            ]\n          },\n          {\n            \"attributeName\": \"osVersion\",\n            \"attributeLocators\": [\n              \"osVersion\"\n            ]\n          },\n          {\n            \"attributeName\": \"managedDeviceOwnerType\",\n            \"attributeLocators\": [\n              \"managedDeviceOwnerType\"\n            ]\n          },\n          {\n            \"attributeName\": \"managementState\",\n            \"attributeLocators\": [\n              \"managementState\"\n            ]\n          },\n          {\n            \"attributeName\": \"enrolledDateTime\",\n            \"attributeLocators\": [\n              \"enrolledDateTime\"\n            ]\n          },\n          {\n            \"attributeName\": \"lastSyncDateTime\",\n            \"attributeLocators\": [\n              \"lastSyncDateTime\"\n            ]\n          },\n          {\n            \"attributeName\": \"userPrincipalName\",\n            \"attributeLocators\": [\n              \"userPrincipalName\"\n            ]\n          },\n          {\n            \"attributeName\": \"emailAddress\",\n            \"attributeLocators\": [\n              \"emailAddress\"\n            ]\n          },\n          {\n            \"attributeName\": \"userDisplayName\",\n            \"attributeLocators\": [\n              \"userDisplayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"isEncrypted\",\n            \"attributeLocators\": [\n              \"isEncrypted\"\n            ]\n          },\n          {\n            \"attributeName\": \"jailBroken\",\n            \"attributeLocators\": [\n              \"jailBroken\"\n            ]\n          },\n          {\n            \"attributeName\": \"totalStorageSpaceInBytes\",\n            \"attributeLocators\": [\n              \"totalStorageSpaceInBytes\"\n            ]\n          },\n          {\n            \"attributeName\": \"freeStorageSpaceInBytes\",\n            \"attributeLocators\": [\n              \"freeStorageSpaceInBytes\"\n            ]\n          },\n          {\n            \"attributeName\": \"operatingSystem\",\n            \"attributeLocators\": [\n              \"operatingSystem\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${operatingSystem}\"\n          },\n          {\n            \"attributeName\": \"complianceState\",\n            \"attributeLocators\": [\n              \"complianceState\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${complianceState}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Submit Data",
+      "description": "Submit one page of Microsoft Intune data to the Jira Assets import source.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:6fa93d10-8b47-45e2-a0c6-91d7e35b820f",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"value\": {{{toJSON payload.value}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:b2c8e59d-047a-4136-9fe8-63a5107cd4b2",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"7a25e9d3-04c1-4f87-b3e6-8d95207caf12\";"
+        }
+      ],
+      "method": "GET",
+      "name": "Check Import Status",
+      "description": "Read the import source status so a run left RUNNING by a previous execution can be cancelled.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:d926b4f1-3057-48ea-b1c9-70f5a83e612d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "DELETE",
+      "name": "Cancel Stuck Import",
+      "description": "Cancel the previous import when it is still running, so a stuck run does not block this one.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:83f5017c-6ea2-4b90-85d1-2c47b0e9d365",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "parentId": "template:action:d926b4f1-3057-48ea-b1c9-70f5a83e612d",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS",
+              "description": "Only cancel when the previous execution is still running."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"7a25e9d3-04c1-4f87-b3e6-8d95207caf12\";"
+        }
+      ],
+      "method": "POST",
+      "name": "Start Import",
+      "description": "Start a new import execution and obtain the submit and cancel URLs for this run.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:1740ae63-c9b5-42d7-8306-f5e1b9427a08",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGE_URL",
+          "script": "const _jsonResponsePath=\"$['response']['data']['@odata.nextLink']\";\nconst _defaultValue=\"https://graph.microsoft.com/v1.0/deviceManagement/managedDevices?$top=100\";\nconst _nextCursor = path(jsonContext, _jsonResponsePath);\nreturn _nextCursor !== undefined ? _nextCursor : _defaultValue;"
+        },
+        "breakJsonPath": "$['response']['data']['@odata.nextLink']",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Intune Managed Devices",
+      "description": "Fetch managed devices from Microsoft Intune.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-microsoft-intune"
+      },
+      "id": "template:action:b2c8e59d-047a-4136-9fe8-63a5107cd4b2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{{PAGE_URL}}}",
+      "parentId": "template:action:1740ae63-c9b5-42d7-8306-f5e1b9427a08",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Complete Import",
+      "description": "Mark the import execution complete so Jira Assets processes the submitted data.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-intune-asset-import-token"
+      },
+      "id": "template:action:cd51826e-72b0-4a9f-b543-0e8617fa2d94",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:1740ae63-c9b5-42d7-8306-f5e1b9427a08",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 700
+    }
+  ],
+  "description": "Import Microsoft Intune managed devices into Jira Assets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Microsoft Intune",
+      "instruction": "Name of the target object schema in Jira Assets."
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "7a25e9d3-04c1-4f87-b3e6-8d95207caf12",
+      "instruction": "Jira Assets external import source ID. Replace with the customer's own ID, or leave as-is on a fresh install to have one created."
+    }
+  ],
+  "groupName": "Microsoft Intune",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Intune Managed Device Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 5 * * *"
+  },
+  "useStaticIP": false
+}

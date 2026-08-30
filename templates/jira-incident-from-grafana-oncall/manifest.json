@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-incident-from-grafana-oncall",
+  "name": "Grafana OnCall - Create Jira Incident from Alert",
+  "description": "Create a Jira incident when Grafana OnCall notifies an alert",
+  "category": "Grafana",
+  "flows": [
+    "jira_incident_from_grafana_oncall.json"
+  ],
+  "icon": "grafana.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "grafana",
+    "on-call",
+    "incident",
+    "alerting"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": []
+}

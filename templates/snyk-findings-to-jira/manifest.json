@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "key": "snyk-findings-to-jira",
+  "name": "Snyk Findings to Jira",
+  "description": "Create Jira issues from open Snyk findings on a schedule",
+  "category": "Snyk",
+  "flows": [
+    "snyk_findings_to_jira.json"
+  ],
+  "icon": "snyk.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "snyk",
+    "security",
+    "vulnerability",
+    "findings",
+    "work-items"
+  ],
+  "createdAt": "2026-08-30",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-snyk-token",
+      "name": "Snyk API Token",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}

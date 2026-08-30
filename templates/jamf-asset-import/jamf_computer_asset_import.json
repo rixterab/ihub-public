@@ -1,0 +1,388 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"0f3c81a4-7d26-4b95-9e10-52c8a7b3f640\";"
+        }
+      ],
+      "method": "PATCH",
+      "name": "Update Import Mapping",
+      "description": "Create or refresh the Jira Assets external import source schema and field mapping.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:0d4a9e17-5c83-4b26-9f70-e18d3a625c04",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Department\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Building\",\n          \"description\": \"\",\n          \"attributes\": []\n        },\n        {\n          \"name\": \"Computers\",\n          \"description\": \"\",\n          \"attributes\": [\n            {\n              \"name\": \"name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"id\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"udid\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"serialNumber\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"assetTag\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"model\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"modelIdentifier\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"osName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"osVersion\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"osBuild\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"processorType\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"totalRamMegabytes\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"macAddress\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"username\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"realName\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"email\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"managed\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"supervised\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"lastContactTime\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"lastReportDate\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"department\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Department\"\n            },\n            {\n              \"name\": \"building\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Building\"\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Department\",\n        \"selector\": \"results\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"userAndLocation.department\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Building\",\n        \"selector\": \"results\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"userAndLocation.building\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Computers\",\n        \"selector\": \"results\",\n        \"description\": \"\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"name\",\n            \"attributeLocators\": [\n              \"general.name\"\n            ]\n          },\n          {\n            \"attributeName\": \"id\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"udid\",\n            \"attributeLocators\": [\n              \"udid\"\n            ]\n          },\n          {\n            \"attributeName\": \"serialNumber\",\n            \"attributeLocators\": [\n              \"hardware.serialNumber\"\n            ]\n          },\n          {\n            \"attributeName\": \"assetTag\",\n            \"attributeLocators\": [\n              \"general.assetTag\"\n            ]\n          },\n          {\n            \"attributeName\": \"model\",\n            \"attributeLocators\": [\n              \"hardware.model\"\n            ]\n          },\n          {\n            \"attributeName\": \"modelIdentifier\",\n            \"attributeLocators\": [\n              \"hardware.modelIdentifier\"\n            ]\n          },\n          {\n            \"attributeName\": \"osName\",\n            \"attributeLocators\": [\n              \"operatingSystem.name\"\n            ]\n          },\n          {\n            \"attributeName\": \"osVersion\",\n            \"attributeLocators\": [\n              \"operatingSystem.version\"\n            ]\n          },\n          {\n            \"attributeName\": \"osBuild\",\n            \"attributeLocators\": [\n              \"operatingSystem.build\"\n            ]\n          },\n          {\n            \"attributeName\": \"processorType\",\n            \"attributeLocators\": [\n              \"hardware.processorType\"\n            ]\n          },\n          {\n            \"attributeName\": \"totalRamMegabytes\",\n            \"attributeLocators\": [\n              \"hardware.totalRamMegabytes\"\n            ]\n          },\n          {\n            \"attributeName\": \"macAddress\",\n            \"attributeLocators\": [\n              \"hardware.macAddress\"\n            ]\n          },\n          {\n            \"attributeName\": \"username\",\n            \"attributeLocators\": [\n              \"userAndLocation.username\"\n            ]\n          },\n          {\n            \"attributeName\": \"realName\",\n            \"attributeLocators\": [\n              \"userAndLocation.realname\"\n            ]\n          },\n          {\n            \"attributeName\": \"email\",\n            \"attributeLocators\": [\n              \"userAndLocation.email\"\n            ]\n          },\n          {\n            \"attributeName\": \"managed\",\n            \"attributeLocators\": [\n              \"general.remoteManagement.managed\"\n            ]\n          },\n          {\n            \"attributeName\": \"supervised\",\n            \"attributeLocators\": [\n              \"general.supervised\"\n            ]\n          },\n          {\n            \"attributeName\": \"lastContactTime\",\n            \"attributeLocators\": [\n              \"general.lastContactTime\"\n            ]\n          },\n          {\n            \"attributeName\": \"lastReportDate\",\n            \"attributeLocators\": [\n              \"general.reportDate\"\n            ]\n          },\n          {\n            \"attributeName\": \"department\",\n            \"attributeLocators\": [\n              \"userAndLocation.department\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${userAndLocation.department}\"\n          },\n          {\n            \"attributeName\": \"building\",\n            \"attributeLocators\": [\n              \"userAndLocation.building\"\n            ],\n            \"objectMappingIQL\": \"Name Like ${userAndLocation.building}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/mapping",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Submit Data",
+      "description": "Submit one page of Jamf Pro data to the Jira Assets import source.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:31a7c9e0-4d68-4b83-95f1-c02e874a6d13",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"data\": {\n    \"results\": {{{toJSON payload.results}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:94f0b3a8-e267-4d15-8720-6bc1e5304f97",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"0f3c81a4-7d26-4b95-9e10-52c8a7b3f640\";"
+        }
+      ],
+      "method": "GET",
+      "name": "Check Import Status",
+      "description": "Read the import source status so a run left RUNNING by a previous execution can be cancelled.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:7b16f280-93de-4a51-8c07-2d94e60ba379",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/configstatus",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "DELETE",
+      "name": "Cancel Stuck Import",
+      "description": "Cancel the previous import when it is still running, so a stuck run does not block this one.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:e5307c4b-1f92-48ad-b6e3-0947c81de562",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{cancelUrl}}",
+      "parentId": "template:action:7b16f280-93de-4a51-8c07-2d94e60ba379",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.status",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING",
+              "operator": "EQUALS",
+              "description": "Only cancel when the previous execution is still running."
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "scriptedVariables": [
+        {
+          "name": "importSourceId",
+          "uuid": "1950000000001",
+          "script": "return \"0f3c81a4-7d26-4b95-9e10-52c8a7b3f640\";"
+        }
+      ],
+      "method": "POST",
+      "name": "Start Import",
+      "description": "Start a new import execution and obtain the submit and cancel URLs for this run.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:2c8de651-70b4-4f39-a18c-53e7092dbf41",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{importSourceId}}/executions",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Fetch Jamf Computers",
+      "description": "Fetch computers from Jamf Pro.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-jamf-pro"
+      },
+      "id": "template:action:94f0b3a8-e267-4d15-8720-6bc1e5304f97",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.JAMF_URL}}/api/v1/computers-inventory?section=GENERAL&section=HARDWARE&section=OPERATING_SYSTEM&section=USER_AND_LOCATION&page=0&page-size=1000&sort=id%3Aasc",
+      "parentId": "template:action:2c8de651-70b4-4f39-a18c-53e7092dbf41",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Complete Import",
+      "description": "Mark the import execution complete so Jira Assets processes the submitted data.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jamf-asset-import-token"
+      },
+      "id": "template:action:68b2e534-0a97-41cd-86e2-7d3f19b04c85",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"completed\": true\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{submitResultsUrl}}",
+      "parentId": "template:action:2c8de651-70b4-4f39-a18c-53e7092dbf41",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 700
+    }
+  ],
+  "description": "Import Jamf Pro computer inventory into Jira Assets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "assetSchema",
+      "behavior": "SET",
+      "value": "Jamf",
+      "instruction": "Name of the target object schema in Jira Assets."
+    },
+    {
+      "name": "importSourceId",
+      "behavior": "SET",
+      "value": "0f3c81a4-7d26-4b95-9e10-52c8a7b3f640",
+      "instruction": "Jira Assets external import source ID. Replace with the customer's own ID, or leave as-is on a fresh install to have one created."
+    },
+    {
+      "name": "JAMF_URL",
+      "behavior": "SET",
+      "value": "https://your-instance.jamfcloud.com",
+      "instruction": "Jamf Pro base URL, without a trailing slash."
+    }
+  ],
+  "groupName": "Jamf",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jamf Computer Asset Import",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 4 * * *"
+  },
+  "useStaticIP": false
+}

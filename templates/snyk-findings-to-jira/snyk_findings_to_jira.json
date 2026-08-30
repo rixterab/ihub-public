@@ -1,0 +1,268 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "pagination": {
+        "variable": {
+          "name": "PAGE_URL",
+          "script": "const _jsonResponsePath=\"$['response']['data']['links']['next']\";\nconst _base=\"{{_flow.SNYK_API_URL}}\";\nconst _defaultValue=_base+\"/rest/orgs/{{_flow.SNYK_ORG_ID}}/issues?version={{_flow.SNYK_API_VERSION}}&limit=100&status=open\";\nconst _next = path(jsonContext, _jsonResponsePath);\nreturn _next !== undefined ? (String(_next).indexOf(\"http\")===0 ? _next : _base+_next) : _defaultValue;"
+        },
+        "breakJsonPath": "$['response']['data']['links']['next']",
+        "type": "RESPONSE_BASED",
+        "enabled": true
+      },
+      "method": "GET",
+      "name": "Fetch Open Snyk Issues",
+      "description": "Read open issues for the configured Snyk organization, following pagination.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-snyk-token"
+      },
+      "id": "template:action:4c9e13b7-52a0-4f68-b9d1-3e7085af2c61",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{{PAGE_URL}}}",
+      "parentId": "",
+      "flowVariables": [],
+      "conditions": [],
+      "ratelimit": {
+        "sleepTime": 1000,
+        "initialSleepTime": 5000,
+        "maxRetries": 1,
+        "burst": 10,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Find Jira Issue for Snyk Finding",
+      "description": "Search Jira for an open issue already linked to this Snyk finding.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:a80d6f52-7c31-4e94-b0a7-58120de6c3f4",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10156]\\\" ~ \\\"{{id}}\\\" AND statusCategory != Done ORDER BY created DESC\",\n  \"maxResults\": 5,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"customfield_10156\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "template:action:4c9e13b7-52a0-4f68-b9d1-3e7085af2c61",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": "Existing Jira issue for this Snyk finding, if any."
+        }
+      ],
+      "iterator": "$.payload.data",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.attributes.effective_severity_level",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SNYK_SEVERITIES}}",
+              "operator": "IN",
+              "description": "Only raise Jira issues for the severity levels listed in SNYK_SEVERITIES."
+            },
+            {
+              "jsonPath": "$.id",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Skip findings with no Snyk issue ID."
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Create Jira Issue from Snyk Finding",
+      "description": "Create a Jira issue for a Snyk finding that has no open linked issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:e3175b0c-9d46-42fa-81b5-7c04e926af38",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"Snyk {{attributes.effective_severity_level}}: {{{attributes.title}}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"labels\": [\n      \"snyk\",\n      \"snyk-{{attributes.effective_severity_level}}\"\n    ],\n    \"customfield_10156\": \"{{id}}\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\n              \"type\": \"text\",\n              \"text\": \"Snyk finding {{id}} ({{attributes.effective_severity_level}}) in organization {{_flow.SNYK_ORG_ID}}. Type: {{attributes.type}}. Status: {{attributes.status}}. Introduced: {{attributes.created_at}}.\"\n            }\n          ]\n        },\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\n              \"type\": \"text\",\n              \"text\": \"Open in Snyk\",\n              \"marks\": [\n                {\n                  \"type\": \"link\",\n                  \"attrs\": {\n                    \"href\": \"{{_flow.SNYK_APP_URL}}/org/{{_flow.SNYK_ORG_SLUG}}/project/{{attributes.coordinates.0.representations.0.dependency.package_name}}\"\n                  }\n                }\n              ]\n            }\n          ]\n        }\n      ]\n    }\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:a80d6f52-7c31-4e94-b0a7-58120de6c3f4",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "Only create when no open Jira issue is already linked to this Snyk finding."
+            }
+          ]
+        }
+      ],
+      "order": 300
+    }
+  ],
+  "description": "Create Jira issues from open Snyk findings on a schedule",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "SEC",
+      "instruction": "Jira project key where Snyk findings are created and searched."
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Bug",
+      "instruction": "Jira issue type to create for Snyk findings."
+    },
+    {
+      "name": "SNYK_API_URL",
+      "behavior": "SET",
+      "value": "https://api.snyk.io",
+      "instruction": "Snyk REST API base URL. Use https://api.eu.snyk.io or https://api.au.snyk.io for those regions."
+    },
+    {
+      "name": "SNYK_APP_URL",
+      "behavior": "SET",
+      "value": "https://app.snyk.io",
+      "instruction": "Snyk web app base URL, used to build links in the Jira description."
+    },
+    {
+      "name": "SNYK_ORG_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Snyk organization UUID to poll."
+    },
+    {
+      "name": "SNYK_ORG_SLUG",
+      "behavior": "SET",
+      "value": "your-org",
+      "instruction": "Snyk organization slug, used only to build web links."
+    },
+    {
+      "name": "SNYK_API_VERSION",
+      "behavior": "SET",
+      "value": "2024-10-15",
+      "instruction": "Snyk REST API version date. Snyk requires this on every request."
+    },
+    {
+      "name": "SNYK_SEVERITIES",
+      "behavior": "SET",
+      "value": "critical,high",
+      "instruction": "Comma-separated Snyk severity levels that should raise a Jira issue."
+    }
+  ],
+  "groupName": "Snyk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Snyk Findings to Jira",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 6 * * *"
+  },
+  "useStaticIP": false
+}
