@@ -13,16 +13,32 @@
         {
           "value": "return=representation",
           "key": "Prefer"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
       "description": "Create a Dynamics 365 case from a Jira work item.",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:custom-header-dynamics-365-token"
+        "value": "template:token-dynamics-365"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nPriority: {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\",\n  \"ticketnumber\": \"{{issue.key}}\"\n}",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nPriority: {{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\"\n}",
       "enabled": true,
       "url": "{{_flow.DYNAMICS_365_URL}}/api/data/v9.2/incidents",
       "parentId": "",
@@ -41,16 +57,25 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create when the Jira work item is not already linked to a Dynamics case"
+            },
+            {
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             }
           ]
         }
@@ -69,7 +94,66 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Dynamics Case ID on Jira Issue",
+      "description": "Stores the linked Dynamics 365 case ID on the Jira work item so it is never created twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:9e4d7c02-1a58-4b36-97e1-c5028f6ab913",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.dynamicsCaseId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:f3fe5b18-ea4c-4bb7-bfdc-7394cc103a28",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.dynamicsCaseId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when the create call returned an identifier"
+            }
+          ]
+        }
+      ],
+      "order": 200
     }
   ],
   "description": "Create a Microsoft Dynamics 365 case when a Jira work item is created",

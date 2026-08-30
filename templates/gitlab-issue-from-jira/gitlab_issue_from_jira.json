@@ -13,6 +13,18 @@
         {
           "value": "IntegrationsHub/Cloud",
           "key": "User-Agent"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
@@ -22,11 +34,17 @@
         "value": "template:custom-header-gitlab-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nProject: {{issue.fields.project.key}}\\nType: {{issue.fields.issuetype.name}}\\nPriority: {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\\n\\n{{issue.fields.description}}\",\n  \"labels\": \"{{_flow.GITLAB_LABELS}}\"\n}",
+      "body": "{\n  \"title\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n  \"description\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nProject: {{issue.fields.project.key}}\\nType: {{issue.fields.issuetype.name}}\\nPriority: {{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\\n\\n{{{adfToHTML issue.fields.description}}}\",\n  \"labels\": \"{{_flow.GITLAB_LABELS}}\"\n}",
       "enabled": true,
       "url": "{{_flow.GITLAB_API_URL}}/projects/{{_flow.GITLAB_PROJECT_ID}}/issues",
       "parentId": "",
       "flowVariables": [
+        {
+          "name": "gitlabIssueIid",
+          "behavior": "SET",
+          "value": "$.response.data.iid",
+          "instruction": "Project-scoped IID of the created GitLab issue."
+        },
         {
           "name": "gitlabIssueUrl",
           "behavior": "SET",
@@ -40,6 +58,13 @@
         {
           "type": "COMBINED_CONDITION",
           "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create when the Jira work item is not already linked to a GitLab issue"
+            },
             {
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
@@ -71,7 +96,66 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store GitLab Issue IID on Jira Issue",
+      "description": "Stores the linked GitLab issue IID on the Jira work item so it is never created twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5c1f9d84-2b7e-4a63-9c05-11f6bd3a7e42",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.gitlabIssueIid}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:4e0b9371-6a9d-4c31-b908-9bc5d10f50a1",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.gitlabIssueIid",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when the create call returned an identifier"
+            }
+          ]
+        }
+      ],
+      "order": 200
     }
   ],
   "description": "Create a GitLab issue when a Jira work item is created",

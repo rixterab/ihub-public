@@ -9,16 +9,32 @@
         {
           "value": "application/json",
           "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
       "description": "Create a HubSpot ticket from a Jira work item.",
       "credentialsReference": {
         "type": "DATABASE_REF",
-        "value": "template:custom-header-hubspot-token"
+        "value": "template:token-hubspot"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"properties\": {\n    \"subject\": \"{{issue.key}} - {{issue.fields.summary}}\",\n    \"content\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nPriority: {{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\",\n    \"hs_pipeline\": \"{{_flow.HUBSPOT_PIPELINE_ID}}\",\n    \"hs_pipeline_stage\": \"{{_flow.HUBSPOT_STAGE_ID}}\"\n  }\n}",
+      "body": "{\n  \"properties\": {\n    \"subject\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n    \"content\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\n\\nPriority: {{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\",\n    \"hs_pipeline\": \"{{_flow.HUBSPOT_PIPELINE_ID}}\",\n    \"hs_pipeline_stage\": \"{{_flow.HUBSPOT_STAGE_ID}}\"\n  }\n}",
       "enabled": true,
       "url": "https://api.hubapi.com/crm/v3/objects/tickets",
       "parentId": "",
@@ -37,16 +53,25 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EQUALS",
+              "description": "Only create when the Jira work item is not already linked to a HubSpot ticket"
+            },
+            {
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             }
           ]
         }
@@ -65,7 +90,66 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store HubSpot Ticket ID on Jira Issue",
+      "description": "Stores the linked HubSpot ticket ID on the Jira work item so it is never created twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:d21b6a3f-8c74-4e19-b0d6-3f95c8a41b60",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.hubspotTicketId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:2566ae59-5180-4c23-982e-02233919e693",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.hubspotTicketId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when the create call returned an identifier"
+            }
+          ]
+        }
+      ],
+      "order": 200
     }
   ],
   "description": "Create a HubSpot ticket when a Jira work item is created",

@@ -4,7 +4,27 @@
       "headers": [
         {
           "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
           "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
@@ -14,7 +34,7 @@
         "value": "template:custom-header-new-relic-insert-key"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"eventType\": \"JiraWorkItemEvent\",\n  \"jiraIssueKey\": \"{{issue.key}}\",\n  \"jiraProjectKey\": \"{{issue.fields.project.key}}\",\n  \"summary\": \"{{issue.fields.summary}}\",\n  \"priority\": \"{{#if issue.fields.priority.name}}{{issue.fields.priority.name}}{{else}}None{{/if}}\",\n  \"issueUrl\": \"{{baseUrl}}/browse/{{issue.key}}\"\n}",
+      "body": "{\n  \"eventType\": \"JiraWorkItemEvent\",\n  \"jiraIssueKey\": \"{{issue.key}}\",\n  \"jiraProjectKey\": \"{{issue.fields.project.key}}\",\n  \"summary\": \"{{{issue.fields.summary}}}\",\n  \"priority\": \"{{#if issue.fields.priority.name}}{{{issue.fields.priority.name}}}{{else}}None{{/if}}\",\n  \"issueUrl\": \"{{baseUrl}}/browse/{{issue.key}}\"\n}",
       "enabled": true,
       "url": "{{_flow.NEW_RELIC_INSERT_URL}}/v1/accounts/{{_flow.NEW_RELIC_ACCOUNT_ID}}/events",
       "parentId": "",
@@ -28,13 +48,15 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             }
           ]
         }
@@ -53,7 +75,8 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
     }
   ],
   "description": "Post a Jira work item event into New Relic",

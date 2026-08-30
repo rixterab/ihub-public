@@ -18,16 +18,9 @@
   "createdAt": "2026-08-30",
   "credentialDefinitions": [
     {
-      "key": "custom-header-dynamics-365-token",
-      "name": "Dynamics 365 Authorization",
-      "type": "CUSTOM_HEADER",
-      "data": {
-        "headers": [
-          {
-            "key": "Authorization"
-          }
-        ]
-      }
+      "key": "token-dynamics-365",
+      "name": "Dynamics 365 Access Token",
+      "type": "TOKEN"
     }
   ]
 }

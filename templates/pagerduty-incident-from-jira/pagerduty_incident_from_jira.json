@@ -13,6 +13,22 @@
         {
           "value": "{{_flow.PAGERDUTY_FROM_EMAIL}}",
           "key": "From"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
@@ -22,7 +38,7 @@
         "value": "template:custom-header-pagerduty-token"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"incident\": {\n    \"type\": \"incident\",\n    \"title\": \"{{issue.key}} - {{issue.fields.summary}}\",\n    \"service\": {\n      \"id\": \"{{_flow.PAGERDUTY_SERVICE_ID}}\",\n      \"type\": \"service_reference\"\n    },\n    \"body\": {\n      \"type\": \"incident_body\",\n      \"details\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\nPriority: {{issue.fields.priority.name}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{issue.fields.reporter.displayName}}{{else}}Unknown{{/if}}\"\n    },\n    \"urgency\": \"high\"\n  }\n}",
+      "body": "{\n  \"incident\": {\n    \"type\": \"incident\",\n    \"title\": \"{{issue.key}} - {{{issue.fields.summary}}}\",\n    \"service\": {\n      \"id\": \"{{_flow.PAGERDUTY_SERVICE_ID}}\",\n      \"type\": \"service_reference\"\n    },\n    \"body\": {\n      \"type\": \"incident_body\",\n      \"details\": \"Created from Jira: {{baseUrl}}/browse/{{issue.key}}\\nPriority: {{{issue.fields.priority.name}}}\\nReporter: {{#if issue.fields.reporter.displayName}}{{{issue.fields.reporter.displayName}}}{{else}}Unknown{{/if}}\"\n    },\n    \"urgency\": \"high\"\n  }\n}",
       "enabled": true,
       "url": "https://api.pagerduty.com/incidents",
       "parentId": "",
@@ -44,20 +60,22 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             },
             {
               "jsonPath": "$.issue.fields.priority.name",
               "type": "DATA_CONDITION",
-              "value": "Critical",
+              "value": "{{_flow.PAGERDUTY_TRIGGER_PRIORITY}}",
               "operator": "EQUALS",
-              "description": "Only page for critical work items by default"
+              "description": "Only page for the Jira priority configured in PAGERDUTY_TRIGGER_PRIORITY"
             }
           ]
         }
@@ -76,7 +94,8 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
     }
   ],
   "description": "Create a PagerDuty incident when a high-priority Jira work item is created",
@@ -87,6 +106,12 @@
       "behavior": "SET",
       "value": "PAGERDUTY",
       "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "PAGERDUTY_TRIGGER_PRIORITY",
+      "behavior": "SET",
+      "value": "Critical",
+      "instruction": "Jira priority name that should page. Only work items with this priority create an incident."
     },
     {
       "name": "PAGERDUTY_SERVICE_ID",

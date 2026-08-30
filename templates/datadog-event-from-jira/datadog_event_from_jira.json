@@ -9,6 +9,22 @@
         {
           "value": "application/json",
           "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
@@ -18,7 +34,7 @@
         "value": "template:custom-header-datadog-api-key"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"title\": \"Jira work item created: {{issue.key}}\",\n  \"text\": \"{{issue.fields.summary}}\\n\\n{{baseUrl}}/browse/{{issue.key}}\",\n  \"alert_type\": \"info\",\n  \"source_type_name\": \"jira\",\n  \"tags\": [\"{{_flow.DATADOG_TAGS}}\", \"jira_project:{{issue.fields.project.key}}\", \"jira_issue:{{issue.key}}\"]\n}",
+      "body": "{\n  \"title\": \"Jira work item created: {{issue.key}}\",\n  \"text\": \"{{{issue.fields.summary}}}\\n\\n{{baseUrl}}/browse/{{issue.key}}\",\n  \"alert_type\": \"info\",\n  \"source_type_name\": \"jira\",\n  \"tags\": [\"source:{{_flow.DATADOG_TAG_SOURCE}}\", \"team:{{_flow.DATADOG_TAG_TEAM}}\", \"jira_project:{{issue.fields.project.key}}\", \"jira_issue:{{issue.key}}\"]\n}",
       "enabled": true,
       "url": "{{_flow.DATADOG_API_URL}}/api/v1/events",
       "parentId": "",
@@ -32,13 +48,15 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             }
           ]
         }
@@ -57,7 +75,8 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
     }
   ],
   "description": "Post a Datadog event when a Jira work item is created",
@@ -76,10 +95,16 @@
       "instruction": "Datadog site API URL."
     },
     {
-      "name": "DATADOG_TAGS",
+      "name": "DATADOG_TAG_SOURCE",
       "behavior": "SET",
-      "value": "jira,ihub",
-      "instruction": "Comma-separated tag value used as a starter. Split into separate tags if your Datadog event schema requires it."
+      "value": "ihub",
+      "instruction": "Value of the source: tag on the Datadog event. Datadog tags are one string each; add further entries to the tags array in the action body if you need more."
+    },
+    {
+      "name": "DATADOG_TAG_TEAM",
+      "behavior": "SET",
+      "value": "platform",
+      "instruction": "Value of the team: tag on the Datadog event."
     }
   ],
   "groupName": "Datadog",

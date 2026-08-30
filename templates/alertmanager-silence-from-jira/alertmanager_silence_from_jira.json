@@ -9,6 +9,22 @@
         {
           "value": "application/json",
           "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
         }
       ],
       "method": "POST",
@@ -18,7 +34,7 @@
         "value": "template:custom-header-alertmanager-auth"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"matchers\": [\n    {\n      \"name\": \"{{_flow.ALERTMANAGER_MATCHER_NAME}}\",\n      \"value\": \"{{_flow.ALERTMANAGER_MATCHER_VALUE}}\",\n      \"isRegex\": false\n    }\n  ],\n  \"startsAt\": \"{{_flow.SILENCE_STARTS_AT}}\",\n  \"endsAt\": \"{{_flow.SILENCE_ENDS_AT}}\",\n  \"createdBy\": \"iHub\",\n  \"comment\": \"Jira change {{issue.key}}: {{issue.fields.summary}} - {{baseUrl}}/browse/{{issue.key}}\"\n}",
+      "body": "{\n  \"matchers\": [\n    {\n      \"name\": \"{{_flow.ALERTMANAGER_MATCHER_NAME}}\",\n      \"value\": \"{{_flow.ALERTMANAGER_MATCHER_VALUE}}\",\n      \"isRegex\": false\n    }\n  ],\n  \"startsAt\": \"{{#if issue.fields.customfield_10160}}{{issue.fields.customfield_10160}}{{else}}{{_flow.SILENCE_STARTS_AT}}{{/if}}\",\n  \"endsAt\": \"{{#if issue.fields.customfield_10161}}{{issue.fields.customfield_10161}}{{else}}{{_flow.SILENCE_ENDS_AT}}{{/if}}\",\n  \"createdBy\": \"iHub\",\n  \"comment\": \"Jira change {{issue.key}}: {{{issue.fields.summary}}} - {{baseUrl}}/browse/{{issue.key}}\"\n}",
       "enabled": true,
       "url": "{{_flow.ALERTMANAGER_URL}}/api/v2/silences",
       "parentId": "",
@@ -40,19 +56,22 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item created events"
             },
             {
               "jsonPath": "$.issue.fields.project.key",
               "type": "DATA_CONDITION",
               "value": "{{_flow.SPACE}}",
-              "operator": "EQUALS"
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
             },
             {
               "jsonPath": "$.issue.fields.issuetype.name",
               "type": "DATA_CONDITION",
-              "value": "Change",
-              "operator": "EQUALS"
+              "value": "{{_flow.CHANGE_ISSUE_TYPE}}",
+              "operator": "EQUALS",
+              "description": "Only silence for the Jira issue type configured in CHANGE_ISSUE_TYPE"
             }
           ]
         }
@@ -71,7 +90,66 @@
           504
         ]
       },
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Alertmanager Silence ID on Jira Issue",
+      "description": "Stores the Alertmanager silence ID on the Jira change work item so the silence can be found and expired later.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:c8b3f461-70de-4a92-8d15-2e7a6b04cf38",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10153\": \"{{_flow.alertmanagerSilenceId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:a0facade-4197-4089-b1aa-49d57b9d8c62",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.alertmanagerSilenceId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when Alertmanager returned a silence ID"
+            }
+          ]
+        }
+      ],
+      "order": 200
     }
   ],
   "description": "Create a Prometheus Alertmanager silence when a Jira change work item is created",
@@ -82,6 +160,12 @@
       "behavior": "SET",
       "value": "CHANGE",
       "instruction": "Jira project key to monitor."
+    },
+    {
+      "name": "CHANGE_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Change",
+      "instruction": "Jira issue type that represents a change window."
     },
     {
       "name": "ALERTMANAGER_URL",
@@ -104,14 +188,14 @@
     {
       "name": "SILENCE_STARTS_AT",
       "behavior": "SET",
-      "value": "2027-01-01T00:00:00Z",
-      "instruction": "Silence start time. Map this from a Jira change-window custom field for production."
+      "value": "2030-01-01T00:00:00Z",
+      "instruction": "Fallback silence start time, used only when the Jira change-window start custom field (customfield_10160) is empty. Replace the custom field key with the one from your Jira instance."
     },
     {
       "name": "SILENCE_ENDS_AT",
       "behavior": "SET",
-      "value": "2027-01-01T02:00:00Z",
-      "instruction": "Silence end time. Map this from a Jira change-window custom field for production."
+      "value": "2030-01-01T02:00:00Z",
+      "instruction": "Fallback silence end time, used only when the Jira change-window end custom field (customfield_10161) is empty. Replace the custom field key with the one from your Jira instance."
     }
   ],
   "groupName": "Prometheus Alertmanager",
