@@ -1,0 +1,473 @@
+{
+  "actions": [
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "GET",
+      "scriptedVariables": [
+        {
+          "name": "clickupSyncEvent",
+          "uuid": "1788301001001",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => (obj === null || obj === undefined) ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst event = String(read('event') || '');\nif (event === 'taskCreated' || event === 'taskUpdated' || event === 'taskCommentPosted') return event;\nreturn '';"
+        },
+        {
+          "name": "clickupTaskId",
+          "uuid": "1788301001002",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => (obj === null || obj === undefined) ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn String(read('task_id') || '');"
+        },
+        {
+          "name": "clickupActorId",
+          "uuid": "1788301001003",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => (obj === null || obj === undefined) ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn String(read('history_items.0.user.id') || '');"
+        },
+        {
+          "name": "clickupCommentId",
+          "uuid": "1788301001004",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => (obj === null || obj === undefined) ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst event = String(read('event') || '');\nif (event !== 'taskCommentPosted') return '';\nreturn String(read('history_items.0.id') || '');"
+        },
+        {
+          "name": "clickupCommentText",
+          "uuid": "1788301001005",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst at = (o, p) => p.split('.').reduce((obj, key) => (obj === null || obj === undefined) ? undefined : obj[key], o);\nconst event = String(at(root, 'event') || '');\nif (event !== 'taskCommentPosted') return '';\nconst comment = at(root, 'history_items.0.comment');\nif (comment === undefined || comment === null) return '';\nlet text;\nif (Array.isArray(comment)) {\n  text = comment.map((seg) => (seg && typeof seg === 'object' ? (seg.text || '') : String(seg))).join('');\n} else if (typeof comment === 'object') {\n  text = comment.text || comment.comment_text || '';\n} else {\n  text = String(comment);\n}\nreturn String(text || '').trim();"
+        }
+      ],
+      "description": "Fetch the ClickUp task's current name, plain-text description and URL. The webhook payload only carries a task id and per-field history diffs, not the full task, so every event is enriched with a live GET before anything is written to Jira.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-clickup-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.CLICKUP_API_URL}}/task/{{clickupTaskId}}",
+      "parentId": "",
+      "flowVariables": [
+        {
+          "name": "clickupTaskName",
+          "behavior": "SET",
+          "value": "$.response.data.name",
+          "instruction": ""
+        },
+        {
+          "name": "clickupTaskDescription",
+          "behavior": "SET",
+          "value": "$.response.data.text_content",
+          "instruction": ""
+        },
+        {
+          "name": "clickupTaskUrl",
+          "behavior": "SET",
+          "value": "$.response.data.url",
+          "instruction": ""
+        }
+      ],
+      "name": "Get ClickUp Task",
+      "id": "template:action:823c0568-dfcd-40f0-9ec4-ab41a0705970",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.clickupTaskId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ClickUp payload must include a task id"
+            },
+            {
+              "jsonPath": "$.clickupSyncEvent",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only taskCreated, taskUpdated and taskCommentPosted events are synced"
+            },
+            {
+              "jsonPath": "$.clickupActorId",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.CLICKUP_INTEGRATION_USER_ID}}",
+              "operator": "NOT_EQUALS",
+              "description": "Loop prevention: ignore changes made in ClickUp by the iHub integration user"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
+      },
+      "order": 100
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "description": "Search for a Jira issue whose ClickUp task id custom field matches the incoming ClickUp task.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{clickupTaskId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "parentId": "template:action:823c0568-dfcd-40f0-9ec4-ab41a0705970",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.issues[0].key",
+          "instruction": ""
+        }
+      ],
+      "name": "Search Jira Issue by ClickUp Task ID",
+      "id": "template:action:f7af4842-067c-495d-918f-e7e0096a17e0",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.clickupTaskName",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only search Jira after ClickUp returned the task details"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "description": "Create a Jira issue from an incoming ClickUp taskCreated event.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{{clickupTaskName}}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{clickupTaskId}}\",\n    \"description\": {{{htmlToADF clickupTaskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue",
+      "parentId": "template:action:f7af4842-067c-495d-918f-e7e0096a17e0",
+      "flowVariables": [
+        {
+          "name": "issueKey",
+          "behavior": "SET",
+          "value": "$.response.data.key",
+          "instruction": ""
+        }
+      ],
+      "name": "Create Jira Issue from ClickUp Task",
+      "id": "template:action:ffb0863b-b96c-49de-9e75-52360807eb41",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.clickupSyncEvent",
+              "type": "DATA_CONDITION",
+              "value": "taskCreated",
+              "operator": "EQUALS",
+              "description": "Only create a Jira issue for a ClickUp task created event"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "EMPTY_ARRAY",
+              "description": "Only create when no Jira issue already links this ClickUp task"
+            }
+          ]
+        }
+      ],
+      "order": 300
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "description": "Write the new Jira issue key onto the ClickUp task's linked-issue custom field.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:custom-header-clickup-api-key"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"value\": \"{{_flow.issueKey}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.CLICKUP_API_URL}}/task/{{clickupTaskId}}/field/{{_flow.CLICKUP_JIRA_KEY_FIELD_ID}}",
+      "parentId": "template:action:ffb0863b-b96c-49de-9e75-52360807eb41",
+      "flowVariables": [],
+      "name": "Store Jira Issue Key on ClickUp Task",
+      "id": "template:action:574efcaa-b781-436b-a7cc-d9d17e5f3685",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.issueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Only write the custom field when Jira returned an issue key"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
+      },
+      "order": 350
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "description": "Update the matching Jira issue summary and description when the ClickUp task is updated.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{{clickupTaskName}}}\",\n    \"description\": {{{htmlToADF clickupTaskDescription}}}\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
+      "parentId": "template:action:f7af4842-067c-495d-918f-e7e0096a17e0",
+      "flowVariables": [],
+      "name": "Update Jira Issue from ClickUp Task",
+      "id": "template:action:ddc0f808-9876-4626-a661-aa1881248707",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.clickupSyncEvent",
+              "type": "DATA_CONDITION",
+              "value": "taskUpdated",
+              "operator": "EQUALS",
+              "description": "Only update Jira for a ClickUp task updated event"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only update when a matching Jira issue was found"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "GET",
+      "description": "Get a Jira issue property for the ClickUp comment id, to find out whether the comment was already synced.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": true,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{clickupCommentId}}",
+      "parentId": "template:action:f7af4842-067c-495d-918f-e7e0096a17e0",
+      "name": "Get ClickUp Comment ID Property",
+      "id": "template:action:00699a46-2b49-4ffb-b4f7-00f4351eabc3",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.clickupSyncEvent",
+              "type": "DATA_CONDITION",
+              "value": "taskCommentPosted",
+              "operator": "EQUALS",
+              "description": "Only check for a ClickUp comment posted event"
+            },
+            {
+              "jsonPath": "$.clickupCommentId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ClickUp comment payload must include a comment id"
+            },
+            {
+              "jsonPath": "$.response.data.issues",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Only look for the property when a matching Jira issue was found"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "description": "Add the ClickUp comment to the matching Jira issue.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {{{htmlToADF clickupCommentText}}}\n}",
+      "logConditionsNotMet": true,
+      "parentId": "template:action:00699a46-2b49-4ffb-b4f7-00f4351eabc3",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "flowVariables": [],
+      "name": "Add ClickUp Comment to Jira",
+      "id": "template:action:527a74d8-b34f-476e-894f-45a88c1914d6",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            },
+            {
+              "jsonPath": "$.clickupCommentText",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "operator": "NOT_EQUALS",
+              "description": "Incoming ClickUp comment payload must include comment text"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "name": "Store Incoming ClickUp Comment ID",
+      "description": "Store the ClickUp comment id after adding it to Jira to avoid duplicate webhook processing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:2a7d5a21-6145-46b5-b564-2c8d8ffa1b55",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"externalId\": \"{{clickupCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"clickup\"\n}",
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{clickupCommentId}}",
+      "parentId": "template:action:527a74d8-b34f-476e-894f-45a88c1914d6",
+      "order": 650
+    }
+  ],
+  "description": "Sync ClickUp webhook events to Jira issues",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "CU",
+      "instruction": "Jira project key used for issues created from ClickUp tasks"
+    },
+    {
+      "name": "ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Task",
+      "instruction": "Jira issue type created for new ClickUp tasks"
+    },
+    {
+      "name": "CLICKUP_API_URL",
+      "behavior": "SET",
+      "value": "https://api.clickup.com/api/v2",
+      "instruction": "ClickUp REST API v2 base URL. Only change if ClickUp introduces a new API version or a regional/proxied base URL."
+    },
+    {
+      "name": "CLICKUP_JIRA_KEY_FIELD_ID",
+      "behavior": "SET",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "instruction": "Required. Same UUID as the outgoing flow's CLICKUP_JIRA_KEY_FIELD_ID: the text-type ClickUp custom field that stores the linked Jira issue key. This flow writes it onto tasks created from ClickUp's side."
+    },
+    {
+      "name": "CLICKUP_INTEGRATION_USER_ID",
+      "behavior": "SET",
+      "value": "00000000",
+      "instruction": "Required. Numeric ClickUp user id of the integration user whose API token the custom-header-clickup-api-key credential holds. Read it from GET https://api.clickup.com/api/v2/user (field user.id). Prevents circular sync: task and comment events made by this user in ClickUp are dropped."
+    }
+  ],
+  "groupName": "ClickUp",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "ClickUp Incoming Sync",
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

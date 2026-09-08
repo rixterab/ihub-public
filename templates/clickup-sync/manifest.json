@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "clickup-sync",
+  "name": "ClickUp Sync",
+  "description": "Two way sync for ClickUp tasks and Jira issues",
+  "category": "ClickUp",
+  "flows": [
+    "clickup_incoming_sync.json",
+    "clickup_outgoing_sync.json"
+  ],
+  "icon": "clickup.svg",
+  "author": "Rixter AB",
+  "tags": ["clickup", "sync", "work-items"],
+  "createdAt": "2026-09-08",
+  "credentialDefinitions": [
+    {
+      "key": "custom-header-clickup-api-key",
+      "name": "ClickUp API Key",
+      "type": "CUSTOM_HEADER",
+      "data": {
+        "headers": [
+          {
+            "key": "Authorization"
+          }
+        ]
+      }
+    }
+  ]
+}
