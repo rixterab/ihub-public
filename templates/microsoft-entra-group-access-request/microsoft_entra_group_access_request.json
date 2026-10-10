@@ -1,0 +1,309 @@
+{
+  "actions": [
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "GET",
+      "name": "Find Entra User On Create",
+      "description": "Resolve each selected Jira user's email address and find the matching Microsoft Entra user for a newly created approved request.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:2cd49d5b-41dc-44e3-ac78-b486e9da4eaa",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{lookupEmail accountId}}?$select=id,userPrincipalName,mail",
+      "parentId": "",
+      "iterator": "$.issue.fields.customfield_10170",
+      "flowVariables": [
+        { "name": "entraUserId", "behavior": "SET", "value": "$.response.data.id", "instruction": "Microsoft Entra object ID for the current selected Jira user." }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            { "jsonPath": "$.eventType", "type": "DATA_CONDITION", "value": "avi:jira:created:issue", "operator": "EQUALS", "description": "Only run for Jira work item created events." },
+            { "jsonPath": "$.issue.fields.project.key", "type": "DATA_CONDITION", "value": "{{_flow.SPACE}}", "operator": "EQUALS", "description": "Only run for the configured access-request project." },
+            { "jsonPath": "$.issue.fields.status.name", "type": "DATA_CONDITION", "value": "{{_flow.APPROVED_STATUS}}", "operator": "EQUALS", "description": "Only run when the request is approved." },
+            { "jsonPath": "$.issue.fields.customfield_10173", "type": "DATA_CONDITION", "value": "", "operator": "EQUALS", "description": "Deduplicate requests by requiring an empty processing marker." }
+          ]
+        }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 3, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 100
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "name": "Add Entra Group Member On Create",
+      "description": "Add the resolved Microsoft Entra user to the selected group.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:a405e09e-e527-44b7-bdde-31f61f9f1e4e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"@odata.id\": \"https://graph.microsoft.com/v1.0/directoryObjects/{{entraUserId}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{issue.fields.customfield_10171.value}}/members/$ref",
+      "parentId": "template:action:2cd49d5b-41dc-44e3-ac78-b486e9da4eaa",
+      "flowVariables": [],
+      "conditions": [
+        { "type": "COMBINED_CONDITION", "conditions": [
+          { "jsonPath": "$.issue.fields.customfield_10172.value", "type": "DATA_CONDITION", "value": "Add", "operator": "EQUALS", "description": "Only run for an Add action." },
+          { "jsonPath": "$._flow.entraUserId", "type": "DATA_CONDITION", "value": "", "operator": "NOT_EQUALS", "description": "Only run when the Entra user was resolved." }
+        ] }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 0, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 300
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "DELETE",
+      "name": "Remove Entra Group Member On Create",
+      "description": "Remove the resolved Microsoft Entra user from the selected group.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:6cf0f4de-9c38-4708-9161-0f461d10427f",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{issue.fields.customfield_10171.value}}/members/{{entraUserId}}/$ref",
+      "parentId": "template:action:2cd49d5b-41dc-44e3-ac78-b486e9da4eaa",
+      "flowVariables": [],
+      "conditions": [
+        { "type": "COMBINED_CONDITION", "conditions": [
+          { "jsonPath": "$.issue.fields.customfield_10172.value", "type": "DATA_CONDITION", "value": "Remove", "operator": "EQUALS", "description": "Only run for a Remove action." },
+          { "jsonPath": "$._flow.entraUserId", "type": "DATA_CONDITION", "value": "", "operator": "NOT_EQUALS", "description": "Only run when the Entra user was resolved." }
+        ] }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 0, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 400
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "name": "Mark Created Request Processed",
+      "description": "Mark the Jira request as processed after the selected membership operation succeeds.",
+      "credentialsReference": { "type": "ATLASSIAN_TOKEN", "value": "ATLASSIAN_AUTH_TOKEN" },
+      "id": "template:action:437873a3-8a42-4703-87de-f6aa53f35f62",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10173\": \"Processed by iHub\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:a405e09e-e527-44b7-bdde-31f61f9f1e4e",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 500
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "name": "Mark Created Removal Request Processed",
+      "description": "Mark the Jira request as processed after the selected removal operation succeeds.",
+      "credentialsReference": { "type": "ATLASSIAN_TOKEN", "value": "ATLASSIAN_AUTH_TOKEN" },
+      "id": "template:action:c454def3-ecc4-4c95-b735-31774d593f7e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10173\": \"Processed by iHub\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:6cf0f4de-9c38-4708-9161-0f461d10427f",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 600
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "GET",
+      "name": "Find Entra User On Update",
+      "description": "Resolve each selected Jira user's email address and find the matching Microsoft Entra user for an updated approved request.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:90b0c162-d775-43a7-8f10-8076c090ae1f",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/users/{{lookupEmail accountId}}?$select=id,userPrincipalName,mail",
+      "parentId": "",
+      "iterator": "$.issue.fields.customfield_10170",
+      "flowVariables": [
+        { "name": "entraUserId", "behavior": "SET", "value": "$.response.data.id", "instruction": "Microsoft Entra object ID for the current selected Jira user." }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            { "jsonPath": "$.eventType", "type": "DATA_CONDITION", "value": "avi:jira:updated:issue", "operator": "EQUALS", "description": "Only run for Jira work item updated events." },
+            { "jsonPath": "$.issue.fields.project.key", "type": "DATA_CONDITION", "value": "{{_flow.SPACE}}", "operator": "EQUALS", "description": "Only run for the configured access-request project." },
+            { "jsonPath": "$.issue.fields.status.name", "type": "DATA_CONDITION", "value": "{{_flow.APPROVED_STATUS}}", "operator": "EQUALS", "description": "Only run when the request is approved." },
+            { "jsonPath": "$.issue.fields.customfield_10173", "type": "DATA_CONDITION", "value": "", "operator": "EQUALS", "description": "Deduplicate requests by requiring an empty processing marker." }
+          ]
+        }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 3, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 700
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "POST",
+      "name": "Add Entra Group Member On Update",
+      "description": "Add the resolved Microsoft Entra user to the selected group.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:45375ecf-d8a6-4b17-b261-c592ea06ba91",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"@odata.id\": \"https://graph.microsoft.com/v1.0/directoryObjects/{{entraUserId}}\"\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{issue.fields.customfield_10171.value}}/members/$ref",
+      "parentId": "template:action:90b0c162-d775-43a7-8f10-8076c090ae1f",
+      "flowVariables": [],
+      "conditions": [
+        { "type": "COMBINED_CONDITION", "conditions": [
+          { "jsonPath": "$.issue.fields.customfield_10172.value", "type": "DATA_CONDITION", "value": "Add", "operator": "EQUALS", "description": "Only run for an Add action." },
+          { "jsonPath": "$._flow.entraUserId", "type": "DATA_CONDITION", "value": "", "operator": "NOT_EQUALS", "description": "Only run when the Entra user was resolved." }
+        ] }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 0, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 900
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "DELETE",
+      "name": "Remove Entra Group Member On Update",
+      "description": "Remove the resolved Microsoft Entra user from the selected group.",
+      "credentialsReference": { "type": "DATABASE_REF", "value": "template:oauth2-microsoft-entra-group-access" },
+      "id": "template:action:8d47e0c4-474e-4e6f-807c-45e4404587b2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "https://graph.microsoft.com/v1.0/groups/{{issue.fields.customfield_10171.value}}/members/{{entraUserId}}/$ref",
+      "parentId": "template:action:90b0c162-d775-43a7-8f10-8076c090ae1f",
+      "flowVariables": [],
+      "conditions": [
+        { "type": "COMBINED_CONDITION", "conditions": [
+          { "jsonPath": "$.issue.fields.customfield_10172.value", "type": "DATA_CONDITION", "value": "Remove", "operator": "EQUALS", "description": "Only run for a Remove action." },
+          { "jsonPath": "$._flow.entraUserId", "type": "DATA_CONDITION", "value": "", "operator": "NOT_EQUALS", "description": "Only run when the Entra user was resolved." }
+        ] }
+      ],
+      "ratelimit": { "sleepTime": 500, "initialSleepTime": 5000, "maxRetries": 0, "burst": 20, "retryStatusCodes": [408, 429, 500, 502, 503, 504] },
+      "order": 1000
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "name": "Mark Updated Request Processed",
+      "description": "Mark the Jira request as processed after the selected membership operation succeeds.",
+      "credentialsReference": { "type": "ATLASSIAN_TOKEN", "value": "ATLASSIAN_AUTH_TOKEN" },
+      "id": "template:action:d316d22f-c03d-4669-886f-cac2ebafbe24",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10173\": \"Processed by iHub\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:45375ecf-d8a6-4b17-b261-c592ea06ba91",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 1100
+    },
+    {
+      "headers": [
+        { "value": "application/json", "key": "Accept" },
+        { "value": "application/json", "key": "Content-Type" },
+        { "value": "keep-alive", "key": "Connection" },
+        { "value": "gzip, deflate, br", "key": "Accept-Encoding" },
+        { "value": "IntegrationsHub/Cloud", "key": "User-Agent" },
+        { "value": "no-cache", "key": "Cache-Control" }
+      ],
+      "method": "PUT",
+      "name": "Mark Updated Removal Request Processed",
+      "description": "Mark the Jira request as processed after the selected removal operation succeeds.",
+      "credentialsReference": { "type": "ATLASSIAN_TOKEN", "value": "ATLASSIAN_AUTH_TOKEN" },
+      "id": "template:action:c079058c-5ffc-467c-9e82-2d75a0de5c38",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"customfield_10173\": \"Processed by iHub\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:8d47e0c4-474e-4e6f-807c-45e4404587b2",
+      "flowVariables": [],
+      "conditions": [],
+      "order": 1200
+    }
+  ],
+  "description": "Add or remove selected Jira users from a Microsoft Entra group after an access request is approved",
+  "enabled": false,
+  "flowVariables": [
+    { "name": "SPACE", "behavior": "SET", "value": "AR", "instruction": "Jira project key containing access requests." },
+    { "name": "APPROVED_STATUS", "behavior": "SET", "value": "Approved", "instruction": "Jira status name that authorizes the Microsoft Entra membership change." }
+  ],
+  "groupName": "Microsoft Entra",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": { "createdBy": "", "updatedBy": "" },
+  "name": "Microsoft Entra Group Access Request",
+  "trigger": { "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE" },
+  "useStaticIP": false
+}

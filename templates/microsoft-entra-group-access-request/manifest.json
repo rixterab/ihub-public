@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "key": "microsoft-entra-group-access-request",
+  "name": "Microsoft Entra Group Access Request",
+  "description": "Add or remove selected Jira users from a Microsoft Entra group after an access request is approved",
+  "category": "Microsoft Entra",
+  "flows": [
+    "microsoft_entra_group_access_request.json"
+  ],
+  "icon": "microsoft.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "microsoft",
+    "entra",
+    "groups",
+    "access-requests",
+    "jira-service-management"
+  ],
+  "createdAt": "2026-09-24",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-microsoft-entra-group-access",
+      "name": "Microsoft Entra Group Access",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "authorizeUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+            "accessTokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+          },
+          "grantType": "client_credentials",
+          "scope": "https://graph.microsoft.com/.default",
+          "headerPrefix": "Bearer",
+          "includeState": false,
+          "includeScopeInAccessTokenReq": true,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

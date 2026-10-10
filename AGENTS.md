@@ -199,15 +199,38 @@ Known trade-off, accepted repository-wide: a double quote inside a Jira summary 
 still break a JSON body under `{{{ }}}`. Say so in the README rather than pretending
 otherwise.
 
-### Helpers
+### Helpers and lookup functions
 
-Three exist. Do not invent others.
+These are implemented in iHub's Mustache renderer. Do not invent others. `lookupEmail`
+and `lookupUser` are asynchronous pre-render functions rather than registered Handlebars
+helpers, but templates use the same Mustache syntax.
 
-| Helper | Does | Note |
+| Function | Does | Note |
 | --- | --- | --- |
-| `{{{adfToHTML x}}}` | Jira ADF → HTML | For descriptions and comments going *out* |
-| `{{{htmlToADF x}}}` | HTML → Jira ADF | For descriptions coming *in*; emits a JSON object, so use it **unquoted** |
-| `{{{toJSON x}}}` | Value → JSON literal | Also unquoted |
+| `{{date input format}}` | Formats a relative date | Only `N years ago` and `YYYY` have specialised behaviour. |
+| `{{plus left right}}` | Adds two numeric values | Converts both arguments with `Number`. |
+| `{{eq left right}}` | Exact equality | Inline or block form; no type coercion. |
+| `{{#ifEqual left right}}…{{/ifEqual}}` | Exact equality block | Supports `{{else}}`. |
+| `{{{JSONstringify x}}}` | Value → JSON | Returns a complete JSON representation. |
+| `{{{toJSON x}}}` | Value → JSON | Returns an empty string for a missing value. |
+| `{{{toCSV array property quotes}}}` | Array property → CSV | The third argument supplies the wrapper/quote characters. |
+| `{{{jsonEscape x}}}` | JSON-escapes a string without surrounding quotes | Use inside an existing JSON string. |
+| `{{{flowVarMerge array scope matchProperty insertProperty}}}` | Merges scope values into array objects | Returns the resulting array as JSON. |
+| `{{{getElementByTagNameNS xml namespace element index}}}` | Reads one XML element | Returns its trimmed text. |
+| `{{{getElementsByTagNameNS xml namespace element}}}` | Reads matching XML elements | Returns the matching elements. |
+| `{{{adfToJsonString x}}}` | Jira ADF → quoted plain-text JSON string | Use as the complete, unquoted JSON value. |
+| `{{{adfToString x}}}` | Jira ADF → JSON-escaped text without surrounding quotes | Use inside an existing JSON string. |
+| `{{{adfToHTML x}}}` | Jira ADF → HTML | For descriptions and comments going *out*. |
+| `{{{adfToWikiMarkup x}}}` | Jira ADF → quoted wiki-markup JSON string | Use as the complete, unquoted JSON value. |
+| `{{{htmlToJsonString x}}}` | HTML → quoted JSON string | Use as the complete, unquoted JSON value. |
+| `{{{htmlToADF x}}}` | HTML → Jira ADF | Emits a JSON object, so use it **unquoted**. |
+| `{{{wikiMarkupToADF x}}}` | Wiki markup → Jira ADF | Emits a JSON object, so use it **unquoted**. |
+| `{{lookupEmail accountIdPath}}` | Jira account ID → email address | Accepts only a plain field reference; blank on missing ID or lookup failure. |
+| `{{lookupUser accountIdPath field}}` | Jira account ID → one user field | Field must be `accountId`, `displayName`, `emailAddress`, `active`, `accountType`, or `locale`. |
+
+Each distinct account ID used by `lookupEmail` or `lookupUser` is fetched only once per
+render. Both lookup functions require `clientKey` in the action scope. Triple braces are
+also accepted, but choose escaped or raw output according to the destination context.
 
 `issue.fields.description` on Jira Cloud is an **ADF object, not a string**. Never
 interpolate it bare — you get `[object Object]` or a broken body. Either run it through
