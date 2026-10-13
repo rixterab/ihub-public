@@ -1,0 +1,502 @@
+{
+  "actions": [
+    {
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{odooTicketId}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"description\",\n    \"status\",\n    \"issuetype\"\n  ]\n}",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "Incoming Odoo payload must include a ticket ID",
+              "expectedValueSource": "FIXED_VALUE",
+              "jsonPath": "$.id",
+              "operator": "NOT_EQUALS",
+              "type": "DATA_CONDITION",
+              "value": ""
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Searches Jira for a work item linked to the incoming Odoo ticket ID.",
+      "enabled": true,
+      "flowVariables": [
+        {
+          "behavior": "SET",
+          "instruction": "Jira work item key found for the incoming Odoo ticket ID.",
+          "name": "issueKey",
+          "value": "$.response.data.issues[0].key"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:d055ca2c-5e67-4bce-8854-c9b678e68142",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Find Jira Work Item by Odoo Ticket ID",
+      "order": 100,
+      "parentId": "",
+      "ratelimit": {
+        "burst": 20,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504],
+        "sleepTime": 500
+      },
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/search/jql",
+      "variables": [
+        {
+          "key": "odooTicketId",
+          "value": "$.payload.id"
+        },
+        {
+          "key": "odooName",
+          "value": "$.payload.name"
+        },
+        {
+          "key": "odooDescription",
+          "value": "$.payload.description"
+        },
+        {
+          "key": "message_ids",
+          "value": "$.message_ids"
+        }
+      ]
+    },
+    {
+      "body": "{\n  \"fields\": {\n    \"project\": { \"key\": \"{{_flow.SPACE}}\" },\n    \"summary\": \"{{{odooName}}}\",\n    \"issuetype\": { \"name\": \"{{_flow.ISSUE_TYPE}}\" },\n    \"customfield_10153\": \"{{odooTicketId}}\",\n    \"description\": {{{htmlToADF odooDescription}}}\n  }\n}",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "Only create when Jira has no linked work item",
+              "expectedValueSource": "FIXED_VALUE",
+              "jsonPath": "$.response.data.issues",
+              "operator": "EMPTY_ARRAY",
+              "type": "DATA_CONDITION",
+              "value": ""
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Creates a Jira work item for a new Odoo ticket when no linked work item exists.",
+      "enabled": true,
+      "flowVariables": [
+        {
+          "behavior": "SET",
+          "instruction": "Jira work item key created for the incoming Odoo ticket.",
+          "name": "issueKey",
+          "value": "$.response.data.key"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:f8f0e4cf-2867-44c8-bd27-294868e44c55",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Create Jira Work Item from Odoo Ticket",
+      "order": 200,
+      "parentId": "template:action:d055ca2c-5e67-4bce-8854-c9b678e68142",
+      "ratelimit": {
+        "burst": 20,
+        "initialSleepTime": 0,
+        "maxRetries": 0,
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issue"
+    },
+    {
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{{odooName}}}\",\n    \"description\": {{{htmlToADF odooDescription}}}\n  }\n}",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "Only update when Jira has a linked work item",
+              "expectedValueSource": "FIXED_VALUE",
+              "jsonPath": "$.response.data.issues",
+              "operator": "NOT_EMPTY_ARRAY",
+              "type": "DATA_CONDITION",
+              "value": ""
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Updates the linked Jira work item summary and description from Odoo.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:cd249361-5622-44ab-aa47-31d94c47398a",
+      "logConditionsNotMet": false,
+      "method": "PUT",
+      "name": "Update Jira Work Item from Odoo Ticket",
+      "order": 300,
+      "parentId": "template:action:d055ca2c-5e67-4bce-8854-c9b678e68142",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}"
+    },
+    {
+      "body": "",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "Only sync comments when Jira has a linked work item",
+              "expectedValueSource": "FIXED_VALUE",
+              "jsonPath": "$.issueKey",
+              "operator": "NOT_EQUALS",
+              "type": "DATA_CONDITION",
+              "value": ""
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Checks whether this Odoo comment has already been added to Jira.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:5c34544d-8262-4644-868f-2c9ecb941517",
+      "iterator": "$.message_ids",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Check Odoo Comment Sync Property",
+      "order": 400,
+      "parentId": "template:action:d055ca2c-5e67-4bce-8854-c9b678e68142",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-odoo-comment-{{payload}}",
+      "variables": [
+        {
+          "key": "issueKey",
+          "value": "$._flow.issueKey"
+        },
+        {
+          "key": "odooCommentId",
+          "value": "$.payload"
+        }
+      ]
+    },
+    {
+      "body": "{\n    \"ids\": [{{odooCommentId}}],\n    \"fields\": [\"body\", \"date\", \"author_id\", \"message_type\", \"subtype_id\"]\n  }",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "",
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404"
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "contextLogAppender": "#{{odooCommentId}}",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-odoo"
+      },
+      "enabled": true,
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "Accept",
+          "value": "*/*"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:837e9239-89a8-48e9-a10c-bd8c613796b2",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Get Odoo Comment",
+      "order": 500,
+      "parentId": "template:action:5c34544d-8262-4644-868f-2c9ecb941517",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{_flow.ODOO_URL}}/json/2/mail.message/read"
+    },
+    {
+      "body": "{\n  \"body\": {{{htmlToADF odooComment}}}\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Adds the incoming Odoo comment to the linked Jira work item.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:bfb0cd0f-cb3c-431a-9161-0b0327723fce",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Add Odoo Comment to Jira",
+      "order": 600,
+      "parentId": "template:action:837e9239-89a8-48e9-a10c-bd8c613796b2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment",
+      "variables": [
+        {
+          "key": "odooComment",
+          "value": "$.response.data.0.body"
+        }
+      ]
+    },
+    {
+      "body": "{\n  \"externalId\": \"{{odooCommentId}}\",\n  \"status\": \"synced\"\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Stores the Odoo message ID as a Jira issue property after adding the comment.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:a4c3e488-998e-4870-a3a8-bdd3d442b082",
+      "logConditionsNotMet": false,
+      "method": "PUT",
+      "name": "Store Odoo Comment Sync Property",
+      "order": 700,
+      "parentId": "template:action:bfb0cd0f-cb3c-431a-9161-0b0327723fce",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-odoo-comment-{{odooCommentId}}"
+    }
+  ],
+  "description": "Synchronize Jira work items and Odoo Helpdesk tickets in both directions, including comments and attachments",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "behavior": "SET",
+      "instruction": "Jira project key where Odoo tickets are created and found.",
+      "name": "SPACE",
+      "value": "ODOO"
+    },
+    {
+      "behavior": "SET",
+      "instruction": "Jira work item type used for Odoo-created tickets.",
+      "name": "ISSUE_TYPE",
+      "value": "Task"
+    },
+    {
+      "behavior": "SET",
+      "instruction": "Base URL of the Odoo instance, without a trailing slash.",
+      "name": "ODOO_URL",
+      "value": "https://replace-with-yoursite.odoo.com"
+    },
+    {
+      "behavior": "SET",
+      "instruction": "Numeric Odoo Helpdesk team ID accepted by this flow.",
+      "name": "ODOO_HELPDESK_TEAM_ID",
+      "value": "1"
+    }
+  ],
+  "groupName": "Odoo Helpdesk",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "5ee9eea44784510aca6df3d0",
+    "updatedBy": "5ee9eea44784510aca6df3d0"
+  },
+  "name": "Odoo Helpdesk -> Jira Incoming",
+  "outcomeRules": {},
+  "trigger": {
+    "type": "CUSTOM_WEBHOOK_TRIGGER_TYPE",
+    "config": {
+      "response": {
+        "customHeaders": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "customTemplate": "{}",
+        "mode": "custom"
+      }
+    }
+  },
+  "useStaticIP": false
+}
