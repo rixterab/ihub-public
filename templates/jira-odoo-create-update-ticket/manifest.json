@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-odoo-create-update-ticket",
+  "name": "Jira ↔ Odoo Helpdesk Sync",
+  "description": "Synchronize Jira work items and Odoo Helpdesk tickets in both directions, including comments and attachments",
+  "category": "Odoo Helpdesk",
+  "flows": [
+    "jira_odoo_helpdesk_outgoing.json",
+    "odoo_helpdesk_jira_incoming.json"
+  ],
+  "icon": "odoo.svg",
+  "author": "Rixter AB",
+  "tags": ["odoo", "helpdesk", "sync", "work-items", "attachments"],
+  "createdAt": "2026-10-10",
+  "credentialDefinitions": [
+    {
+      "key": "token-odoo",
+      "name": "Odoo Integration API",
+      "type": "TOKEN"
+    }
+  ]
+}
