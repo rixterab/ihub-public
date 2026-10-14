@@ -6,14 +6,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -153,14 +146,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -307,14 +293,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -387,7 +366,8 @@
             {
               "jsonPath": "$.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block the issue update iHub itself makes when it writes the monday item ID back"
             }
@@ -402,14 +382,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -475,7 +448,8 @@
             {
               "jsonPath": "$.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block the issue update iHub itself makes when it writes the monday item ID back"
             }
@@ -490,14 +464,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -570,7 +537,8 @@
             {
               "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "User shall not be iHub"
             }
@@ -641,14 +609,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 3,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -718,7 +679,8 @@
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block attachments added by the iHub user"
             }
@@ -823,6 +785,12 @@
       "behavior": "SET",
       "value": "files__1",
       "instruction": "ID of the monday files column that receives Jira attachments"
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira updates, comments and attachments made by this account are not synced back to monday.com."
     }
   ],
   "groupName": "Monday",

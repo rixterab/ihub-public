@@ -31,13 +31,13 @@ From Jira to Matrix42:
 
 Matrix42 exposes its data through an OData REST API whose base path, entity set names and field casing vary by tenant, module version and customization (on-prem vs. cloud). This template assumes an OData v3/v4-style endpoint and generic entity names (`Tickets`, `Notes`, `Attachments`) as a starting point — **before enabling either flow, check the tenant's `$metadata` document** (`{{M42_URL}}/{{M42_API_PATH}}/$metadata`) and confirm the actual entity set name, property names (`Subject`/`Description`/`Id`/`DisplayName`), and note/attachment entity structure, then adjust the flow variables and action bodies to match.
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create ticket | `POST` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/{{_flow.M42_ENTITY}}` |
-| Update ticket | `PATCH` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/{{_flow.M42_ENTITY}}({{issue.fields.customfield_10153}})` |
-| Add note | `POST` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Notes` |
-| Upload attachment | `POST` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Attachments` |
-| Download attachment | `GET` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Attachments({{matrix42AttachmentId}})/$value` |
+| Action              | Method  | Endpoint                                                                                            |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------- |
+| Create ticket       | `POST`  | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/{{_flow.M42_ENTITY}}`                                     |
+| Update ticket       | `PATCH` | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/{{_flow.M42_ENTITY}}({{issue.fields.customfield_10153}})` |
+| Add note            | `POST`  | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Notes`                                                    |
+| Upload attachment   | `POST`  | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Attachments`                                              |
+| Download attachment | `GET`   | `{{_flow.M42_URL}}/{{_flow.M42_API_PATH}}/Attachments({{matrix42AttachmentId}})/$value`             |
 
 The template authenticates with Basic Auth using a Matrix42 integration/service account. If the tenant requires OAuth2 instead, replace the `basic-auth-matrix42` credential in `manifest.json` and both flow JSON files with an OAuth2 credential definition and point it at the tenant's token endpoint.
 
@@ -47,17 +47,17 @@ Create a Jira custom field of type single-line text to store the Matrix42 ticket
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-instance.matrix42.cloud` | Incoming and outgoing `M42_URL` flow variable | Replace with the customer's Matrix42 instance URL. |
-| `M42Services/api/odata/v3` | Incoming and outgoing `M42_API_PATH` flow variable | Replace with the confirmed OData API path from the tenant's `$metadata` document. |
-| `Tickets` | Outgoing `M42_ENTITY` flow variable | Replace with the entity set holding the tickets, for example `Incidents` or `SDIssues`. |
-| `M42` | Incoming `SPACE` flow variable | Replace with the Jira project key where Matrix42-created tickets should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
-| `integration@company` | `manifest.json` credential definition | Replace with the customer's Matrix42 integration account username before importing, or edit the credential after import. |
+| Value in template                                | Where                                                                                                | Customer action                                                                                                          |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `https://your-instance.matrix42.cloud`           | Incoming and outgoing `M42_URL` flow variable                                                        | Replace with the customer's Matrix42 instance URL.                                                                       |
+| `M42Services/api/odata/v3`                       | Incoming and outgoing `M42_API_PATH` flow variable                                                   | Replace with the confirmed OData API path from the tenant's `$metadata` document.                                        |
+| `Tickets`                                        | Outgoing `M42_ENTITY` flow variable                                                                  | Replace with the entity set holding the tickets, for example `Incidents` or `SDIssues`.                                  |
+| `M42`                                            | Incoming `SPACE` flow variable                                                                       | Replace with the Jira project key where Matrix42-created tickets should create/find issues.                              |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                                                                  | Replace if the target Jira project does not use `Task`.                                                                  |
+| `customfield_10153`                              | Both flow JSON files                                                                                 | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                      |
+| `cf[10153]`                                      | Incoming flow JQL search                                                                             | Replace with the numeric custom field ID, for example `cf[12345]`.                                                       |
+| `replace-with-your-instance-of-integration-user` | Outgoing `JIRA_INTEGRATION_ACCOUNT_ID` flow variable (read by the comment and attachment conditions) | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync.  |
+| `integration@company`                            | `manifest.json` credential definition                                                                | Replace with the customer's Matrix42 integration account username before importing, or edit the credential after import. |
 
 ## Matrix42 Workflow Setup
 

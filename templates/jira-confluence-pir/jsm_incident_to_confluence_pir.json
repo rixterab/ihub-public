@@ -124,7 +124,8 @@
             {
               "jsonPath": "$.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip updates made by the iHub integration user, including the report link write back"
             }
@@ -404,25 +405,25 @@
       "name": "MAJOR_INCIDENT_ISSUE_TYPE",
       "behavior": "SET",
       "value": "Incident",
-      "instruction": "Jira issue type name that identifies a major incident. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+      "instruction": "Jira issue type name that identifies a major incident. Read by the Fetch Resolved Incident action condition"
     },
     {
       "name": "MAJOR_INCIDENT_PRIORITY",
       "behavior": "SET",
       "value": "Highest",
-      "instruction": "Jira priority name that identifies a major incident. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+      "instruction": "Jira priority name that identifies a major incident. Read by the Fetch Resolved Incident action condition"
     },
     {
       "name": "RESOLVED_STATUS_NAME",
       "behavior": "SET",
       "value": "Resolved",
-      "instruction": "Jira status name that marks the incident as resolved. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+      "instruction": "Jira status name that marks the incident as resolved. Read by the Fetch Resolved Incident action condition"
     },
     {
       "name": "IHUB_ACCOUNT_ID",
       "behavior": "SET",
-      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
-      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance. Loop prevention: updates authored by this account, including the report link write back, are skipped. The same value is hard coded in the Fetch Resolved Incident action condition and must be replaced there too"
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance. Loop prevention: updates authored by this account, including the report link write back, are skipped. Read by the Fetch Resolved Incident action condition"
     },
     {
       "name": "CONFLUENCE_URL",

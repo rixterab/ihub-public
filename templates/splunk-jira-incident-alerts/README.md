@@ -32,8 +32,8 @@ From Splunk to Jira:
 
 The Jira -> Splunk flow uses the Splunk management API. The default endpoint is:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
+| Action                    | Method | Endpoint                                                                                                      |
+| ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
 | Create saved-search alert | `POST` | `{{_flow.SPLUNK_URL}}/servicesNS/{{_flow.SPLUNK_OWNER}}/{{_flow.SPLUNK_APP}}/saved/searches?output_mode=json` |
 
 The request body is `application/x-www-form-urlencoded` and includes saved-search alert settings such as `name`, `search`, `cron_schedule`, `dispatch.earliest_time`, `dispatch.latest_time`, `alert_type`, `alert_comparator`, `alert_threshold`, `alert.track`, and `alert.severity`.
@@ -81,20 +81,20 @@ Create a Jira custom field of type single-line text to store the Splunk alert ke
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `OPS` | Both `SPACE` flow variables | Replace with the Jira project key for incidents. |
-| `Incident` | `INCIDENT_ISSUE_TYPE` and `ISSUE_TYPE` flow variables | Replace if the Jira project uses another issue type name. |
-| `customfield_10155` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10155]` | Splunk -> Jira JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Jira -> Splunk flow variable | Replace with the Jira account ID used by iHub/the integration user. |
-| `https://your-splunk-host:8089` | Jira -> Splunk `SPLUNK_URL` flow variable | Replace with the Splunk management API URL. Splunk Cloud commonly uses `https://<deployment-name>.splunkcloud.com:8089`. |
-| `nobody` / `search` | Jira -> Splunk `SPLUNK_OWNER` and `SPLUNK_APP` flow variables | Replace with the Splunk namespace that should own the saved-search alert. |
-| `search index=main (error OR failure) \| head 100` | Jira -> Splunk `SPLUNK_DEFAULT_SEARCH` flow variable | Replace with the real SPL query. Tokens `${JIRA_ISSUE_KEY}` and `${JIRA_SUMMARY}` are substituted before the alert is created. |
-| `*/5 * * * *`, `-15m`, `now` | Jira -> Splunk scheduling variables | Adjust the saved-search cadence and dispatch window. |
-| `15` | Splunk -> Jira `ACK_TIMEOUT_MINUTES` flow variable | Adjust the unacknowledged threshold. |
-| Empty `SPLUNK_CREATED_ALERT_WEBHOOK_URL` | Jira -> Splunk flow variable | Optional. Set only if alerts created from Jira should also call a webhook action. |
-| Empty `Authorization` header | `custom-header-splunk-authorization` credential | Set to the full Splunk REST authorization header value. |
+| Value in template                                  | Where                                                         | Customer action                                                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `OPS`                                              | Both `SPACE` flow variables                                   | Replace with the Jira project key for incidents.                                                                               |
+| `Incident`                                         | `INCIDENT_ISSUE_TYPE` and `ISSUE_TYPE` flow variables         | Replace if the Jira project uses another issue type name.                                                                      |
+| `customfield_10155`                                | Both flow JSON files                                          | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                            |
+| `cf[10155]`                                        | Splunk -> Jira JQL search                                     | Replace with the numeric custom field ID, for example `cf[12345]`.                                                             |
+| `replace-with-your-instance-of-integration-user`   | Jira -> Splunk `IHUB_JIRA_ACCOUNT_ID` flow variable           | Replace with the Jira account ID used by iHub/the integration user.                                                            |
+| `https://your-splunk-host:8089`                    | Jira -> Splunk `SPLUNK_URL` flow variable                     | Replace with the Splunk management API URL. Splunk Cloud commonly uses `https://<deployment-name>.splunkcloud.com:8089`.       |
+| `nobody` / `search`                                | Jira -> Splunk `SPLUNK_OWNER` and `SPLUNK_APP` flow variables | Replace with the Splunk namespace that should own the saved-search alert.                                                      |
+| `search index=main (error OR failure) \| head 100` | Jira -> Splunk `SPLUNK_DEFAULT_SEARCH` flow variable          | Replace with the real SPL query. Tokens `${JIRA_ISSUE_KEY}` and `${JIRA_SUMMARY}` are substituted before the alert is created. |
+| `*/5 * * * *`, `-15m`, `now`                       | Jira -> Splunk scheduling variables                           | Adjust the saved-search cadence and dispatch window.                                                                           |
+| `15`                                               | Splunk -> Jira `ACK_TIMEOUT_MINUTES` flow variable            | Adjust the unacknowledged threshold.                                                                                           |
+| Empty `SPLUNK_CREATED_ALERT_WEBHOOK_URL`           | Jira -> Splunk flow variable                                  | Optional. Set only if alerts created from Jira should also call a webhook action.                                              |
+| Empty `Authorization` header                       | `custom-header-splunk-authorization` credential               | Set to the full Splunk REST authorization header value.                                                                        |
 
 ## Splunk Setup Notes
 

@@ -16,13 +16,13 @@ The flow listens to the Atlassian webhook trigger of the instance iHub is instal
 
 ## Jira And Confluence API Calls
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Fetch service request | `GET` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=...&expand=renderedFields` |
-| Create Confluence space | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/space` |
-| Store space link on request | `PUT` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}` |
-| Add remote link | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink` |
-| Comment on request | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment` |
+| Action                      | Method | Endpoint                                                                      |
+| --------------------------- | ------ | ----------------------------------------------------------------------------- |
+| Fetch service request       | `GET`  | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=...&expand=renderedFields` |
+| Create Confluence space     | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/space`                                     |
+| Store space link on request | `PUT`  | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}`                                  |
+| Add remote link             | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink`                       |
+| Comment on request          | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment`                          |
 
 Calls to Jira use the built-in `ATLASSIAN_TOKEN` credential reference and need no manual configuration. Calls to Confluence use the manifest's `basic-auth-confluence` credential, since the Confluence site may be a different Atlassian tenant than the one iHub is installed in. If Jira and Confluence are on the same site, the same Atlassian account email and API token can be reused for both.
 
@@ -40,17 +40,17 @@ Create a Jira custom field of type single-line text (or URL) on the service requ
 
 Hard-coded values that must be reviewed before enabling the flow:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `Service Request` | `SERVICE_REQUEST_ISSUE_TYPE` flow variable **and** `Fetch Approved Service Request` action condition | Replace with the issue type name used for service requests in this instance. |
-| `Approved` | `APPROVED_STATUS_NAME` flow variable **and** `Fetch Approved Service Request` action condition | Replace with the status name that marks a service request as approved in this instance's workflow. If approval is tracked with the native JSM approvals feature rather than a status transition, change the condition to check the approval decision field instead. |
-| `customfield_10161` | Flow variable, action condition and the write-back action body | Replace with the custom field id used to store the space link, for example `customfield_12345`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | `IHUB_ACCOUNT_ID` flow variable **and** the `Fetch Approved Service Request` action condition | Replace with the `accountId` of the iHub integration user in this Jira instance, in both places. This is the loop guard for the space link write-back. |
-| `https://your-company.atlassian.net/wiki` | `CONFLUENCE_URL` flow variable | Replace with the base URL of the Confluence Cloud site, for example `https://acme.atlassian.net/wiki`. |
-| `SR` | `SPACE_KEY_PREFIX` flow variable | Replace with the prefix to use when building space keys, or set to an empty string to use the bare issue key. |
-| `integration@your-company.com` | `manifest.json` credential definition | Replace with the Atlassian account email used for the Confluence API token, before importing or by editing the credential after import. |
+| Value in template                                | Where                                                                                                | Customer action                                                                                                                                                                                                                                                     |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Service Request`                                | `SERVICE_REQUEST_ISSUE_TYPE` flow variable **and** `Fetch Approved Service Request` action condition | Replace with the issue type name used for service requests in this instance.                                                                                                                                                                                        |
+| `Approved`                                       | `APPROVED_STATUS_NAME` flow variable **and** `Fetch Approved Service Request` action condition       | Replace with the status name that marks a service request as approved in this instance's workflow. If approval is tracked with the native JSM approvals feature rather than a status transition, change the condition to check the approval decision field instead. |
+| `customfield_10161`                              | Flow variable, action condition and the write-back action body                                       | Replace with the custom field id used to store the space link, for example `customfield_12345`.                                                                                                                                                                     |
+| `replace-with-your-instance-of-integration-user` | `IHUB_ACCOUNT_ID` flow variable (read by the `Fetch Approved Service Request` action condition)      | Replace with the `accountId` of the iHub integration user in this Jira instance. This is the loop guard for the space link write-back.                                                                                                                              |
+| `https://your-company.atlassian.net/wiki`        | `CONFLUENCE_URL` flow variable                                                                       | Replace with the base URL of the Confluence Cloud site, for example `https://acme.atlassian.net/wiki`.                                                                                                                                                              |
+| `SR`                                             | `SPACE_KEY_PREFIX` flow variable                                                                     | Replace with the prefix to use when building space keys, or set to an empty string to use the bare issue key.                                                                                                                                                       |
+| `integration@your-company.com`                   | `manifest.json` credential definition                                                                | Replace with the Atlassian account email used for the Confluence API token, before importing or by editing the credential after import.                                                                                                                             |
 
-Condition values in iHub are compared literally and are not templated, which is why the issue type, status and account id above are hard coded in the action condition in addition to being flow variables. The flow variables are the documented reference value; the conditions are what actually gates the flow, so both must be kept in sync.
+The account id condition reads `{{_flow.IHUB_ACCOUNT_ID}}` with `expectedValueSource: MUSTACHE`, so setting the flow variable is enough. The issue type and status are still literal values in the action condition as well as flow variables: the flow variables are the documented reference value, the condition is what actually gates the flow, so both must be kept in sync.
 
 To find an `accountId`, call `GET /rest/api/3/myself` in the Jira instance while authenticated as the integration user.
 

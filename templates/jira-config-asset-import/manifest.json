@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "key": "jira-config-asset-import",
+  "name": "Jira Config Asset Import",
+  "description": "Import Jira Cloud configuration into Jira Assets",
+  "category": "Jira",
+  "flows": ["import_jira_configuration_into_assets.json"],
+  "icon": "atlassian-jira-icon.png",
+  "author": "Rixter AB",
+  "tags": ["jira", "assets", "configuration", "governance", "import"],
+  "createdAt": "2026-10-13",
+  "credentialDefinitions": [
+    {
+      "key": "token-jira-config-asset-import-token",
+      "name": "Jira Config Asset Import Token",
+      "type": "TOKEN"
+    },
+    {
+      "key": "basic-auth-jira-admin",
+      "name": "Jira Admin Email and API Token",
+      "type": "BASIC_AUTH",
+      "data": {
+        "username": "jira-admin@example.com"
+      }
+    }
+  ]
+}

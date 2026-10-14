@@ -43,19 +43,19 @@ The link value stored on both sides is the issue **key**, because it is human re
 
 ## Jira API Calls
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Find local issue | `POST` | `{{baseUrl}}/rest/api/3/search/jql` |
-| Find remote issue | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/search/jql` |
-| Create local issue | `POST` | `{{baseUrl}}/rest/api/3/issue` |
-| Update local issue | `PUT` | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}` |
-| Comment local issue | `POST` | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment` |
-| Upload local attachment | `POST` | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments` |
-| Create remote issue | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/issue` |
-| Update remote issue | `PUT` | `{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}` |
-| Comment remote issue | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}/comment` |
+| Action                   | Method | Endpoint                                                                               |
+| ------------------------ | ------ | -------------------------------------------------------------------------------------- |
+| Find local issue         | `POST` | `{{baseUrl}}/rest/api/3/search/jql`                                                    |
+| Find remote issue        | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/search/jql`                                           |
+| Create local issue       | `POST` | `{{baseUrl}}/rest/api/3/issue`                                                         |
+| Update local issue       | `PUT`  | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}`                                      |
+| Comment local issue      | `POST` | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/comment`                              |
+| Upload local attachment  | `POST` | `{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/attachments`                          |
+| Create remote issue      | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/issue`                                                |
+| Update remote issue      | `PUT`  | `{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}`             |
+| Comment remote issue     | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}/comment`     |
 | Upload remote attachment | `POST` | `{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}/attachments` |
-| Download attachment | `GET` | The attachment `content` URL from `issue.fields.attachment[]` |
+| Download attachment      | `GET`  | The attachment `content` URL from `issue.fields.attachment[]`                          |
 
 Attachments are download-then-upload in both directions. The source attachment `content` URL is fetched with the credential of the instance that owns it, stored as an iHub input file, then posted as multipart to `/rest/api/3/issue/{key}/attachments` on the target instance with the `X-Atlassian-Token: no-check` header.
 
@@ -104,29 +104,29 @@ Conflict policy is **last write wins, with no merge**. If the same field is edit
 
 The remote instance is configured to POST the **standard Jira Cloud webhook body**; there is no custom payload contract. The incoming flow reads it with tolerant scripted variables that accept the native shape and a nested `payload` wrapper:
 
-| Scripted variable | Read from |
-| --- | --- |
-| `remoteEventType` | `webhookEvent`, `event`, `eventType`, `issue_event_type_name` |
-| `remoteIssueKey` | `issue.key`, `issueKey`, `key` |
-| `remoteIssueId` | `issue.id`, `issueId`, `id` |
-| `remoteSummary` | `issue.fields.summary`, `fields.summary`, `summary` |
-| `remoteDescription` | `issue.fields.description`, `fields.description`, `description` |
-| `remoteLinkFieldValue` | `issue.fields.customfield_10200` |
-| `remoteAuthorAccountId` | `user.accountId`, `issue.fields.creator.accountId` |
-| `remoteCommentId` | `comment.id`, `commentId` |
-| `remoteCommentBody` | `comment.body`, `commentBody`, `body` |
-| `remoteCommentAuthorAccountId` | `comment.author.accountId`, `comment.updateAuthor.accountId` |
-| `remoteHasAttachmentChange` | `changelog.items[].field == "Attachment"` |
-| `remoteAttachments` | `issue.fields.attachment` |
+| Scripted variable              | Read from                                                       |
+| ------------------------------ | --------------------------------------------------------------- |
+| `remoteEventType`              | `webhookEvent`, `event`, `eventType`, `issue_event_type_name`   |
+| `remoteIssueKey`               | `issue.key`, `issueKey`, `key`                                  |
+| `remoteIssueId`                | `issue.id`, `issueId`, `id`                                     |
+| `remoteSummary`                | `issue.fields.summary`, `fields.summary`, `summary`             |
+| `remoteDescription`            | `issue.fields.description`, `fields.description`, `description` |
+| `remoteLinkFieldValue`         | `issue.fields.customfield_10200`                                |
+| `remoteAuthorAccountId`        | `user.accountId`, `issue.fields.creator.accountId`              |
+| `remoteCommentId`              | `comment.id`, `commentId`                                       |
+| `remoteCommentBody`            | `comment.body`, `commentBody`, `body`                           |
+| `remoteCommentAuthorAccountId` | `comment.author.accountId`, `comment.updateAuthor.accountId`    |
+| `remoteHasAttachmentChange`    | `changelog.items[].field == "Attachment"`                       |
+| `remoteAttachments`            | `issue.fields.attachment`                                       |
 
 Event mapping:
 
-| `webhookEvent` | Result |
-| --- | --- |
-| `jira:issue_created` | Create the issue on the other side |
-| `jira:issue_updated` | Update summary and description |
-| `comment_created` | Add the comment |
-| `jira:issue_updated` with a changelog entry for `Attachment` | Copy attachments |
+| `webhookEvent`                                               | Result                             |
+| ------------------------------------------------------------ | ---------------------------------- |
+| `jira:issue_created`                                         | Create the issue on the other side |
+| `jira:issue_updated`                                         | Update summary and description     |
+| `comment_created`                                            | Add the comment                    |
+| `jira:issue_updated` with a changelog entry for `Attachment` | Copy attachments                   |
 
 Jira has no dedicated attachment webhook event. Attachments are detected from a `jira:issue_updated` event whose `changelog.items[]` contains an entry with `field` equal to `Attachment`, after which the flow iterates `issue.fields.attachment[]` and copies each entry that has not been synced yet.
 
@@ -178,21 +178,21 @@ Create a single-line text custom field in **each** instance to hold the other in
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `customfield_10153` | Both flow JSON files | Replace with the **local** instance link field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric id of the **local** link field, for example `cf[12345]`. |
-| `customfield_10200` | Both flow JSON files | Replace with the **remote** instance link field key. This is a different field from the local one. |
-| `cf[10200]` | Outgoing flow JQL search, and the incoming `remoteLinkFieldValue` / `remoteLinkFieldOnlyChange` scripted variables | Replace with the numeric id of the **remote** link field. |
-| `https://your-remote-instance.atlassian.net` | `REMOTE_URL` flow variable in both flows | Replace with the remote Jira Cloud base URL, for example `https://acme.atlassian.net`. |
-| `LOCAL` | `SPACE` flow variable in both flows | Replace with the project key in the local instance that holds the synced issues. |
-| `REMOTE` | `REMOTE_PROJECT` flow variable in both flows | Replace with the project key in the remote instance that holds the synced issues. |
-| `Task` | `ISSUE_TYPE` and `REMOTE_ISSUE_TYPE` flow variables | Replace with issue type names that exist in each project. Issue type names differ per instance, which is why these are two separate variables. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | `LOCAL_IHUB_ACCOUNT_ID` flow variable **and** the outgoing action conditions | Replace with the `accountId` of the iHub integration user in the **local** instance, in both places. |
-| `712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4` | `REMOTE_IHUB_ACCOUNT_ID` flow variable **and** the incoming action conditions | Replace with the `accountId` of the iHub integration user in the **remote** instance, in both places. These are two different accounts. |
-| `integration@your-company.com` | `manifest.json` credential definition | Replace with the Atlassian account email used for the remote API token, before importing or by editing the credential after import. |
+| Value in template                                | Where                                                                                                              | Customer action                                                                                                                                |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `customfield_10153`                              | Both flow JSON files                                                                                               | Replace with the **local** instance link field key, for example `customfield_12345`.                                                           |
+| `cf[10153]`                                      | Incoming flow JQL search                                                                                           | Replace with the numeric id of the **local** link field, for example `cf[12345]`.                                                              |
+| `customfield_10200`                              | Both flow JSON files                                                                                               | Replace with the **remote** instance link field key. This is a different field from the local one.                                             |
+| `cf[10200]`                                      | Outgoing flow JQL search, and the incoming `remoteLinkFieldValue` / `remoteLinkFieldOnlyChange` scripted variables | Replace with the numeric id of the **remote** link field.                                                                                      |
+| `https://your-remote-instance.atlassian.net`     | `REMOTE_URL` flow variable in both flows                                                                           | Replace with the remote Jira Cloud base URL, for example `https://acme.atlassian.net`.                                                         |
+| `LOCAL`                                          | `SPACE` flow variable in both flows                                                                                | Replace with the project key in the local instance that holds the synced issues.                                                               |
+| `REMOTE`                                         | `REMOTE_PROJECT` flow variable in both flows                                                                       | Replace with the project key in the remote instance that holds the synced issues.                                                              |
+| `Task`                                           | `ISSUE_TYPE` and `REMOTE_ISSUE_TYPE` flow variables                                                                | Replace with issue type names that exist in each project. Issue type names differ per instance, which is why these are two separate variables. |
+| `replace-with-your-instance-of-integration-user` | `LOCAL_IHUB_ACCOUNT_ID` flow variable in both flows (read by the outgoing action conditions)                       | Replace with the `accountId` of the iHub integration user in the **local** instance.                                                           |
+| `712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4`    | `REMOTE_IHUB_ACCOUNT_ID` flow variable in both flows (read by the incoming action conditions)                      | Replace with the `accountId` of the iHub integration user in the **remote** instance. These are two different accounts.                        |
+| `integration@your-company.com`                   | `manifest.json` credential definition                                                                              | Replace with the Atlassian account email used for the remote API token, before importing or by editing the credential after import.            |
 
-The account ids appear both as flow variables and as literal values inside action conditions, because iHub condition values are compared literally and are not templated. The flow variables are the documented reference value; the conditions are what actually enforces the guard. Both must carry the same value or loop prevention will not work.
+The loop-guard conditions read the account ids from these flow variables (`{{_flow.LOCAL_IHUB_ACCOUNT_ID}}` in the outgoing flow, `{{_flow.REMOTE_IHUB_ACCOUNT_ID}}` in the incoming flow, both with `expectedValueSource: MUSTACHE`), so each id is set once per flow and nothing inside the actions needs editing. Set both variables in both flows; if the variable a flow reads is left as the placeholder, loop prevention in that direction does not work.
 
 To find an `accountId`, call `GET /rest/api/3/myself` in each instance while authenticated as that instance's integration user.
 

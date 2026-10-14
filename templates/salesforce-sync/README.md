@@ -30,12 +30,12 @@ From Salesforce to Jira:
 
 The outgoing flow uses OAuth2 and Salesforce REST sObject endpoints:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create Case | `POST` | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/Case` |
-| Comment Case | `POST` | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/CaseComment` |
+| Action                  | Method  | Endpoint                                                                                                   |
+| ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| Create Case             | `POST`  | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/Case`                                    |
+| Comment Case            | `POST`  | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/CaseComment`                             |
 | Update Case Description | `PATCH` | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/Case/{{issue.fields.customfield_10153}}` |
-| Upload Case File | `POST` | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/ContentVersion` |
+| Upload Case File        | `POST`  | `{{_flow.SF_URL}}/services/data/{{_flow.SF_API_VERSION}}/sobjects/ContentVersion`                          |
 
 The file upload uses `ContentVersion` with `FirstPublishLocationId` set to the Salesforce Case ID, so Salesforce links the uploaded File to the Case.
 
@@ -45,17 +45,17 @@ Create a Jira custom field of type single-line text to store the Salesforce Case
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-domain.my.salesforce.com` | Incoming and outgoing `SF_URL` flow variable | Replace with the customer's Salesforce My Domain or instance URL. |
-| `v67.0` | Incoming and outgoing `SF_API_VERSION` flow variable | Replace if the Salesforce org must use another REST API version. |
-| `Jira` | Outgoing `CASE_ORIGIN` flow variable | Must match an allowed Salesforce Case `Origin` picklist value. |
-| `New` | Outgoing `CASE_STATUS` flow variable | Must match an allowed Salesforce Case `Status` picklist value. |
-| `SF` | Incoming `SPACE` flow variable | Replace with the Jira project key where Salesforce-created cases should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| Value in template                                | Where                                                                                                | Customer action                                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://your-domain.my.salesforce.com`          | Incoming and outgoing `SF_URL` flow variable                                                         | Replace with the customer's Salesforce My Domain or instance URL.                                                       |
+| `v67.0`                                          | Incoming and outgoing `SF_API_VERSION` flow variable                                                 | Replace if the Salesforce org must use another REST API version.                                                        |
+| `Jira`                                           | Outgoing `CASE_ORIGIN` flow variable                                                                 | Must match an allowed Salesforce Case `Origin` picklist value.                                                          |
+| `New`                                            | Outgoing `CASE_STATUS` flow variable                                                                 | Must match an allowed Salesforce Case `Status` picklist value.                                                          |
+| `SF`                                             | Incoming `SPACE` flow variable                                                                       | Replace with the Jira project key where Salesforce-created cases should create/find issues.                             |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                                                                  | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10153`                              | Both flow JSON files                                                                                 | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10153]`                                      | Incoming flow JQL search                                                                             | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user` | Outgoing `JIRA_INTEGRATION_ACCOUNT_ID` flow variable (read by the comment and attachment conditions) | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
 
 ## Salesforce Flow Payload
 

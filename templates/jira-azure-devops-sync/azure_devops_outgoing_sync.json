@@ -225,7 +225,8 @@
               "type": "DATA_CONDITION",
               "jsonPath": "$.comment.author.accountId",
               "operator": "NOT_EQUALS",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "description": "User shall not be iHub"
             }
           ]
@@ -239,14 +240,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "headers": [
         {
@@ -367,7 +361,8 @@
               "description": "BLOCK iHub User added attachments",
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS"
             }
           ]
@@ -518,6 +513,12 @@
       "behavior": "SET",
       "value": "https://dev.azure.com/rixterdev",
       "instruction": ""
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira comments and attachments made by this account are not synced back to Azure DevOps."
     }
   ],
   "groupName": "Azure Devops",

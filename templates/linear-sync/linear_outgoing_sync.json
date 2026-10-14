@@ -93,15 +93,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 100
     },
@@ -186,15 +178,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 200
     },
@@ -389,15 +373,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 350
     },
@@ -469,15 +445,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 360
     },
@@ -549,15 +517,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 370
     },
@@ -629,7 +589,8 @@
             {
               "jsonPath": "$.payload.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block issue updates made by the iHub integration user, including the write-back of the link field"
             }
@@ -641,15 +602,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 400
     },
@@ -721,7 +674,8 @@
             {
               "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "User shall not be iHub"
             }
@@ -733,15 +687,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 500
     },
@@ -866,7 +812,8 @@
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block attachments added by the iHub integration user"
             }
@@ -878,15 +825,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 20,
-        "retryStatusCodes": [
-          400,
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [400, 408, 429, 500, 502, 503, 504]
       },
       "order": 600,
       "contextLogAppender": "{{eventType}}"
@@ -974,6 +913,12 @@
       "behavior": "SET",
       "value": "",
       "instruction": "Optional. UUID of the Linear workflow state that created issues are moved into. Leave empty to use the team default."
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira updates, comments and attachments made by this account are not synced back to Linear."
     }
   ],
   "groupName": "Linear",

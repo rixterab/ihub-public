@@ -1,0 +1,2688 @@
+{
+  "actions": [
+    {
+      "body": "{\n  \"$schema\": \"https://api.atlassian.com/jsm/assets/imports/external/schema/versions/2023_10_19\",\n  \"schema\": {\n    \"objectSchema\": {\n      \"name\": \"{{_flow.assetSchema}}\",\n      \"description\": \"Jira Cloud configuration imported by iHub\",\n      \"objectTypes\": [\n        {\n          \"name\": \"Project Category\",\n          \"description\": \"Jira project categories.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"User\",\n          \"description\": \"Jira users (Atlassian accounts).\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Account ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Account Type\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Active\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Email Address\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Time Zone\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Locale\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Group\",\n          \"description\": \"Jira groups.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Group ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Application\",\n          \"description\": \"Jira products (application roles) and their seat usage.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Application Key\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"User Count\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Number Of Seats\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Remaining Seats\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Unlimited Seats\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Platform\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Project\",\n          \"description\": \"Jira projects (spaces).\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project Key\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project Type\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Team Managed\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Private\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"URL\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Lead\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"User\"\n            },\n            {\n              \"name\": \"Category\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Project Category\"\n            },\n            {\n              \"name\": \"Issue Count\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Last Issue Update\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Issue Type\",\n          \"description\": \"Jira work item types.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Hierarchy Level\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Subtask\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Scope\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Project\"\n            },\n            {\n              \"name\": \"Icon URL\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Issue Type Scheme\",\n          \"description\": \"Jira work item type schemes.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default Issue Type\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Issue Type\"\n            }\n          ]\n        },\n        {\n          \"name\": \"Status\",\n          \"description\": \"Jira statuses, including statuses not used by any workflow.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Status Category\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Scope\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Project\"\n            }\n          ]\n        },\n        {\n          \"name\": \"Priority\",\n          \"description\": \"Jira priorities.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Color\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Icon URL\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Resolution\",\n          \"description\": \"Jira resolutions.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Field\",\n          \"description\": \"Jira system and custom fields, with usage counts.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Field Type\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Custom Field Type\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Type Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Locked\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Screens Count\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Contexts Count\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Last Used\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Last Used Tracking\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Workflow\",\n          \"description\": \"Jira workflows, global and team-managed.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Scope\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Project\"\n            },\n            {\n              \"name\": \"Editable\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Version\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Created Date\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Updated Date\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Workflow Scheme\",\n          \"description\": \"Jira workflow schemes.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default Workflow\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Draft\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Last Modified\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Screen\",\n          \"description\": \"Jira screens.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Scope\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Project\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Project\"\n            }\n          ]\n        },\n        {\n          \"name\": \"Screen Scheme\",\n          \"description\": \"Jira screen schemes and the screen used per operation.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default Screen\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Screen\"\n            },\n            {\n              \"name\": \"Create Screen\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Screen\"\n            },\n            {\n              \"name\": \"Edit Screen\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Screen\"\n            },\n            {\n              \"name\": \"View Screen\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"Screen\"\n            }\n          ]\n        },\n        {\n          \"name\": \"Issue Type Screen Scheme\",\n          \"description\": \"Jira work item type screen schemes.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Notification Scheme\",\n          \"description\": \"Jira notification schemes.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Permission Scheme\",\n          \"description\": \"Jira permission schemes.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"Project Role\",\n          \"description\": \"Jira project roles.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Admin\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Default\",\n              \"description\": \"\",\n              \"type\": \"boolean\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Scope\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        },\n        {\n          \"name\": \"JQL Filter\",\n          \"description\": \"Saved Jira filters with their JQL and owner.\",\n          \"attributes\": [\n            {\n              \"name\": \"Name\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": true,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Jira ID\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Description\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"JQL\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Owner\",\n              \"description\": \"\",\n              \"type\": \"referenced_object\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1,\n              \"referenceObjectTypeName\": \"User\"\n            },\n            {\n              \"name\": \"Favourite Count\",\n              \"description\": \"\",\n              \"type\": \"integer\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"Last Used\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            },\n            {\n              \"name\": \"URL\",\n              \"description\": \"\",\n              \"type\": \"text\",\n              \"label\": false,\n              \"unique\": false,\n              \"minimumCardinality\": 0,\n              \"maximumCardinality\": 1\n            }\n          ]\n        }\n      ]\n    }\n  },\n  \"mapping\": {\n    \"objectTypeMappings\": [\n      {\n        \"objectTypeName\": \"Project Category\",\n        \"selector\": \"projectCategories\",\n        \"description\": \"Jira project categories.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"User\",\n        \"selector\": \"users\",\n        \"description\": \"Jira users (Atlassian accounts).\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"displayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"Account ID\",\n            \"attributeLocators\": [\n              \"accountId\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Account Type\",\n            \"attributeLocators\": [\n              \"accountType\"\n            ]\n          },\n          {\n            \"attributeName\": \"Active\",\n            \"attributeLocators\": [\n              \"active\"\n            ]\n          },\n          {\n            \"attributeName\": \"Email Address\",\n            \"attributeLocators\": [\n              \"emailAddress\"\n            ]\n          },\n          {\n            \"attributeName\": \"Time Zone\",\n            \"attributeLocators\": [\n              \"timeZone\"\n            ]\n          },\n          {\n            \"attributeName\": \"Locale\",\n            \"attributeLocators\": [\n              \"locale\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Group\",\n        \"selector\": \"groups\",\n        \"description\": \"Jira groups.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Group ID\",\n            \"attributeLocators\": [\n              \"groupId\"\n            ],\n            \"externalIdPart\": true\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Application\",\n        \"selector\": \"applications\",\n        \"description\": \"Jira products (application roles) and their seat usage.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Application Key\",\n            \"attributeLocators\": [\n              \"key\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"User Count\",\n            \"attributeLocators\": [\n              \"userCount\"\n            ]\n          },\n          {\n            \"attributeName\": \"Number Of Seats\",\n            \"attributeLocators\": [\n              \"numberOfSeats\"\n            ]\n          },\n          {\n            \"attributeName\": \"Remaining Seats\",\n            \"attributeLocators\": [\n              \"remainingSeats\"\n            ]\n          },\n          {\n            \"attributeName\": \"Unlimited Seats\",\n            \"attributeLocators\": [\n              \"hasUnlimitedSeats\"\n            ]\n          },\n          {\n            \"attributeName\": \"Platform\",\n            \"attributeLocators\": [\n              \"platform\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Project\",\n        \"selector\": \"projects\",\n        \"description\": \"Jira projects (spaces).\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Project Key\",\n            \"attributeLocators\": [\n              \"key\"\n            ]\n          },\n          {\n            \"attributeName\": \"Project Type\",\n            \"attributeLocators\": [\n              \"projectTypeKey\"\n            ]\n          },\n          {\n            \"attributeName\": \"Team Managed\",\n            \"attributeLocators\": [\n              \"simplified\"\n            ]\n          },\n          {\n            \"attributeName\": \"Private\",\n            \"attributeLocators\": [\n              \"isPrivate\"\n            ]\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"URL\",\n            \"attributeLocators\": [\n              \"url\"\n            ]\n          },\n          {\n            \"attributeName\": \"Lead\",\n            \"attributeLocators\": [\n              \"lead.accountId\"\n            ],\n            \"objectMappingIQL\": \"\\\"Account ID\\\" = ${lead.accountId}\"\n          },\n          {\n            \"attributeName\": \"Category\",\n            \"attributeLocators\": [\n              \"projectCategory.id\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${projectCategory.id}\"\n          },\n          {\n            \"attributeName\": \"Issue Count\",\n            \"attributeLocators\": [\n              \"insight.totalIssueCount\"\n            ]\n          },\n          {\n            \"attributeName\": \"Last Issue Update\",\n            \"attributeLocators\": [\n              \"insight.lastIssueUpdateTime\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Issue Type\",\n        \"selector\": \"issueTypes\",\n        \"description\": \"Jira work item types.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Hierarchy Level\",\n            \"attributeLocators\": [\n              \"hierarchyLevel\"\n            ]\n          },\n          {\n            \"attributeName\": \"Subtask\",\n            \"attributeLocators\": [\n              \"subtask\"\n            ]\n          },\n          {\n            \"attributeName\": \"Scope\",\n            \"attributeLocators\": [\n              \"scope.type\"\n            ]\n          },\n          {\n            \"attributeName\": \"Project\",\n            \"attributeLocators\": [\n              \"scope.project.id\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${scope.project.id}\"\n          },\n          {\n            \"attributeName\": \"Icon URL\",\n            \"attributeLocators\": [\n              \"iconUrl\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Issue Type Scheme\",\n        \"selector\": \"issueTypeSchemes\",\n        \"description\": \"Jira work item type schemes.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default\",\n            \"attributeLocators\": [\n              \"isDefault\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default Issue Type\",\n            \"attributeLocators\": [\n              \"defaultIssueTypeId\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${defaultIssueTypeId}\"\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Status\",\n        \"selector\": \"statuses\",\n        \"description\": \"Jira statuses, including statuses not used by any workflow.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Status Category\",\n            \"attributeLocators\": [\n              \"statusCategory\"\n            ]\n          },\n          {\n            \"attributeName\": \"Scope\",\n            \"attributeLocators\": [\n              \"scope.type\"\n            ]\n          },\n          {\n            \"attributeName\": \"Project\",\n            \"attributeLocators\": [\n              \"scope.project.id\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${scope.project.id}\"\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Priority\",\n        \"selector\": \"priorities\",\n        \"description\": \"Jira priorities.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default\",\n            \"attributeLocators\": [\n              \"isDefault\"\n            ]\n          },\n          {\n            \"attributeName\": \"Color\",\n            \"attributeLocators\": [\n              \"statusColor\"\n            ]\n          },\n          {\n            \"attributeName\": \"Icon URL\",\n            \"attributeLocators\": [\n              \"iconUrl\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Resolution\",\n        \"selector\": \"resolutions\",\n        \"description\": \"Jira resolutions.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default\",\n            \"attributeLocators\": [\n              \"default\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Field\",\n        \"selector\": \"fields\",\n        \"description\": \"Jira system and custom fields, with usage counts.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Field Type\",\n            \"attributeLocators\": [\n              \"schema.type\"\n            ]\n          },\n          {\n            \"attributeName\": \"Custom Field Type\",\n            \"attributeLocators\": [\n              \"schema.custom\"\n            ]\n          },\n          {\n            \"attributeName\": \"Type Name\",\n            \"attributeLocators\": [\n              \"typeDisplayName\"\n            ]\n          },\n          {\n            \"attributeName\": \"Locked\",\n            \"attributeLocators\": [\n              \"isLocked\"\n            ]\n          },\n          {\n            \"attributeName\": \"Screens Count\",\n            \"attributeLocators\": [\n              \"screensCount\"\n            ]\n          },\n          {\n            \"attributeName\": \"Contexts Count\",\n            \"attributeLocators\": [\n              \"contextsCount\"\n            ]\n          },\n          {\n            \"attributeName\": \"Last Used\",\n            \"attributeLocators\": [\n              \"lastUsed.value\"\n            ]\n          },\n          {\n            \"attributeName\": \"Last Used Tracking\",\n            \"attributeLocators\": [\n              \"lastUsed.type\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Workflow\",\n        \"selector\": \"workflows\",\n        \"description\": \"Jira workflows, global and team-managed.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Scope\",\n            \"attributeLocators\": [\n              \"scope.type\"\n            ]\n          },\n          {\n            \"attributeName\": \"Project\",\n            \"attributeLocators\": [\n              \"scope.project.id\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${scope.project.id}\"\n          },\n          {\n            \"attributeName\": \"Editable\",\n            \"attributeLocators\": [\n              \"isEditable\"\n            ]\n          },\n          {\n            \"attributeName\": \"Version\",\n            \"attributeLocators\": [\n              \"version.versionNumber\"\n            ]\n          },\n          {\n            \"attributeName\": \"Created Date\",\n            \"attributeLocators\": [\n              \"created\"\n            ]\n          },\n          {\n            \"attributeName\": \"Updated Date\",\n            \"attributeLocators\": [\n              \"updated\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Workflow Scheme\",\n        \"selector\": \"workflowSchemes\",\n        \"description\": \"Jira workflow schemes.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default Workflow\",\n            \"attributeLocators\": [\n              \"defaultWorkflow\"\n            ]\n          },\n          {\n            \"attributeName\": \"Draft\",\n            \"attributeLocators\": [\n              \"draft\"\n            ]\n          },\n          {\n            \"attributeName\": \"Last Modified\",\n            \"attributeLocators\": [\n              \"lastModified\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Screen\",\n        \"selector\": \"screens\",\n        \"description\": \"Jira screens.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Scope\",\n            \"attributeLocators\": [\n              \"scope.type\"\n            ]\n          },\n          {\n            \"attributeName\": \"Project\",\n            \"attributeLocators\": [\n              \"scope.project.id\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${scope.project.id}\"\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Screen Scheme\",\n        \"selector\": \"screenSchemes\",\n        \"description\": \"Jira screen schemes and the screen used per operation.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default Screen\",\n            \"attributeLocators\": [\n              \"screens.default\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${screens.default}\"\n          },\n          {\n            \"attributeName\": \"Create Screen\",\n            \"attributeLocators\": [\n              \"screens.create\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${screens.create}\"\n          },\n          {\n            \"attributeName\": \"Edit Screen\",\n            \"attributeLocators\": [\n              \"screens.edit\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${screens.edit}\"\n          },\n          {\n            \"attributeName\": \"View Screen\",\n            \"attributeLocators\": [\n              \"screens.view\"\n            ],\n            \"objectMappingIQL\": \"\\\"Jira ID\\\" = ${screens.view}\"\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Issue Type Screen Scheme\",\n        \"selector\": \"issueTypeScreenSchemes\",\n        \"description\": \"Jira work item type screen schemes.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Notification Scheme\",\n        \"selector\": \"notificationSchemes\",\n        \"description\": \"Jira notification schemes.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Permission Scheme\",\n        \"selector\": \"permissionSchemes\",\n        \"description\": \"Jira permission schemes.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"Project Role\",\n        \"selector\": \"projectRoles\",\n        \"description\": \"Jira project roles.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"Admin\",\n            \"attributeLocators\": [\n              \"admin\"\n            ]\n          },\n          {\n            \"attributeName\": \"Default\",\n            \"attributeLocators\": [\n              \"default\"\n            ]\n          },\n          {\n            \"attributeName\": \"Scope\",\n            \"attributeLocators\": [\n              \"scope.type\"\n            ]\n          }\n        ]\n      },\n      {\n        \"objectTypeName\": \"JQL Filter\",\n        \"selector\": \"filters\",\n        \"description\": \"Saved Jira filters with their JQL and owner.\",\n        \"attributesMapping\": [\n          {\n            \"attributeName\": \"Name\",\n            \"attributeLocators\": [\n              \"name\"\n            ]\n          },\n          {\n            \"attributeName\": \"Jira ID\",\n            \"attributeLocators\": [\n              \"id\"\n            ],\n            \"externalIdPart\": true\n          },\n          {\n            \"attributeName\": \"Description\",\n            \"attributeLocators\": [\n              \"description\"\n            ]\n          },\n          {\n            \"attributeName\": \"JQL\",\n            \"attributeLocators\": [\n              \"jql\"\n            ]\n          },\n          {\n            \"attributeName\": \"Owner\",\n            \"attributeLocators\": [\n              \"owner.accountId\"\n            ],\n            \"objectMappingIQL\": \"\\\"Account ID\\\" = ${owner.accountId}\"\n          },\n          {\n            \"attributeName\": \"Favourite Count\",\n            \"attributeLocators\": [\n              \"favouritedCount\"\n            ]\n          },\n          {\n            \"attributeName\": \"Last Used\",\n            \"attributeLocators\": [\n              \"approximateLastUsed\"\n            ]\n          },\n          {\n            \"attributeName\": \"URL\",\n            \"attributeLocators\": [\n              \"viewUrl\"\n            ]\n          }\n        ]\n      }\n    ]\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Create or refresh the Jira Assets import source schema and field mapping for every Jira configuration object type.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:1ff01779-9db5-4874-9b4f-aec08379694d",
+      "logConditionsNotMet": false,
+      "method": "PATCH",
+      "name": "Update Import Mapping",
+      "order": 100,
+      "parentId": "",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/mapping"
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Read the import source status so a run left RUNNING by a previous execution can be cancelled.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:6b68bec9-e937-4ebd-bdf7-346331dcdfef",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Check Import Status",
+      "order": 200,
+      "parentId": "",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/configstatus"
+    },
+    {
+      "body": "{}",
+      "conditions": [
+        {
+          "conditions": [
+            {
+              "description": "Only cancel when the previous execution is still running.",
+              "jsonPath": "$.status",
+              "operator": "EQUALS",
+              "type": "DATA_CONDITION",
+              "value": "RUNNING"
+            }
+          ],
+          "type": "COMBINED_CONDITION"
+        }
+      ],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Cancel the previous import when it is still running, so a stuck run does not block this one.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:4ab749f5-8b5e-4064-b6cd-4e6e14c0249d",
+      "logConditionsNotMet": false,
+      "method": "DELETE",
+      "name": "Cancel Stuck Import",
+      "order": 300,
+      "parentId": "template:action:6b68bec9-e937-4ebd-bdf7-346331dcdfef",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{cancelUrl}}",
+      "variables": [
+        {
+          "key": "cancelUrl",
+          "value": "$.links.cancel"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Start a new import execution and obtain the submit and cancel URLs for this run.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Start Import",
+      "order": 400,
+      "parentId": "",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "https://api.atlassian.com/jsm/assets/workspace/{{context.workspaceId}}/v1/importsource/{{_flow.importSourceId}}/executions"
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira project categories.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:a0600db3-dcd5-41e1-9f3c-5685470653af",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Project Categories",
+      "order": 500,
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/projectCategory"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"projectCategories\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Project Categories to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:398c731c-5e19-4b14-94f6-c0ad4aa0e068",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Project Categories",
+      "order": 600,
+      "parentId": "template:action:a0600db3-dcd5-41e1-9f3c-5685470653af",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira users (Atlassian accounts).",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:51a4a60a-08da-41ed-95cb-0aa7fa1f1b99",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Users",
+      "order": 700,
+      "pagination": {
+        "breakJsonPath": "$.response.data",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=1000; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/users/search?maxResults=1000&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"users\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Keep only the account types in USER_ACCOUNT_TYPES and submit the users to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:cf78a9a5-9bee-41be-8c58-29b882cb2e65",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Users",
+      "order": 800,
+      "parentId": "template:action:51a4a60a-08da-41ed-95cb-0aa7fa1f1b99",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira groups.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:a431a09a-4df6-4b1e-b9d3-075c95b28703",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Groups",
+      "order": 900,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=250; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/group/bulk?maxResults=250&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"groups\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Groups to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:e6eb6a8f-aed9-4dff-87d4-80f92776743c",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Groups",
+      "order": 1000,
+      "parentId": "template:action:a431a09a-4df6-4b1e-b9d3-075c95b28703",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira products (application roles) and their seat usage.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:81bbc895-f652-45c6-92d6-e5a08587be5a",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Applications",
+      "order": 1100,
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/applicationrole"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"applications\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Applications to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:ef859915-c491-4664-9b9c-4908ded33fb5",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Applications",
+      "order": 1200,
+      "parentId": "template:action:81bbc895-f652-45c6-92d6-e5a08587be5a",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira projects (spaces).",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:32e9da19-882b-44b0-b54b-c4c5603d4f1f",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Projects",
+      "order": 1300,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=250; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/project/search?maxResults=250&expand=description,lead,url,insight&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"projects\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Projects to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:107486ea-827f-425f-bbe0-638c11780bb8",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Projects",
+      "order": 1400,
+      "parentId": "template:action:32e9da19-882b-44b0-b54b-c4c5603d4f1f",
+      "scriptedVariables": [
+        {
+          "name": "rows",
+          "script": "const responseData = typeof response !== \"undefined\" ? response?.data : undefined;\nconst payloadData = typeof payload !== \"undefined\" ? payload : undefined;\nconst body = responseData ?? payloadData;\nconst input = Array.isArray(body) ? body : (body?.values ?? body?.permissionSchemes ?? []);\nif (!Array.isArray(input)) return [];\nconst rows = input;\nreturn rows.map((row) => {\n  const item = row ?? {};\n  return {\n    ...item,\n    id: item.id !== undefined && item.id !== null ? String(item.id) : item.id\n  };\n});",
+          "uuid": "4170de3f-44d4-4e47-b831-b1b99f337df5"
+        }
+      ],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira work item types.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:6550c1c0-289f-47bf-a497-6dc3799f3b9c",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Issue Types",
+      "order": 1500,
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issuetype"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"issueTypes\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Issue Types to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:e8edc157-bec3-48eb-8066-68d4536103a5",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Issue Types",
+      "order": 1600,
+      "parentId": "template:action:6550c1c0-289f-47bf-a497-6dc3799f3b9c",
+      "scriptedVariables": [
+        {
+          "name": "rows",
+          "script": "const responseData = typeof response !== \"undefined\" ? response?.data : undefined;\nconst payloadData = typeof payload !== \"undefined\" ? payload : undefined;\nconst body = responseData ?? payloadData;\nconst input = Array.isArray(body) ? body : (body?.values ?? body?.permissionSchemes ?? []);\nif (!Array.isArray(input)) return [];\nconst rows = input;\nreturn rows.map((row) => {\n  const item = row ?? {};\n  return {\n    ...item,\n    id: item.id !== undefined && item.id !== null ? String(item.id) : item.id\n  };\n});",
+          "uuid": "07205a83-954e-4064-9bb5-881a0d07dbf4"
+        }
+      ],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira work item type schemes.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:c9a811c7-d453-4d8b-b5f4-ae6a7026f02c",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Issue Type Schemes",
+      "order": 1700,
+      "pagination": {
+        "breakJsonPath": "$['response']['data']['nextPage']",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=250; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issuetypescheme?maxResults=50&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"issueTypeSchemes\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Issue Type Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:982c54c7-5655-44e9-9c9a-e067b27d633c",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Issue Type Schemes",
+      "order": 1800,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": false,
+        "variable": {
+          "name": "page",
+          "script": ""
+        }
+      },
+      "parentId": "template:action:c9a811c7-d453-4d8b-b5f4-ae6a7026f02c",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira statuses, including statuses not used by any workflow.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:d2be6474-65a9-4434-8f42-e34ce2a8749c",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Statuses",
+      "order": 1900,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=200; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/statuses/search?maxResults=200&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"statuses\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Statuses to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:0b47ff2c-088d-4343-802d-33dfcb55c177",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Statuses",
+      "order": 2000,
+      "parentId": "template:action:d2be6474-65a9-4434-8f42-e34ce2a8749c",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira priorities.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:0597ceb8-1104-4447-bee1-a6a3f19651da",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Priorities",
+      "order": 2100,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=200; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/priority?startAt={{page}}&maxResults=200"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"priorities\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Priorities to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:941ec42d-2577-4db1-a940-a16869edc30b",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Priorities",
+      "order": 2200,
+      "parentId": "template:action:0597ceb8-1104-4447-bee1-a6a3f19651da",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira resolutions.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:65178385-44da-4e32-8f0b-e3f43d593b3c",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Resolutions",
+      "order": 2300,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=50; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/resolution/search?maxResults=50&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"resolutions\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Resolutions to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:32c9813e-252b-47ad-8617-890e15352503",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Resolutions",
+      "order": 2400,
+      "parentId": "template:action:65178385-44da-4e32-8f0b-e3f43d593b3c",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira system and custom fields, with usage counts.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:708ff471-ecb3-42ec-9b3c-92bd86743c52",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Fields",
+      "order": 2500,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=200; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/field/search?expand=lastUsed,screensCount,contextsCount,isLocked,searcherKey&maxResults=200&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"fields\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Fields to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:0b4e4011-7968-4fa7-90de-26963bac5af8",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Fields",
+      "order": 2600,
+      "parentId": "template:action:708ff471-ecb3-42ec-9b3c-92bd86743c52",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira workflows, global and team-managed.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:7cbeb956-8e58-4c3c-874b-c9b4e58c753c",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Workflows",
+      "order": 2700,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=50; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/workflows/search?maxResults=50&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"workflows\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Workflows to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:154baf24-d8be-483f-ac9a-b63787458816",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Workflows",
+      "order": 2800,
+      "parentId": "template:action:7cbeb956-8e58-4c3c-874b-c9b4e58c753c",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira workflow schemes.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:67c2ca97-619e-4e6a-96a4-9cdbd272fd0d",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Workflow Schemes",
+      "order": 2900,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=50; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/workflowscheme?maxResults=50&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"workflowSchemes\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Workflow Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:af29ade4-c403-435a-b3ed-4d6499a8767f",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Workflow Schemes",
+      "order": 3000,
+      "parentId": "template:action:67c2ca97-619e-4e6a-96a4-9cdbd272fd0d",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira screens.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:2482df52-ff3d-4cde-9f35-3d05353fbfbb",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Screens",
+      "order": 3100,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=100; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/screens?maxResults=100&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"screens\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Screens to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:d0752563-2523-4ff5-97d4-f35ee5a9b824",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Screens",
+      "order": 3200,
+      "parentId": "template:action:2482df52-ff3d-4cde-9f35-3d05353fbfbb",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira screen schemes and the screen used per operation.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:b609d986-a394-4598-9406-49d45ae20ddf",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Screen Schemes",
+      "order": 3300,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=100; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/screenscheme?maxResults=100&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"screenSchemes\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Screen Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:3a538d6b-52f5-4030-b3b4-c088344abe8d",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Screen Schemes",
+      "order": 3400,
+      "parentId": "template:action:b609d986-a394-4598-9406-49d45ae20ddf",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira work item type screen schemes.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:e65e646c-43db-437b-a40b-dad51d9afa61",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Issue Type Screen Schemes",
+      "order": 3500,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=100; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/issuetypescreenscheme?maxResults=100&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"issueTypeScreenSchemes\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Issue Type Screen Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:7ab4d75f-6a83-4067-adb2-277ea4a135dc",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Issue Type Screen Schemes",
+      "order": 3600,
+      "parentId": "template:action:e65e646c-43db-437b-a40b-dad51d9afa61",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira notification schemes.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:91d4feaf-9b64-47ef-8392-16e287020c9f",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Notification Schemes",
+      "order": 3700,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=50; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/notificationscheme?maxResults=50&startAt={{page}}"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"notificationSchemes\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Notification Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:a8b23390-2bc2-41e9-bd17-80ef683630f5",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Notification Schemes",
+      "order": 3800,
+      "parentId": "template:action:91d4feaf-9b64-47ef-8392-16e287020c9f",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "description": "Read Jira permission schemes.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:d97f2b1e-9fef-4f1b-9fdc-2129ee36c02f",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Permission Schemes",
+      "order": 3900,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": false,
+        "variable": {
+          "name": "page",
+          "script": ""
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/permissionscheme"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"permissionSchemes\": {{{toJSON permissionSchemes}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Permission Schemes to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:2fe5be38-9660-4354-950a-1c2007875c93",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Permission Schemes",
+      "order": 4000,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": false,
+        "variable": {
+          "name": "page",
+          "script": ""
+        }
+      },
+      "parentId": "template:action:d97f2b1e-9fef-4f1b-9fdc-2129ee36c02f",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read Jira project roles.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:93044887-fbe9-4651-9219-292949bb0804",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira Project Roles",
+      "order": 4100,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": false,
+        "variable": {
+          "name": "page",
+          "script": ""
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/role"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"projectRoles\": {{{toJSON payload}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira Project Roles to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:4bf535da-5edf-46f1-bb3f-00cfa269921b",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira Project Roles",
+      "order": 4200,
+      "parentId": "template:action:93044887-fbe9-4651-9219-292949bb0804",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:basic-auth-jira-admin"
+      },
+      "description": "Read saved Jira filters with their JQL and owner.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:6ba262f9-7442-49fa-8220-2a6c0dc4edff",
+      "logConditionsNotMet": false,
+      "method": "GET",
+      "name": "Fetch Jira JQL Filters",
+      "order": 4300,
+      "pagination": {
+        "breakJsonPath": "$.response.data.values",
+        "enabled": true,
+        "type": "AUTO_INCREMENT",
+        "variable": {
+          "name": "page",
+          "script": "const incrementValue=50; const startValue=0;\nreturn page !== undefined ? page + incrementValue : startValue;"
+        }
+      },
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "ratelimit": {
+        "burst": 10,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ],
+        "sleepTime": 500
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{baseUrl}}/rest/api/3/filter/search?maxResults=50&startAt={{page}}&overrideSharePermissions=true&expand=description,owner,jql,favouritedCount,approximateLastUsed,viewUrl"
+    },
+    {
+      "body": "{\n  \"data\": {\n    \"filters\": {{{toJSON payload.values}}}\n  }\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Submit the fetched Jira JQL Filters to the Jira Assets import execution.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:ffad1f65-4b79-4ba9-b72a-2949b73e38bb",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Submit Jira JQL Filters",
+      "order": 4400,
+      "parentId": "template:action:6ba262f9-7442-49fa-8220-2a6c0dc4edff",
+      "scriptedVariables": [],
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    },
+    {
+      "body": "{\n  \"completed\": true\n}",
+      "conditions": [],
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:token-jira-config-asset-import-token"
+      },
+      "description": "Mark the import execution complete so Jira Assets processes the submitted data.",
+      "enabled": true,
+      "flowVariables": [],
+      "headers": [
+        {
+          "key": "Accept",
+          "value": "application/json"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "key": "Connection",
+          "value": "keep-alive"
+        },
+        {
+          "key": "Accept-Encoding",
+          "value": "gzip, deflate, br"
+        },
+        {
+          "key": "User-Agent",
+          "value": "IntegrationsHub/Cloud"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ],
+      "id": "template:action:b94ed2f8-d766-43ef-a963-31ab3818daad",
+      "logConditionsNotMet": false,
+      "method": "POST",
+      "name": "Complete Import",
+      "order": 4500,
+      "parentId": "template:action:98689908-1660-4edd-bfad-a6bbc10dd1c2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "url": "{{submitResultsUrl}}",
+      "variables": [
+        {
+          "key": "submitResultsUrl",
+          "value": "$.links.submitResults"
+        }
+      ]
+    }
+  ],
+  "description": "Import Jira Cloud configuration into Jira Assets",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "behavior": "SET",
+      "instruction": "Name of the target object schema in Jira Assets. Created by the import if it does not exist.",
+      "name": "assetSchema",
+      "value": "Jira Config"
+    },
+    {
+      "behavior": "SET",
+      "instruction": "Jira Assets external import source ID for this flow. Replace with the ID of the import source created for the target schema.",
+      "name": "importSourceId",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "behavior": "SET",
+      "instruction": "Comma-separated Jira account types to import as User objects: atlassian, app, customer. Default imports licensed people only.",
+      "name": "USER_ACCOUNT_TYPES",
+      "value": "atlassian"
+    }
+  ],
+  "groupName": "Jira",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Import Jira Configuration into Assets",
+  "trigger": {
+    "type": "SCHEDULED_TRIGGER_TYPE",
+    "value": "0 3 * * *"
+  },
+  "useStaticIP": false
+}

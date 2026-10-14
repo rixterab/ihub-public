@@ -34,16 +34,16 @@ From Linear to Jira:
 
 Linear has no REST API. Every call is `POST https://api.linear.app/graphql`, and the operation lives entirely in the request body, so the action name and description carry the meaning. The URL comes from the `LINEAR_API_URL` flow variable in both flows.
 
-| Action | Flow | GraphQL operation |
-| --- | --- | --- |
-| Find Linear Issue by Jira URL | Outgoing | `attachmentsForURL(url:)` |
-| Create Linear Issue | Outgoing | `issueCreate(input:)` |
-| Link Jira Issue on Linear Issue | Outgoing and incoming | `attachmentCreate(input:)` |
-| Set Linear Project on Created Issue | Outgoing | `issueUpdate(id:, input:)` |
-| Set Linear Workflow State on Created Issue | Outgoing | `issueUpdate(id:, input:)` |
-| Update Linear Issue | Outgoing | `issueUpdate(id:, input:)` |
-| Add Jira Comment to Linear Issue | Outgoing | `commentCreate(input:)` |
-| Add Jira Attachment Link to Linear Issue | Outgoing | `attachmentCreate(input:)` |
+| Action                                     | Flow                  | GraphQL operation          |
+| ------------------------------------------ | --------------------- | -------------------------- |
+| Find Linear Issue by Jira URL              | Outgoing              | `attachmentsForURL(url:)`  |
+| Create Linear Issue                        | Outgoing              | `issueCreate(input:)`      |
+| Link Jira Issue on Linear Issue            | Outgoing and incoming | `attachmentCreate(input:)` |
+| Set Linear Project on Created Issue        | Outgoing              | `issueUpdate(id:, input:)` |
+| Set Linear Workflow State on Created Issue | Outgoing              | `issueUpdate(id:, input:)` |
+| Update Linear Issue                        | Outgoing              | `issueUpdate(id:, input:)` |
+| Add Jira Comment to Linear Issue           | Outgoing              | `commentCreate(input:)`    |
+| Add Jira Attachment Link to Linear Issue   | Outgoing              | `attachmentCreate(input:)` |
 
 Three things about the Linear API shape the flows:
 
@@ -57,7 +57,7 @@ Linear does not version its API. There is no version header and no date pinned s
 
 Linear issue descriptions and comment bodies are **Markdown**. Jira Cloud uses ADF. iHub ships `adfToHTML` and `htmlToADF`, so neither direction converts cleanly, and the template makes a deliberate choice in each direction:
 
-- **Jira -> Linear**: the flow does *not* send `adfToHTML` output. Raw HTML in a Markdown field renders as visible tag soup. Instead the outgoing flow uses the scripted variables `jiraDescriptionText` and `jiraCommentText`, which walk the ADF document and return plain text with paragraph and list breaks preserved, JSON escaped so it can be embedded in the request body. Bold, italics, links, tables, code blocks and inline images lose their formatting; the text survives. Panels, mentions and inline cards are reduced to their text or URL.
+- **Jira -> Linear**: the flow does _not_ send `adfToHTML` output. Raw HTML in a Markdown field renders as visible tag soup. Instead the outgoing flow uses the scripted variables `jiraDescriptionText` and `jiraCommentText`, which walk the ADF document and return plain text with paragraph and list breaks preserved, JSON escaped so it can be embedded in the request body. Bold, italics, links, tables, code blocks and inline images lose their formatting; the text survives. Panels, mentions and inline cards are reduced to their text or URL.
 - **Linear -> Jira**: Markdown is passed through `htmlToADF`. The result is readable, but Markdown markers survive as literal text, so `**bold**` appears verbatim in the Jira issue.
 
 Both flows prefix the synced body with a link back to the other system, so a reader can always jump to the original.
@@ -77,27 +77,53 @@ Create a Jira custom field of type single-line text to store the Linear issue UU
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `11111111-1111-1111-1111-111111111111` | Outgoing `LINEAR_TEAM_ID` flow variable | Replace with the UUID of the Linear team that Jira issues are created in. Required. |
-| `11111111-1111-1111-1111-111111111111` | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearTeamId` | Replace with the same Linear team UUID. Events from other teams are dropped. |
-| `22222222-2222-2222-2222-222222222222` | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearOrganizationId` | Replace with the customer's Linear organization UUID. |
-| `33333333-3333-3333-3333-333333333333` | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearActorId` | Replace with the Linear user UUID of the integration user whose API key the template uses. This prevents circular sync. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing update, comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular sync. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `LIN` | Incoming `SPACE` flow variable | Replace with the Jira project key where Linear issues should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| empty | Outgoing `LINEAR_PROJECT_ID` flow variable | Optional. Set to a Linear project UUID to file created issues into that project. Left empty, the action is skipped. |
-| empty | Outgoing `LINEAR_STATE_ID` flow variable | Optional. Set to a Linear workflow state UUID to give created issues a specific initial state. Left empty, the action is skipped, and the team default state applies. |
+| Value in template                                | Where                                                                                                        | Customer action                                                                                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `11111111-1111-1111-1111-111111111111`           | Outgoing `LINEAR_TEAM_ID` flow variable                                                                      | Replace with the UUID of the Linear team that Jira issues are created in. Required.                                                                                   |
+| `11111111-1111-1111-1111-111111111111`           | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearTeamId`                                  | Replace with the same Linear team UUID. Events from other teams are dropped.                                                                                          |
+| `22222222-2222-2222-2222-222222222222`           | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearOrganizationId`                          | Replace with the customer's Linear organization UUID.                                                                                                                 |
+| `33333333-3333-3333-3333-333333333333`           | Incoming `Find Jira Issue by Linear Issue ID` condition on `$.linearActorId`                                 | Replace with the Linear user UUID of the integration user whose API key the template uses. This prevents circular sync.                                               |
+| `replace-with-your-instance-of-integration-user` | Outgoing `JIRA_INTEGRATION_ACCOUNT_ID` flow variable (read by the update, comment and attachment conditions) | Replace with the Jira account ID used by iHub/the integration user. This prevents circular sync.                                                                      |
+| `customfield_10153`                              | Both flow JSON files                                                                                         | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                                                                   |
+| `cf[10153]`                                      | Incoming flow JQL search                                                                                     | Replace with the numeric custom field ID, for example `cf[12345]`.                                                                                                    |
+| `LIN`                                            | Incoming `SPACE` flow variable                                                                               | Replace with the Jira project key where Linear issues should create/find issues.                                                                                      |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                                                                          | Replace if the target Jira project does not use `Task`.                                                                                                               |
+| empty                                            | Outgoing `LINEAR_PROJECT_ID` flow variable                                                                   | Optional. Set to a Linear project UUID to file created issues into that project. Left empty, the action is skipped.                                                   |
+| empty                                            | Outgoing `LINEAR_STATE_ID` flow variable                                                                     | Optional. Set to a Linear workflow state UUID to give created issues a specific initial state. Left empty, the action is skipped, and the team default state applies. |
 
 The team, organization, state and project UUIDs are all readable from the API with the integration user's key, for example:
 
 ```graphql
 query {
-  viewer { id name email }
-  organization { id name }
-  teams { nodes { id key name states { nodes { id name type } } projects { nodes { id name } } } }
+  viewer {
+    id
+    name
+    email
+  }
+  organization {
+    id
+    name
+  }
+  teams {
+    nodes {
+      id
+      key
+      name
+      states {
+        nodes {
+          id
+          name
+          type
+        }
+      }
+      projects {
+        nodes {
+          id
+          name
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -178,11 +204,11 @@ A `Comment` event carries the comment in `data` and the issue it belongs to in `
 
 Event mapping used by the incoming flow:
 
-| `type` | `action` | Result in Jira |
-| --- | --- | --- |
-| `Issue` | `create` | Create a Jira issue and link it back with a Linear attachment |
-| `Issue` | `update` | Update the linked Jira issue summary and description |
-| `Comment` | `create` | Add a Jira comment on the linked issue |
+| `type`    | `action` | Result in Jira                                                |
+| --------- | -------- | ------------------------------------------------------------- |
+| `Issue`   | `create` | Create a Jira issue and link it back with a Linear attachment |
+| `Issue`   | `update` | Update the linked Jira issue summary and description          |
+| `Comment` | `create` | Add a Jira comment on the linked issue                        |
 
 Anything else is dropped. On `update` events Linear also sends `data.updatedFrom` with the previous values of the changed properties; the template does not branch on it, it simply writes the current summary and description.
 
