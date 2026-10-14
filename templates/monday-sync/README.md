@@ -54,16 +54,16 @@ which monday receives as `column_values: "{\"text__1\": \"ABC-1\"}"`. All three 
 
 Both flows authenticate with a monday API token in the `Authorization` header and send the API version in the `API-Version` header. Every call below is `POST https://api.monday.com/v2` except the file upload, which uses the separate multipart endpoint.
 
-| Action | GraphQL operation | Endpoint |
-| --- | --- | --- |
-| Find Monday Item by Jira Key | `items_page_by_column_values(board_id:, columns: [{column_id:, column_values:}])` | `https://api.monday.com/v2` |
-| Create Monday Item | `create_item(board_id:, group_id:, item_name:, column_values:)` | `https://api.monday.com/v2` |
-| Update Monday Item Name | `change_simple_column_value(column_id: "name")` | `https://api.monday.com/v2` |
-| Update Monday Item Description Column | `change_simple_column_value(column_id: $columnId)` | `https://api.monday.com/v2` |
-| Write Jira Key to Monday Item | `change_simple_column_value(column_id: $columnId)` | `https://api.monday.com/v2` |
-| Add Update to Monday Item | `create_update(item_id:, body:)` | `https://api.monday.com/v2` |
-| Get Monday Asset Public URL | `assets(ids:) { public_url }` | `https://api.monday.com/v2` |
-| Upload Attachment to Monday Item | `add_file_to_column(item_id:, column_id:, file:)` | `https://api.monday.com/v2/file` |
+| Action                                | GraphQL operation                                                                 | Endpoint                         |
+| ------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------- |
+| Find Monday Item by Jira Key          | `items_page_by_column_values(board_id:, columns: [{column_id:, column_values:}])` | `https://api.monday.com/v2`      |
+| Create Monday Item                    | `create_item(board_id:, group_id:, item_name:, column_values:)`                   | `https://api.monday.com/v2`      |
+| Update Monday Item Name               | `change_simple_column_value(column_id: "name")`                                   | `https://api.monday.com/v2`      |
+| Update Monday Item Description Column | `change_simple_column_value(column_id: $columnId)`                                | `https://api.monday.com/v2`      |
+| Write Jira Key to Monday Item         | `change_simple_column_value(column_id: $columnId)`                                | `https://api.monday.com/v2`      |
+| Add Update to Monday Item             | `create_update(item_id:, body:)`                                                  | `https://api.monday.com/v2`      |
+| Get Monday Asset Public URL           | `assets(ids:) { public_url }`                                                     | `https://api.monday.com/v2`      |
+| Upload Attachment to Monday Item      | `add_file_to_column(item_id:, column_id:, file:)`                                 | `https://api.monday.com/v2/file` |
 
 Comments are monday **updates**, created with `create_update(item_id:, body:)`. Update bodies are HTML, so both flows use the `{{{adfToHTML ...}}}` and `{{{htmlToADF ...}}}` helpers on the comment body, the same way the ServiceNow template does.
 
@@ -79,20 +79,20 @@ On the monday board, create a text column for the Jira issue key, a long text co
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key holding the monday item ID, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `1234567890` | Incoming and outgoing `MONDAY_BOARD_ID` flow variable | Replace with the numeric ID of the monday board that mirrors the Jira project. |
-| `topics` | Outgoing `MONDAY_GROUP_ID` flow variable | Replace with the group ID on that board where new items should be created. |
-| `text__1` | Incoming and outgoing `MONDAY_JIRA_KEY_COLUMN` flow variable | Replace with the ID of the monday text column holding the Jira issue key. |
-| `long_text__1` | `MONDAY_DESCRIPTION_COLUMN` flow variable **and** the `Update Jira Issue Description` condition in the incoming flow | Replace with the ID of the monday long text column holding the description. The condition compares a literal column ID, so it must be changed in both places. |
-| `files__1` | `MONDAY_FILES_COLUMN` flow variable **and** the `Get Monday Asset Public URL` condition in the incoming flow | Replace with the ID of the monday files column. The condition compares a literal column ID, so it must be changed in both places. |
-| `12345678` | `MONDAY_IHUB_USER_ID` flow variable **and** the `Find Jira Issue by Monday Item ID` condition in the incoming flow | Replace with the monday user ID of the integration user whose API token iHub uses. The condition compares a literal user ID, so it must be changed in both places. This is the primary loop guard. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing update, comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular update, comment and attachment sync. |
-| `2026-07` | Incoming and outgoing `MONDAY_API_VERSION` flow variable | The monday API version sent in the `API-Version` header. `2026-07` was the current stable version when this template was written; monday rotates versions quarterly and deprecates old ones, so check the [versioning docs](https://developer.monday.com/api-reference/docs/api-versioning) before enabling. |
-| `MON` | Incoming `SPACE` flow variable | Replace with the Jira project key where monday items should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
+| Value in template                                | Where                                                                                                                | Customer action                                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `customfield_10153`                              | Both flow JSON files                                                                                                 | Replace with the customer's Jira custom field key holding the monday item ID, for example `customfield_12345`.                                                                                                                                                                                               |
+| `cf[10153]`                                      | Incoming flow JQL search                                                                                             | Replace with the numeric custom field ID, for example `cf[12345]`.                                                                                                                                                                                                                                           |
+| `1234567890`                                     | Incoming and outgoing `MONDAY_BOARD_ID` flow variable                                                                | Replace with the numeric ID of the monday board that mirrors the Jira project.                                                                                                                                                                                                                               |
+| `topics`                                         | Outgoing `MONDAY_GROUP_ID` flow variable                                                                             | Replace with the group ID on that board where new items should be created.                                                                                                                                                                                                                                   |
+| `text__1`                                        | Incoming and outgoing `MONDAY_JIRA_KEY_COLUMN` flow variable                                                         | Replace with the ID of the monday text column holding the Jira issue key.                                                                                                                                                                                                                                    |
+| `long_text__1`                                   | `MONDAY_DESCRIPTION_COLUMN` flow variable **and** the `Update Jira Issue Description` condition in the incoming flow | Replace with the ID of the monday long text column holding the description. The condition compares a literal column ID, so it must be changed in both places.                                                                                                                                                |
+| `files__1`                                       | `MONDAY_FILES_COLUMN` flow variable **and** the `Get Monday Asset Public URL` condition in the incoming flow         | Replace with the ID of the monday files column. The condition compares a literal column ID, so it must be changed in both places.                                                                                                                                                                            |
+| `12345678`                                       | `MONDAY_IHUB_USER_ID` flow variable **and** the `Find Jira Issue by Monday Item ID` condition in the incoming flow   | Replace with the monday user ID of the integration user whose API token iHub uses. The condition compares a literal user ID, so it must be changed in both places. This is the primary loop guard.                                                                                                           |
+| `replace-with-your-instance-of-integration-user` | Outgoing update, comment and attachment conditions                                                                   | Replace with the Jira account ID used by iHub/the integration user. This prevents circular update, comment and attachment sync.                                                                                                                                                                              |
+| `2026-07`                                        | Incoming and outgoing `MONDAY_API_VERSION` flow variable                                                             | The monday API version sent in the `API-Version` header. `2026-07` was the current stable version when this template was written; monday rotates versions quarterly and deprecates old ones, so check the [versioning docs](https://developer.monday.com/api-reference/docs/api-versioning) before enabling. |
+| `MON`                                            | Incoming `SPACE` flow variable                                                                                       | Replace with the Jira project key where monday items should create/find issues.                                                                                                                                                                                                                              |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                                                                                  | Replace if the target Jira project does not use `Task`.                                                                                                                                                                                                                                                      |
 
 Note that `MONDAY_DESCRIPTION_COLUMN`, `MONDAY_FILES_COLUMN` and `MONDAY_IHUB_USER_ID` are declared as flow variables for visibility, but the conditions that branch on them compare literal strings. iHub conditions match a JSONPath against a static value, so a `{{_flow.X}}` reference in a condition value would be compared literally and never match, which for the user ID guard would fail open and allow sync loops. Both places must be edited together.
 
@@ -102,12 +102,12 @@ After the template is instantiated in iHub, copy the trigger URL from the `Monda
 
 Subscribe to these four events:
 
-| monday subscription event | Delivered `event.type` | Result in Jira |
-| --- | --- | --- |
-| `create_item` | `create_pulse` | Create a Jira issue |
-| `change_column_value` | `update_column_value` | Update description or attach a file |
-| `change_name` | `update_name` | Update the Jira summary |
-| `create_update` | `create_update` | Add a Jira comment |
+| monday subscription event | Delivered `event.type` | Result in Jira                      |
+| ------------------------- | ---------------------- | ----------------------------------- |
+| `create_item`             | `create_pulse`         | Create a Jira issue                 |
+| `change_column_value`     | `update_column_value`  | Update description or attach a file |
+| `change_name`             | `update_name`          | Update the Jira summary             |
+| `create_update`           | `create_update`        | Add a Jira comment                  |
 
 ### The challenge handshake
 

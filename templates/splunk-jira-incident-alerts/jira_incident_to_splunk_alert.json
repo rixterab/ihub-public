@@ -71,14 +71,7 @@
         "initialSleepTime": 5000,
         "maxRetries": 0,
         "burst": 1,
-        "retryStatusCodes": [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504
-        ]
+        "retryStatusCodes": [408, 429, 500, 502, 503, 504]
       },
       "name": "Create Splunk Saved Search Alert",
       "id": "template:action:0c8cf9d2-4e03-45d8-9b8c-5c711f01a001",
@@ -190,7 +183,7 @@
     {
       "name": "IHUB_JIRA_ACCOUNT_ID",
       "behavior": "SET",
-      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "value": "replace-with-your-instance-of-integration-user",
       "instruction": "Atlassian accountId used by the iHub integration user. Used to prevent Jira/Splunk loops."
     },
     {

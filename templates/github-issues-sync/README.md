@@ -31,12 +31,12 @@ From GitHub to Jira:
 
 The outgoing flow uses GitHub REST API endpoints:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create Issue | `POST` | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues` |
-| Update Issue | `PATCH` | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}` |
-| Add Comment | `POST` | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments` |
-| Add Attachment Link Comment | `POST` | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments` |
+| Action                      | Method  | Endpoint                                                                                                                         |
+| --------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Create Issue                | `POST`  | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues`                                             |
+| Update Issue                | `PATCH` | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}`          |
+| Add Comment                 | `POST`  | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments` |
+| Add Attachment Link Comment | `POST`  | `{{_flow.GITHUB_API_URL}}/repos/{{_flow.GITHUB_OWNER}}/{{_flow.GITHUB_REPO}}/issues/{{issue.fields.customfield_10153}}/comments` |
 
 GitHub authenticates with a personal access token or GitHub App installation token that can read and write issues in the target repository.
 
@@ -48,18 +48,18 @@ This template assumes one configured GitHub repository per instantiated template
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://api.github.com` | Outgoing flow variable `GITHUB_API_URL` | Keep for GitHub.com, or replace with the GitHub Enterprise Server API URL. |
-| `2026-03-10` | Outgoing flow variable `GITHUB_API_VERSION` | Replace only if the customer standardizes on another GitHub REST API version. |
-| `your-org` | Outgoing flow variable `GITHUB_OWNER` | Replace with the target repository owner or organization. |
-| `your-repo` | Outgoing flow variable `GITHUB_REPO` | Replace with the target repository name. |
-| `GH` | Incoming flow variable `SPACE` | Replace with the Jira project key where GitHub-created issues should create/find issues. |
-| `Task` | Incoming flow variable `ISSUE_TYPE` | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. |
-| `ihub-sync-bot` | Incoming GitHub event conditions | Replace with the GitHub login used by the iHub GitHub token. This prevents circular issue and comment sync. |
+| Value in template                                | Where                                       | Customer action                                                                                             |
+| ------------------------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `https://api.github.com`                         | Outgoing flow variable `GITHUB_API_URL`     | Keep for GitHub.com, or replace with the GitHub Enterprise Server API URL.                                  |
+| `2026-03-10`                                     | Outgoing flow variable `GITHUB_API_VERSION` | Replace only if the customer standardizes on another GitHub REST API version.                               |
+| `your-org`                                       | Outgoing flow variable `GITHUB_OWNER`       | Replace with the target repository owner or organization.                                                   |
+| `your-repo`                                      | Outgoing flow variable `GITHUB_REPO`        | Replace with the target repository name.                                                                    |
+| `GH`                                             | Incoming flow variable `SPACE`              | Replace with the Jira project key where GitHub-created issues should create/find issues.                    |
+| `Task`                                           | Incoming flow variable `ISSUE_TYPE`         | Replace if the target Jira project does not use `Task`.                                                     |
+| `customfield_10153`                              | Both flow JSON files                        | Replace with the customer's Jira custom field key, for example `customfield_12345`.                         |
+| `cf[10153]`                                      | Incoming flow JQL search                    | Replace with the numeric custom field ID, for example `cf[12345]`.                                          |
+| `replace-with-your-instance-of-integration-user` | Outgoing comment and attachment conditions  | Replace with the Jira account ID used by iHub/the integration user.                                         |
+| `ihub-sync-bot`                                  | Incoming GitHub event conditions            | Replace with the GitHub login used by the iHub GitHub token. This prevents circular issue and comment sync. |
 
 ## Places To Update The Jira Custom Field
 

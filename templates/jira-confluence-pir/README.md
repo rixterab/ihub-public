@@ -17,14 +17,14 @@ The flow listens to the Atlassian webhook trigger of the instance iHub is instal
 
 ## Jira And Confluence API Calls
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Fetch incident | `GET` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=...&expand=renderedFields` |
-| Create PIR page | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/content` |
-| Fetch incident comments | `GET` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment?expand=renderedBody&orderBy=created` |
-| Add comment to PIR page | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/content/{{_flow.pirPageId}}/child/comment` |
-| Store PIR link on incident | `PUT` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}` |
-| Add remote link | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink` |
+| Action                     | Method | Endpoint                                                                                 |
+| -------------------------- | ------ | ---------------------------------------------------------------------------------------- |
+| Fetch incident             | `GET`  | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=...&expand=renderedFields`            |
+| Create PIR page            | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/content`                                              |
+| Fetch incident comments    | `GET`  | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment?expand=renderedBody&orderBy=created` |
+| Add comment to PIR page    | `POST` | `{{_flow.CONFLUENCE_URL}}/rest/api/content/{{_flow.pirPageId}}/child/comment`            |
+| Store PIR link on incident | `PUT`  | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}`                                             |
+| Add remote link            | `POST` | `{{baseUrl}}/rest/api/3/issue/{{issue.key}}/remotelink`                                  |
 
 Calls to Jira use the built-in `ATLASSIAN_TOKEN` credential reference and need no manual configuration. Calls to Confluence use the manifest's `basic-auth-confluence` credential, since the Confluence site may be a different Atlassian tenant than the one iHub is installed in. If Jira and Confluence are on the same site, the same Atlassian account email and API token can be reused for both.
 
@@ -38,17 +38,17 @@ Create a Jira custom field of type single-line text (or URL) on the incident to 
 
 Hard-coded values that must be reviewed before enabling the flow:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `Incident` | `MAJOR_INCIDENT_ISSUE_TYPE` flow variable **and** `Fetch Resolved Incident` action condition | Replace with the issue type name used for major incidents in this instance. |
-| `Highest` | `MAJOR_INCIDENT_PRIORITY` flow variable **and** `Fetch Resolved Incident` action condition | Replace with the priority name used to mark a major incident. |
-| `Resolved` | `RESOLVED_STATUS_NAME` flow variable **and** `Fetch Resolved Incident` action condition | Replace with the status name that marks an incident as resolved in this instance's workflow. |
-| `customfield_10160` | Flow variable, action condition and both write-back action bodies | Replace with the custom field id used to store the PIR link, for example `customfield_12345`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | `IHUB_ACCOUNT_ID` flow variable **and** the `Fetch Resolved Incident` action condition | Replace with the `accountId` of the iHub integration user in this Jira instance, in both places. This is the loop guard for the link write-back. |
-| `https://your-company.atlassian.net/wiki` | `CONFLUENCE_URL` flow variable | Replace with the base URL of the Confluence Cloud site, for example `https://acme.atlassian.net/wiki`. |
-| `PIR` | `CONFLUENCE_SPACE_KEY` flow variable | Replace with the key of the Confluence space that should hold post-incident reports. |
-| (empty) | `CONFLUENCE_PARENT_PAGE_ID` flow variable | Optionally set to a Confluence page id to create every report as a child of that page instead of at the space root. |
-| `integration@your-company.com` | `manifest.json` credential definition | Replace with the Atlassian account email used for the Confluence API token, before importing or by editing the credential after import. |
+| Value in template                                | Where                                                                                        | Customer action                                                                                                                                  |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Incident`                                       | `MAJOR_INCIDENT_ISSUE_TYPE` flow variable **and** `Fetch Resolved Incident` action condition | Replace with the issue type name used for major incidents in this instance.                                                                      |
+| `Highest`                                        | `MAJOR_INCIDENT_PRIORITY` flow variable **and** `Fetch Resolved Incident` action condition   | Replace with the priority name used to mark a major incident.                                                                                    |
+| `Resolved`                                       | `RESOLVED_STATUS_NAME` flow variable **and** `Fetch Resolved Incident` action condition      | Replace with the status name that marks an incident as resolved in this instance's workflow.                                                     |
+| `customfield_10160`                              | Flow variable, action condition and both write-back action bodies                            | Replace with the custom field id used to store the PIR link, for example `customfield_12345`.                                                    |
+| `replace-with-your-instance-of-integration-user` | `IHUB_ACCOUNT_ID` flow variable **and** the `Fetch Resolved Incident` action condition       | Replace with the `accountId` of the iHub integration user in this Jira instance, in both places. This is the loop guard for the link write-back. |
+| `https://your-company.atlassian.net/wiki`        | `CONFLUENCE_URL` flow variable                                                               | Replace with the base URL of the Confluence Cloud site, for example `https://acme.atlassian.net/wiki`.                                           |
+| `PIR`                                            | `CONFLUENCE_SPACE_KEY` flow variable                                                         | Replace with the key of the Confluence space that should hold post-incident reports.                                                             |
+| (empty)                                          | `CONFLUENCE_PARENT_PAGE_ID` flow variable                                                    | Optionally set to a Confluence page id to create every report as a child of that page instead of at the space root.                              |
+| `integration@your-company.com`                   | `manifest.json` credential definition                                                        | Replace with the Atlassian account email used for the Confluence API token, before importing or by editing the credential after import.          |
 
 Condition values in iHub are compared literally and are not templated, which is why the issue type, priority, status and account id above are hard coded in the action condition in addition to being flow variables. The flow variables are the documented reference value; the conditions are what actually gates the flow, so both must be kept in sync.
 

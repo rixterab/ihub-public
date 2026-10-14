@@ -31,12 +31,12 @@ From Jira to BMC:
 
 The flows use the BMC Helix ITSM / Remedy AR System REST API. The default forms follow the BMC incident interface forms:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create incident | `POST` | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_CREATE_FORM}}?fields=values(Incident%20Number)` |
-| Update incident | `PUT` | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_UPDATE_FORM}}/{{issue.fields.customfield_10153}}|{{issue.fields.customfield_10153}}` |
-| Add work log | `POST` | `{{_flow.BMC_URL}}/api/arsys/v1/mergeEntry/{{_flow.BMC_WORK_LOG_FORM}}?fields=values(Request%20ID)` |
-| Download attachment | `GET` | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_WORK_LOG_FORM}}/{{bmcAttachmentEntryId}}/attach/{{bmcAttachmentFieldName}}` |
+| Action              | Method | Endpoint                                                                                                                      |
+| ------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Create incident     | `POST` | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_CREATE_FORM}}?fields=values(Incident%20Number)`                    |
+| Update incident     | `PUT`  | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_INCIDENT_UPDATE_FORM}}/{{issue.fields.customfield_10153}}                   | {{issue.fields.customfield_10153}}` |
+| Add work log        | `POST` | `{{_flow.BMC_URL}}/api/arsys/v1/mergeEntry/{{_flow.BMC_WORK_LOG_FORM}}?fields=values(Request%20ID)`                           |
+| Download attachment | `GET`  | `{{_flow.BMC_URL}}/api/arsys/v1/entry/{{_flow.BMC_WORK_LOG_FORM}}/{{bmcAttachmentEntryId}}/attach/{{bmcAttachmentFieldName}}` |
 
 The manifest defines a custom `Authorization` header credential named `BMC Authorization Header`. For AR-JWT authentication, paste the full value such as `AR-JWT <token>`. For Helix SSO/OAuth-backed environments, paste the full bearer value required by the tenant.
 
@@ -46,20 +46,20 @@ Create a Jira custom field of type single-line text to store the BMC incident nu
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-company-restapi.onbmc.com` | Incoming and outgoing `BMC_URL` flow variable | Replace with the customer's BMC Helix ITSM / AR System REST API base URL. |
-| `HPD:IncidentInterface_Create` | Outgoing `BMC_INCIDENT_CREATE_FORM` flow variable | Replace if the customer uses a customized incident create interface form. |
-| `HPD:IncidentInterface` | Outgoing `BMC_INCIDENT_UPDATE_FORM` flow variable | Replace if the customer uses a customized incident update interface form. |
-| `HPD:WorkLog` | Incoming and outgoing `BMC_WORK_LOG_FORM` flow variable | Replace if work information is handled by a customized form. |
-| `Attachment` | Incoming and outgoing `BMC_WORK_LOG_ATTACHMENT_FIELD` flow variable | Replace with the attachment field name used on the customer's work log form. |
-| `Allen`, `Allbrook`, `Calbro Services` | Outgoing requester variables | Replace with valid BMC requester values for incidents created from Jira. |
-| `3-Moderate/Limited`, `3-Medium`, `Assigned`, `Direct Input`, `User Service Restoration` | Outgoing BMC incident defaults | Replace with values allowed by the customer's BMC configuration. |
-| `BMC` | Incoming `SPACE` flow variable | Replace with the Jira project key where BMC incidents should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| Value in template                                                                        | Where                                                               | Customer action                                                                                                         |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://your-company-restapi.onbmc.com`                                                 | Incoming and outgoing `BMC_URL` flow variable                       | Replace with the customer's BMC Helix ITSM / AR System REST API base URL.                                               |
+| `HPD:IncidentInterface_Create`                                                           | Outgoing `BMC_INCIDENT_CREATE_FORM` flow variable                   | Replace if the customer uses a customized incident create interface form.                                               |
+| `HPD:IncidentInterface`                                                                  | Outgoing `BMC_INCIDENT_UPDATE_FORM` flow variable                   | Replace if the customer uses a customized incident update interface form.                                               |
+| `HPD:WorkLog`                                                                            | Incoming and outgoing `BMC_WORK_LOG_FORM` flow variable             | Replace if work information is handled by a customized form.                                                            |
+| `Attachment`                                                                             | Incoming and outgoing `BMC_WORK_LOG_ATTACHMENT_FIELD` flow variable | Replace with the attachment field name used on the customer's work log form.                                            |
+| `Allen`, `Allbrook`, `Calbro Services`                                                   | Outgoing requester variables                                        | Replace with valid BMC requester values for incidents created from Jira.                                                |
+| `3-Moderate/Limited`, `3-Medium`, `Assigned`, `Direct Input`, `User Service Restoration` | Outgoing BMC incident defaults                                      | Replace with values allowed by the customer's BMC configuration.                                                        |
+| `BMC`                                                                                    | Incoming `SPACE` flow variable                                      | Replace with the Jira project key where BMC incidents should create/find issues.                                        |
+| `Task`                                                                                   | Incoming `ISSUE_TYPE` flow variable                                 | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10153`                                                                      | Both flow JSON files                                                | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10153]`                                                                              | Incoming flow JQL search                                            | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user`                                         | Outgoing comment and attachment conditions                          | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
 
 ## BMC Webhook Payload
 

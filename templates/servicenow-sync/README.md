@@ -31,13 +31,13 @@ From Jira to ServiceNow:
 
 Both flows use OAuth2 and the current ServiceNow REST APIs: Table API `v2` and Attachment API `/api/now/attachment`.
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create ticket | `POST` | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}` |
-| Update ticket | `PATCH` | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}` |
-| Comment ticket | `PATCH` | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}` |
-| Upload attachment | `POST` | `{{_flow.SN_URL}}/api/now/attachment/upload` |
-| Download attachment | `GET` | `{{_flow.SN_URL}}/api/now/attachment/{{serviceNowAttachmentId}}/file` |
+| Action              | Method  | Endpoint                                                                                                        |
+| ------------------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| Create ticket       | `POST`  | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}`                                    |
+| Update ticket       | `PATCH` | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}` |
+| Comment ticket      | `PATCH` | `{{_flow.SN_URL}}/api/now/{{_flow.SN_API_VERSION}}/table/{{_flow.SN_TABLE}}/{{issue.fields.customfield_10153}}` |
+| Upload attachment   | `POST`  | `{{_flow.SN_URL}}/api/now/attachment/upload`                                                                    |
+| Download attachment | `GET`   | `{{_flow.SN_URL}}/api/now/attachment/{{serviceNowAttachmentId}}/file`                                           |
 
 Comments are written by patching the ticket's journal input field `comments` (Additional comments). To write to `work_notes` instead, change the field name in the `Comment ServiceNow Ticket` action body.
 
@@ -49,19 +49,19 @@ Create a Jira custom field of type single-line text to store the ServiceNow `sys
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-instance.service-now.com` | Incoming and outgoing `SN_URL` flow variable | Replace with the customer's ServiceNow instance URL. |
-| `v2` | Incoming and outgoing `SN_API_VERSION` flow variable | Replace if the instance must use another Table API version. |
-| `incident` | Incoming and outgoing `SN_TABLE` flow variable | Replace with the table holding the tickets, for example `sn_customerservice_case` or `sc_req_item`. |
-| `integration` | Outgoing `SN_CONTACT_TYPE` flow variable | Must match an allowed `contact_type` choice in the instance. |
-| `3` | Outgoing `SN_IMPACT` and `SN_URGENCY` flow variables | Adjust the default impact and urgency of tickets created from Jira. |
-| `SN` | Incoming `SPACE` flow variable | Replace with the Jira project key where ServiceNow tickets should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
-| `your-instance` in the OAuth2 URLs | `manifest.json` credential definition | Replace with the customer's instance name before importing, or edit the credential after import. |
+| Value in template                                | Where                                                | Customer action                                                                                                         |
+| ------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://your-instance.service-now.com`          | Incoming and outgoing `SN_URL` flow variable         | Replace with the customer's ServiceNow instance URL.                                                                    |
+| `v2`                                             | Incoming and outgoing `SN_API_VERSION` flow variable | Replace if the instance must use another Table API version.                                                             |
+| `incident`                                       | Incoming and outgoing `SN_TABLE` flow variable       | Replace with the table holding the tickets, for example `sn_customerservice_case` or `sc_req_item`.                     |
+| `integration`                                    | Outgoing `SN_CONTACT_TYPE` flow variable             | Must match an allowed `contact_type` choice in the instance.                                                            |
+| `3`                                              | Outgoing `SN_IMPACT` and `SN_URGENCY` flow variables | Adjust the default impact and urgency of tickets created from Jira.                                                     |
+| `SN`                                             | Incoming `SPACE` flow variable                       | Replace with the Jira project key where ServiceNow tickets should create/find issues.                                   |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                  | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10153`                              | Both flow JSON files                                 | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10153]`                                      | Incoming flow JQL search                             | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user` | Outgoing comment and attachment conditions           | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| `your-instance` in the OAuth2 URLs               | `manifest.json` credential definition                | Replace with the customer's instance name before importing, or edit the credential after import.                        |
 
 ## ServiceNow Webhook Payload
 

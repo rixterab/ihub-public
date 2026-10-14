@@ -31,11 +31,11 @@ From Freshdesk to Jira:
 
 The outgoing flow uses Freshdesk API v2 endpoints:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create Ticket | `POST` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets` |
-| Update Ticket | `PUT` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
-| Add Note | `POST` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}/notes` |
+| Action                   | Method | Endpoint                                                                          |
+| ------------------------ | ------ | --------------------------------------------------------------------------------- |
+| Create Ticket            | `POST` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets`                                          |
+| Update Ticket            | `PUT`  | `{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}`       |
+| Add Note                 | `POST` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}/notes` |
 | Add Note With Attachment | `POST` | `{{_flow.FRESHDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}/notes` |
 
 Freshdesk authenticates with basic auth where the username is the Freshdesk API key and the password is typically `X`.
@@ -46,19 +46,19 @@ Create a Jira custom field of type single-line text to store the Freshdesk ticke
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-domain.freshdesk.com` | Outgoing flow variable `FRESHDESK_URL` | Replace with the customer's Freshdesk account URL. |
-| `jira-sync@example.com` | Outgoing flow variable `FRESHDESK_REQUESTER_EMAIL` | Replace with the requester email used when Jira creates Freshdesk tickets. |
-| `2` | Outgoing flow variable `FRESHDESK_DEFAULT_PRIORITY` | Replace if Jira-created Freshdesk tickets should use another default priority. |
-| `2` | Outgoing flow variable `FRESHDESK_DEFAULT_STATUS` | Replace if Jira-created Freshdesk tickets should use another default status. |
-| `2` | Outgoing flow variable `FRESHDESK_TICKET_SOURCE` | Replace if Jira-created Freshdesk tickets should use another Freshdesk source value. |
-| `true` | Outgoing flow variable `FRESHDESK_COMMENT_PRIVATE` | Set to `false` if Jira comments should become public Freshdesk notes. |
-| `FD` | Incoming flow variable `SPACE` | Replace with the Jira project key where Freshdesk-created tickets should create/find issues. |
-| `Task` | Incoming flow variable `ISSUE_TYPE` | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| Value in template                                | Where                                               | Customer action                                                                                                         |
+| ------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://your-domain.freshdesk.com`              | Outgoing flow variable `FRESHDESK_URL`              | Replace with the customer's Freshdesk account URL.                                                                      |
+| `jira-sync@example.com`                          | Outgoing flow variable `FRESHDESK_REQUESTER_EMAIL`  | Replace with the requester email used when Jira creates Freshdesk tickets.                                              |
+| `2`                                              | Outgoing flow variable `FRESHDESK_DEFAULT_PRIORITY` | Replace if Jira-created Freshdesk tickets should use another default priority.                                          |
+| `2`                                              | Outgoing flow variable `FRESHDESK_DEFAULT_STATUS`   | Replace if Jira-created Freshdesk tickets should use another default status.                                            |
+| `2`                                              | Outgoing flow variable `FRESHDESK_TICKET_SOURCE`    | Replace if Jira-created Freshdesk tickets should use another Freshdesk source value.                                    |
+| `true`                                           | Outgoing flow variable `FRESHDESK_COMMENT_PRIVATE`  | Set to `false` if Jira comments should become public Freshdesk notes.                                                   |
+| `FD`                                             | Incoming flow variable `SPACE`                      | Replace with the Jira project key where Freshdesk-created tickets should create/find issues.                            |
+| `Task`                                           | Incoming flow variable `ISSUE_TYPE`                 | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10153`                              | Both flow JSON files                                | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10153]`                                      | Incoming flow JQL search                            | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user` | Outgoing comment and attachment conditions          | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
 
 ## Places To Update The Jira Custom Field
 

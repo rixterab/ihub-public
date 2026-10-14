@@ -212,7 +212,7 @@
             {
               "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "replace-with-your-instance-of-integration-user",
               "operator": "NOT_EQUALS",
               "description": "Block comments authored by the iHub integration user"
             }
@@ -418,7 +418,7 @@
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+              "value": "replace-with-your-instance-of-integration-user",
               "operator": "NOT_EQUALS",
               "description": "Block attachments added by the iHub integration user"
             }

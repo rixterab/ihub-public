@@ -49,7 +49,7 @@ action graph:
 | --- | --- | --- |
 | Jira → tool, create something | `gitlab-issue-from-jira` | Create + guard + write-back |
 | Full two-way sync | `github-issues-sync`, `linear-sync` | Loop guards, comments, attachments |
-| Tool → Jira from a webhook | `splunk-jira-incident-alerts` (incoming flow) | Scripted variables, JQL dedup, create-or-comment |
+| Tool → Jira from a webhook | `splunk-jira-incident-alerts` (incoming flow) | JQL dedup, create-or-comment (copy the action graph, not its scripts; see section 4) |
 | Scheduled pull into Jira Assets | `microsoft-entra-asset-import` | The seven-action import-source dance |
 | Chat notification | `slack-notify-work-item-created` | mrkdwn rules, `ok:false` handling |
 | Scheduled poll of a REST API | `snyk-findings-to-jira` | Pagination + iterator + per-item dedup |
@@ -220,10 +220,39 @@ Trello mostly strips it. Linear rejects it outright, which is why `linear-sync` 
 scripted variables to produce plain text instead. Pick per target and say what you
 picked.
 
-### Scripted variables
+### JSONPath and Handlebars first, scripts last
 
-For incoming webhooks whose payload shape you do not fully control. Read the payload
-tolerantly, and always with the same prelude the repository already uses:
+Build flows from the declarative pieces. They are visible in the iHub UI, a customer
+can read and adjust them, and a reviewer can check them against the API docs:
+
+| Need | Use |
+| --- | --- |
+| Put a value into a URL or body | `{{x}}` / `{{{x}}}` straight from the trigger data or a captured variable |
+| Branch on a value | A `DATA_CONDITION` on a JSONPath: `$.issue.fields.status.name`, `$.payload.data` |
+| Keep a value from a response | An action-level flow variable with a JSONPath: `$.response.data.id` |
+| Keep a value from the trigger | An action-level flow variable with a JSONPath: `$.issue.key`, `$.payload.alert_id` |
+| Optional text | `{{#if x}}…{{/if}}`, as `gitlab-issue-from-jira` does for reporter and priority |
+| Filter a set | Push it into the API query (JQL, a `severity=` fragment), not into the flow |
+
+**Scripted variables are for the rare case these cannot express**, for example:
+
+- Computing a next-page URL or cursor for pagination.
+- Converting a format the helpers do not cover (ADF → plain text for Linear).
+- Mapping many vendor states onto a fixed vocabulary (`firing` / `resolved` /
+  `acknowledged`) that several actions branch on — one script beats the same mapping
+  repeated in five conditions.
+- Sanitising a value that must survive inside another syntax, such as stripping `"` and
+  `\` before a value goes into a JQL string.
+
+A scripted variable that only reads one field (`return read('alert_id')`) is a
+JSONPath written the long way; replace it. Do not ship a script to tolerate four
+possible field names for the same value either: when the vendor payload is
+user-defined (Datadog, Splunk, Grafana), the README defines the payload template, so the
+shape is fixed and a plain path works. Many existing templates predate this rule and
+carry minified scripts copied 23 times over; they are not a precedent.
+
+When a script is genuinely needed, keep it short and readable, return a **string**, and
+use the prelude the repository already uses so payload access is consistent:
 
 ```js
 const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;
@@ -231,12 +260,9 @@ const at = (o, p) => { /* dotted-path getter, array-index aware */ };
 const read = (...ps) => { /* first non-empty path wins */ };
 ```
 
-Then one variable per derived value, each returning a **string**. Reference them in
-actions and conditions without the `_flow.` prefix: `{{alertKey}}`, `$.alertKey`.
-
-Normalise vendor states to a fixed vocabulary (`firing` / `resolved` / `acknowledged`)
-in a scripted variable, then branch on that — never branch on the raw vendor string in
-five different places.
+Reference scripted variables in actions and conditions without the `_flow.` prefix:
+`{{alertKey}}`, `$.alertKey`. Say in the README what each one computes and why a
+JSONPath could not.
 
 ### Pagination
 
@@ -465,6 +491,8 @@ Manual checks a script cannot do:
 - Would a redelivered webhook create a duplicate?
 - Does every free-text interpolation into a JSON body use `{{{ }}}`?
 - Is every value a customer must change a flow variable, and is it in the README table?
+- Could any scripted variable be a JSONPath or a `{{ }}` expression instead? If so, it
+  should be.
 - Have you actually verified the payload paths against a real delivery, or are they
   assumptions? If assumptions, say so in the README.
 
@@ -484,6 +512,8 @@ Manual checks a script cannot do:
   precedent in `templates/`, either find another way or flag it prominently as
   unverified.
 - **Do not interpolate `issue.fields.description` bare.** It is ADF.
+- **Do not reach for a scripted variable** when a JSONPath, a condition or a Handlebars
+  expression does the job. Scripts are the exception, not the default.
 - **Do not use `{{ }}` for free text in a JSON body**, or `{{{ }}}` in Slack mrkdwn.
 - **Do not create without a dedup guard.**
 - **Do not hardcode a customer-specific value in a condition** and then tell the reader

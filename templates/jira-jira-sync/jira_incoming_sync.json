@@ -839,7 +839,7 @@
     {
       "name": "LOCAL_IHUB_ACCOUNT_ID",
       "behavior": "SET",
-      "value": "712020:6a00297e-29ca-4539-8eba-272c510f6e9d",
+      "value": "replace-with-your-instance-of-integration-user",
       "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped. The same value is hard coded in the action conditions and must be replaced there too"
     },
     {

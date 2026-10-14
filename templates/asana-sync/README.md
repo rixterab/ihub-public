@@ -33,20 +33,20 @@ Asana's webhook events only carry resource GIDs and an action, not the actual co
 
 The outgoing flow uses OAuth2 and the Asana REST API:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create Task | `POST` | `{{_flow.ASANA_URL}}/tasks` |
-| Comment on Task | `POST` | `{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}/stories` |
-| Update Task Notes | `PUT` | `{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}` |
-| Upload Attachment | `POST` | `{{_flow.ASANA_URL}}/attachments` |
+| Action            | Method | Endpoint                                                               |
+| ----------------- | ------ | ---------------------------------------------------------------------- |
+| Create Task       | `POST` | `{{_flow.ASANA_URL}}/tasks`                                            |
+| Comment on Task   | `POST` | `{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}/stories` |
+| Update Task Notes | `PUT`  | `{{_flow.ASANA_URL}}/tasks/{{issue.fields.customfield_10200}}`         |
+| Upload Attachment | `POST` | `{{_flow.ASANA_URL}}/attachments`                                      |
 
 The incoming flow uses the same OAuth2 credential to enrich webhook events:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Get Task | `GET` | `{{_flow.ASANA_URL}}/tasks/{{asanaTaskGid}}` |
-| Get Story | `GET` | `{{_flow.ASANA_URL}}/stories/{{asanaStoryGid}}` |
-| Get Attachment | `GET` | `{{_flow.ASANA_URL}}/attachments/{{asanaAttachmentGid}}` |
+| Action         | Method | Endpoint                                                 |
+| -------------- | ------ | -------------------------------------------------------- |
+| Get Task       | `GET`  | `{{_flow.ASANA_URL}}/tasks/{{asanaTaskGid}}`             |
+| Get Story      | `GET`  | `{{_flow.ASANA_URL}}/stories/{{asanaStoryGid}}`          |
+| Get Attachment | `GET`  | `{{_flow.ASANA_URL}}/attachments/{{asanaAttachmentGid}}` |
 
 Attachment downloads are a two-step process: the Get Attachment call returns a temporary, pre-signed `download_url`, and a second unauthenticated `GET` against that URL retrieves the file bytes.
 
@@ -56,18 +56,18 @@ Create a Jira custom field of type single-line text to store the Asana Task GID.
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://app.asana.com/api/1.0` | Incoming and outgoing `ASANA_URL` flow variable | Replace only if the customer uses a proxied or region-specific Asana API base URL. |
-| `0000000000000000` | Outgoing `ASANA_WORKSPACE_GID` flow variable | Replace with the customer's Asana workspace GID. |
-| `0000000000000000` | Outgoing `ASANA_PROJECT_GID` flow variable | Replace with the Asana project GID that newly created tasks are added to. |
-| `0000000000000000` | Register Webhook `ASANA_PROJECT_GID` flow variable | Replace with the same Asana project GID; this is the project the incoming webhook subscribes to. |
-| _(empty)_ | Register Webhook `ASANA_TARGET_URL` flow variable | Set to the `Asana Incoming Sync` custom webhook trigger URL after that flow is created. |
-| `AS` | Incoming `SPACE` flow variable | Replace with the Jira project key where Asana-created tasks should create/find issues. |
-| `Task` | Incoming `ISSUE_TYPE` flow variable | Replace if the target Jira project does not use `Task`. |
-| `customfield_10200` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10200]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| Value in template                                | Where                                              | Customer action                                                                                                         |
+| ------------------------------------------------ | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://app.asana.com/api/1.0`                  | Incoming and outgoing `ASANA_URL` flow variable    | Replace only if the customer uses a proxied or region-specific Asana API base URL.                                      |
+| `0000000000000000`                               | Outgoing `ASANA_WORKSPACE_GID` flow variable       | Replace with the customer's Asana workspace GID.                                                                        |
+| `0000000000000000`                               | Outgoing `ASANA_PROJECT_GID` flow variable         | Replace with the Asana project GID that newly created tasks are added to.                                               |
+| `0000000000000000`                               | Register Webhook `ASANA_PROJECT_GID` flow variable | Replace with the same Asana project GID; this is the project the incoming webhook subscribes to.                        |
+| _(empty)_                                        | Register Webhook `ASANA_TARGET_URL` flow variable  | Set to the `Asana Incoming Sync` custom webhook trigger URL after that flow is created.                                 |
+| `AS`                                             | Incoming `SPACE` flow variable                     | Replace with the Jira project key where Asana-created tasks should create/find issues.                                  |
+| `Task`                                           | Incoming `ISSUE_TYPE` flow variable                | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10200`                              | Both flow JSON files                               | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10200]`                                      | Incoming flow JQL search                           | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user` | Outgoing comment and attachment conditions         | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
 
 ## Asana Webhook Setup
 

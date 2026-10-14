@@ -32,13 +32,13 @@ From Zendesk to Jira:
 
 The outgoing flow uses Zendesk Support API v2 endpoints:
 
-| Action | Method | Endpoint |
-| --- | --- | --- |
-| Create Ticket | `POST` | `{{_flow.ZENDESK_URL}}/api/v2/tickets` |
-| Update Ticket Subject | `PUT` | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
-| Add Ticket Comment | `PUT` | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
-| Upload Attachment | `POST` | `{{_flow.ZENDESK_URL}}/api/v2/uploads?filename={{filename}}` |
-| Add Comment With Uploaded Attachment | `PUT` | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
+| Action                               | Method | Endpoint                                                                  |
+| ------------------------------------ | ------ | ------------------------------------------------------------------------- |
+| Create Ticket                        | `POST` | `{{_flow.ZENDESK_URL}}/api/v2/tickets`                                    |
+| Update Ticket Subject                | `PUT`  | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
+| Add Ticket Comment                   | `PUT`  | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
+| Upload Attachment                    | `POST` | `{{_flow.ZENDESK_URL}}/api/v2/uploads?filename={{filename}}`              |
+| Add Comment With Uploaded Attachment | `PUT`  | `{{_flow.ZENDESK_URL}}/api/v2/tickets/{{issue.fields.customfield_10153}}` |
 
 Zendesk ticket comments are created by adding a `ticket.comment` object while creating or updating a ticket. Attachments are uploaded first to get an upload token, then the token is added to a new ticket comment.
 
@@ -50,20 +50,20 @@ Create a Jira custom field of type single-line text to store the Zendesk ticket 
 
 Hard-coded values that must be reviewed before enabling the flows:
 
-| Value in template | Where | Customer action |
-| --- | --- | --- |
-| `https://your-subdomain.zendesk.com` | Outgoing flow variable `ZENDESK_URL` | Replace with the customer's Zendesk account URL. |
-| `Jira Sync` | Outgoing flow variable `ZENDESK_REQUESTER_NAME` | Replace with the requester name used when Jira creates Zendesk tickets. |
-| `jira-sync@example.com` | Outgoing flow variable `ZENDESK_REQUESTER_EMAIL` | Replace with the requester email used when Jira creates Zendesk tickets. |
-| `normal` | Outgoing flow variable `ZENDESK_DEFAULT_PRIORITY` | Replace if Jira-created Zendesk tickets should use another default priority. |
-| `new` | Outgoing flow variable `ZENDESK_DEFAULT_STATUS` | Replace if Jira-created Zendesk tickets should use another default status. |
-| `true` | Outgoing flow variable `ZENDESK_INITIAL_COMMENT_PUBLIC` | Set to `false` if Jira descriptions should create internal Zendesk notes. |
-| `false` | Outgoing flow variable `ZENDESK_COMMENT_PUBLIC` | Set to `true` if Jira comments and attachment comments should be public Zendesk comments. |
-| `ZD` | Incoming flow variable `SPACE` | Replace with the Jira project key where Zendesk-created tickets should create/find issues. |
-| `Task` | Incoming flow variable `ISSUE_TYPE` | Replace if the target Jira project does not use `Task`. |
-| `customfield_10153` | Both flow JSON files | Replace with the customer's Jira custom field key, for example `customfield_12345`. |
-| `cf[10153]` | Incoming flow JQL search | Replace with the numeric custom field ID, for example `cf[12345]`. |
-| `712020:6a00297e-29ca-4539-8eba-272c510f6e9d` | Outgoing comment and attachment conditions | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
+| Value in template                                | Where                                                   | Customer action                                                                                                         |
+| ------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `https://your-subdomain.zendesk.com`             | Outgoing flow variable `ZENDESK_URL`                    | Replace with the customer's Zendesk account URL.                                                                        |
+| `Jira Sync`                                      | Outgoing flow variable `ZENDESK_REQUESTER_NAME`         | Replace with the requester name used when Jira creates Zendesk tickets.                                                 |
+| `jira-sync@example.com`                          | Outgoing flow variable `ZENDESK_REQUESTER_EMAIL`        | Replace with the requester email used when Jira creates Zendesk tickets.                                                |
+| `normal`                                         | Outgoing flow variable `ZENDESK_DEFAULT_PRIORITY`       | Replace if Jira-created Zendesk tickets should use another default priority.                                            |
+| `new`                                            | Outgoing flow variable `ZENDESK_DEFAULT_STATUS`         | Replace if Jira-created Zendesk tickets should use another default status.                                              |
+| `true`                                           | Outgoing flow variable `ZENDESK_INITIAL_COMMENT_PUBLIC` | Set to `false` if Jira descriptions should create internal Zendesk notes.                                               |
+| `false`                                          | Outgoing flow variable `ZENDESK_COMMENT_PUBLIC`         | Set to `true` if Jira comments and attachment comments should be public Zendesk comments.                               |
+| `ZD`                                             | Incoming flow variable `SPACE`                          | Replace with the Jira project key where Zendesk-created tickets should create/find issues.                              |
+| `Task`                                           | Incoming flow variable `ISSUE_TYPE`                     | Replace if the target Jira project does not use `Task`.                                                                 |
+| `customfield_10153`                              | Both flow JSON files                                    | Replace with the customer's Jira custom field key, for example `customfield_12345`.                                     |
+| `cf[10153]`                                      | Incoming flow JQL search                                | Replace with the numeric custom field ID, for example `cf[12345]`.                                                      |
+| `replace-with-your-instance-of-integration-user` | Outgoing comment and attachment conditions              | Replace with the Jira account ID used by iHub/the integration user. This prevents circular comment and attachment sync. |
 
 ## Places To Update The Jira Custom Field
 
