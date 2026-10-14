@@ -111,6 +111,7 @@
               "jsonPath": "$.issue.fields.creator.accountId",
               "type": "DATA_CONDITION",
               "value": "{{_flow.IHUB_JIRA_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip Jira incidents created by the iHub integration user."
             }

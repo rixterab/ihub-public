@@ -130,7 +130,8 @@
             {
               "jsonPath": "$.remoteAuthorAccountId",
               "type": "DATA_CONDITION",
-              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip every event authored by the remote iHub integration user"
             }
@@ -216,7 +217,8 @@
             {
               "jsonPath": "$.remoteAuthorAccountId",
               "type": "DATA_CONDITION",
-              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip issues created by the remote iHub integration user"
             }
@@ -346,7 +348,8 @@
             {
               "jsonPath": "$.remoteAuthorAccountId",
               "type": "DATA_CONDITION",
-              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip updates made by the remote iHub integration user, including the local key write back"
             },
@@ -429,7 +432,8 @@
             {
               "jsonPath": "$.remoteCommentAuthorAccountId",
               "type": "DATA_CONDITION",
-              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip comments written by the remote iHub integration user"
             }
@@ -635,7 +639,8 @@
             {
               "jsonPath": "$.remoteAuthorAccountId",
               "type": "DATA_CONDITION",
-              "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
+              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip attachments added by the remote iHub integration user"
             }
@@ -840,13 +845,13 @@
       "name": "LOCAL_IHUB_ACCOUNT_ID",
       "behavior": "SET",
       "value": "replace-with-your-instance-of-integration-user",
-      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped. The same value is hard coded in the action conditions and must be replaced there too"
+      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped."
     },
     {
       "name": "REMOTE_IHUB_ACCOUNT_ID",
       "behavior": "SET",
       "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
-      "instruction": "Atlassian accountId of the iHub integration user in the REMOTE instance. This is a different account from LOCAL_IHUB_ACCOUNT_ID. The same value is hard coded in the action conditions and must be replaced there too"
+      "instruction": "Atlassian accountId of the iHub integration user in the REMOTE instance. This is a different account from LOCAL_IHUB_ACCOUNT_ID."
     }
   ],
   "groupName": "Jira",

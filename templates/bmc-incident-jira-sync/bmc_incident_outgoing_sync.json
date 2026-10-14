@@ -218,7 +218,8 @@
             {
               "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "User shall not be iHub"
             }
@@ -419,7 +420,8 @@
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block attachments added by the iHub user"
             }
@@ -584,6 +586,12 @@
       "behavior": "SET",
       "value": "Internal",
       "instruction": "BMC View Access value used for synced Jira comments and attachments"
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira comments and attachments made by this account are not synced back to BMC Helix."
     }
   ],
   "groupName": "BMC",

@@ -150,6 +150,7 @@ Wrap the list in a single `COMBINED_CONDITION`. Entries are ANDed.
   "jsonPath": "$.eventType",
   "type": "DATA_CONDITION",
   "value": "avi:jira:created:issue",
+  "expectedValueSource": "FIXED_VALUE",
   "operator": "EQUALS",
   "description": "Only run for Jira work item created events"
 }
@@ -160,8 +161,35 @@ Wrap the list in a single `COMBINED_CONDITION`. Entries are ANDed.
 filter into the API request instead of inventing an operator — that is what
 `snyk-findings-to-jira` does with its severity query fragment.
 
-`value` may contain `{{_flow.X}}`; that is how configurable conditions are built. Always
-write a `description` — a condition without one is unreadable in the iHub UI.
+`value` may contain `{{_flow.X}}`; that is how configurable conditions are built.
+
+`expectedValueSource` says how iHub should read `value`. It is optional, but set it on
+every condition you write: it shows the reader, and the iHub UI, what kind of value
+they are looking at. Exactly three values are allowed:
+
+| `expectedValueSource` | `value` is | Example `value` |
+| --- | --- | --- |
+| `FIXED_VALUE` | A literal, compared as written | `avi:jira:created:issue`, `""` |
+| `MUSTACHE` | A Handlebars template, rendered before comparing | `{{_flow.SPACE}}`, `{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}` |
+| `JSON_PATH` | A JSONPath into the flow data, resolved before comparing | `$.issue.fields.reporter.accountId` |
+
+No template in this repository uses `JSON_PATH` yet; if you reach for it, verify the
+behaviour in iHub first and say so in the README. Do not invent a fourth value.
+
+A configurable condition looks like this:
+
+```json
+{
+  "jsonPath": "$.comment.author.accountId",
+  "type": "DATA_CONDITION",
+  "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+  "expectedValueSource": "MUSTACHE",
+  "operator": "NOT_EQUALS",
+  "description": "Skip comments written by the iHub integration user"
+}
+```
+
+Always write a `description` — a condition without one is unreadable in the iHub UI.
 
 ### Flow variables
 
@@ -176,6 +204,10 @@ write a `description` — a condition without one is unreadable in the iHub UI.
 - `behavior` is always `SET`.
 - `instruction` is not optional. It is what the customer reads in the UI.
 - `SPACE` is the conventional name for "the Jira project key this flow watches".
+- `JIRA_INTEGRATION_ACCOUNT_ID` is the conventional name for "the iHub integration
+  user's Jira `accountId`", with the default value
+  `replace-with-your-instance-of-integration-user`. Loop-guard conditions read it via
+  `{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}`; never put a literal account id in a condition.
 
 **Anything a customer must change belongs in a flow variable**, not hardcoded in a
 condition or a URL. A README row saying "edit the action condition" is a smell.
@@ -315,8 +347,8 @@ them, and list every place they appear.
 
 Any two-way sync needs all of these, and the README must enumerate them:
 
-1. Actor filter on the Jira side (`$.comment.author.accountId` `NOT_EQUALS` the
-   integration account).
+1. Actor filter on the Jira side (`$.comment.author.accountId` `NOT_EQUALS`
+   `{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}`).
 2. Actor filter on the tool side.
 3. Create only when the link is absent.
 4. Jira issue properties (`ihub-<external-id>`) to suppress already-synced comments.

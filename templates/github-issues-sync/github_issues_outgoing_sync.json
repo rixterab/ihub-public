@@ -212,7 +212,8 @@
             {
               "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block comments authored by the iHub integration user"
             }
@@ -418,7 +419,8 @@
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Block attachments added by the iHub integration user"
             }
@@ -513,6 +515,12 @@
       "behavior": "SET",
       "value": "your-repo",
       "instruction": "GitHub repository name."
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira comments and attachments made by this account are not synced back to GitHub."
     }
   ],
   "groupName": "GitHub",

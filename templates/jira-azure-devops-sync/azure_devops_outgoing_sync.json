@@ -225,7 +225,8 @@
               "type": "DATA_CONDITION",
               "jsonPath": "$.comment.author.accountId",
               "operator": "NOT_EQUALS",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "description": "User shall not be iHub"
             }
           ]
@@ -360,7 +361,8 @@
               "description": "BLOCK iHub User added attachments",
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "replace-with-your-instance-of-integration-user",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS"
             }
           ]
@@ -511,6 +513,12 @@
       "behavior": "SET",
       "value": "https://dev.azure.com/rixterdev",
       "instruction": ""
+    },
+    {
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
+      "behavior": "SET",
+      "value": "replace-with-your-instance-of-integration-user",
+      "instruction": "Atlassian accountId of the iHub integration user in this Jira instance (find it with GET /rest/api/3/myself as that user). Loop prevention: Jira comments and attachments made by this account are not synced back to Azure DevOps."
     }
   ],
   "groupName": "Azure Devops",
