@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "key": "personio-employee-from-jira",
+  "name": "Jira Service Management - Create Employee in Personio",
+  "description": "Create a Personio employee when a Jira Service Management onboarding request is approved",
+  "category": "Personio",
+  "flows": [
+    "personio_employee_from_jira.json"
+  ],
+  "icon": "personio.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "personio",
+    "hr",
+    "onboarding",
+    "employee",
+    "jira-service-management",
+    "approval"
+  ],
+  "createdAt": "2026-10-22",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-personio",
+      "name": "Personio API",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "accessTokenUrl": "https://api.personio.de/v2/auth/token"
+          },
+          "grantType": "client_credentials",
+          "headerPrefix": "Bearer",
+          "includeState": false,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

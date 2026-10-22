@@ -31,69 +31,24 @@
       "method": "POST",
       "scriptedVariables": [
         {
-          "name": "remoteEventType",
-          "uuid": "1787643421101",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst eventType = read('webhookEvent', 'event', 'eventType', 'event_type', 'issue_event_type_name');\nif (eventType) {\n  const normalized = String(eventType).toLowerCase();\n  if (normalized === 'jira:issue_created' || normalized === 'issue_created' || normalized === 'created') return 'jira:issue_created';\n  if (normalized === 'jira:issue_updated' || normalized === 'issue_updated' || normalized === 'updated') return 'jira:issue_updated';\n  if (normalized === 'comment_created' || normalized === 'jira:issue_commented' || normalized === 'commented') return 'comment_created';\n  return eventType;\n}\nif (read('comment.id', 'comment.body')) return 'comment_created';\nif (read('changelog.id', 'changelog.items')) return 'jira:issue_updated';\nif (read('issue.key', 'issue.id')) return 'jira:issue_created';\nreturn '';"
-        },
-        {
-          "name": "remoteIssueKey",
-          "uuid": "1787643421102",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('issue.key', 'issueKey', 'key', 'payload.issue.key');"
-        },
-        {
-          "name": "remoteIssueId",
-          "uuid": "1787643421103",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst value = read('issue.id', 'issueId', 'id');\nreturn value === '' ? '' : String(value);"
-        },
-        {
-          "name": "remoteSummary",
-          "uuid": "1787643421104",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst summary = read('issue.fields.summary', 'fields.summary', 'summary');\nif (summary) return summary;\nconst key = read('issue.key', 'issueKey', 'key');\nreturn key ? 'Jira issue ' + key : 'Jira issue';"
-        },
-        {
           "name": "remoteDescription",
           "uuid": "1787643421105",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst description = read('issue.fields.description', 'fields.description', 'description');\nif (description && typeof description === 'object') return description;\nif (typeof description === 'string' && description.trim() !== '') {\n  return { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: description }] }] };\n}\nreturn { type: 'doc', version: 1, content: [] };"
-        },
-        {
-          "name": "remoteLinkFieldValue",
-          "uuid": "1787643421106",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('issue.fields.customfield_10200', 'fields.customfield_10200');"
-        },
-        {
-          "name": "remoteAuthorAccountId",
-          "uuid": "1787643421107",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('user.accountId', 'user.account_id', 'issue.fields.creator.accountId');"
-        },
-        {
-          "name": "remoteLinkFieldOnlyChange",
-          "uuid": "1787643421108",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst items = read('changelog.items');\nif (!Array.isArray(items) || items.length === 0) return 'false';\nconst linkFields = ['customfield_10200'];\nconst onlyLink = items.every((entry) => linkFields.includes(String(entry?.fieldId || entry?.field || '')));\nreturn onlyLink ? 'true' : 'false';"
-        },
-        {
-          "name": "remoteCommentId",
-          "uuid": "1787643421109",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst value = read('comment.id', 'commentId', 'comment.commentId');\nreturn value === '' ? '' : String(value);"
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// Admin webhooks deliver this field as a wiki markup string or as ADF depending on how it was written.\n// ADF passes through; a string becomes one plain-text paragraph per non-empty line.\nconst toAdf = (value) => {\n  if (value && typeof value === 'object') return value;\n  const lines = typeof value === 'string' ? value.split(/\\r?\\n/).filter((line) => line.trim() !== '') : [];\n  return { type: 'doc', version: 1, content: lines.map((line) => ({ type: 'paragraph', content: [{ type: 'text', text: line }] })) };\n};\nreturn JSON.stringify(toAdf(root && root.issue && root.issue.fields ? root.issue.fields.description : null));"
         },
         {
           "name": "remoteCommentBody",
           "uuid": "1787643421110",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst body = read('comment.body', 'commentBody', 'body');\nif (body && typeof body === 'object') return body;\nif (typeof body === 'string' && body.trim() !== '') {\n  return { type: 'doc', version: 1, content: [{ type: 'paragraph', content: [{ type: 'text', text: body }] }] };\n}\nreturn { type: 'doc', version: 1, content: [] };"
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// Admin webhooks deliver this field as a wiki markup string or as ADF depending on how it was written.\n// ADF passes through; a string becomes one plain-text paragraph per non-empty line.\nconst toAdf = (value) => {\n  if (value && typeof value === 'object') return value;\n  const lines = typeof value === 'string' ? value.split(/\\r?\\n/).filter((line) => line.trim() !== '') : [];\n  return { type: 'doc', version: 1, content: lines.map((line) => ({ type: 'paragraph', content: [{ type: 'text', text: line }] })) };\n};\nreturn JSON.stringify(toAdf(root && root.comment ? root.comment.body : null));"
         },
         {
-          "name": "remoteCommentAuthorAccountId",
-          "uuid": "1787643421111",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nreturn read('comment.author.accountId', 'comment.updateAuthor.accountId', 'user.accountId');"
+          "name": "remoteLinkFieldOnlyChange",
+          "uuid": "1787643421108",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// True when every changelog entry is the link field, i.e. the event is only an iHub write-back.\nconst items = root && root.changelog && root.changelog.items;\nif (!Array.isArray(items) || items.length === 0) return 'false';\nreturn items.every((entry) => String(entry.fieldId || entry.field || '') === 'customfield_10200') ? 'true' : 'false';"
         },
         {
           "name": "remoteHasAttachmentChange",
           "uuid": "1787643421112",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst items = read('changelog.items');\nif (!Array.isArray(items)) return 'false';\nconst changed = items.some((entry) => String(entry?.field || entry?.fieldId || '').toLowerCase() === 'attachment');\nreturn changed ? 'true' : 'false';"
-        },
-        {
-          "name": "remoteAttachments",
-          "uuid": "1787643421113",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst read = (...paths) => {\n  for (const path of paths) {\n    const value = path.split('.').reduce((obj, key) => obj == null ? undefined : obj[key], root);\n    if (value !== undefined && value !== null && String(value).trim() !== '') return value;\n  }\n  return '';\n};\nconst attachments = read('issue.fields.attachment', 'fields.attachment', 'attachment');\nreturn Array.isArray(attachments) ? attachments : [];"
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// True when the changelog has an Attachment entry; Jira has no dedicated attachment webhook event.\nconst items = root && root.changelog && root.changelog.items;\nif (!Array.isArray(items)) return 'false';\nreturn items.some((entry) => String(entry.field || entry.fieldId || '').toLowerCase() === 'attachment') ? 'true' : 'false';"
         }
       ],
       "description": "Search the local instance for the issue whose link field holds the incoming remote issue key.",
@@ -102,7 +57,7 @@
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{remoteIssueKey}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
+      "body": "{\n  \"jql\": \"project = {{_flow.SPACE}} AND \\\"cf[10153]\\\" ~ \\\"{{issue.key}}\\\" ORDER BY created DESC\",\n  \"maxResults\": 50,\n  \"fields\": [\n    \"summary\",\n    \"status\",\n    \"assignee\",\n    \"issuetype\"\n  ]\n}",
       "enabled": true,
       "url": "{{baseUrl}}/rest/api/3/search/jql",
       "parentId": "",
@@ -121,24 +76,26 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteIssueKey",
+              "jsonPath": "$.issue.key",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "The incoming Jira webhook must contain an issue key"
             },
             {
-              "jsonPath": "$.remoteAuthorAccountId",
+              "jsonPath": "$.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.REMOTE_JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip every event authored by the remote iHub integration user"
+              "description": "Loop guard: skip every event triggered by the remote integration user"
             }
           ]
         }
       ],
-      "order": 100
+      "order": 100,
+      "logConditionsNotMet": false
     },
     {
       "headers": [
@@ -175,7 +132,7 @@
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{remoteSummary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{remoteIssueKey}}\",\n    \"description\": {{{toJSON remoteDescription}}}\n  }\n}",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.SPACE}}\"\n    },\n    \"summary\": \"{{{issue.fields.summary}}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.ISSUE_TYPE}}\"\n    },\n    \"customfield_10153\": \"{{issue.key}}\",\n    \"description\": {{{remoteDescription}}}\n  }\n}",
       "logConditionsNotMet": false,
       "enabled": true,
       "url": "{{baseUrl}}/rest/api/3/issue",
@@ -195,32 +152,28 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteEventType",
+              "jsonPath": "$.webhookEvent",
               "type": "DATA_CONDITION",
               "value": "jira:issue_created",
-              "operator": "EQUALS"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only create on remote issue created events"
             },
             {
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EMPTY_ARRAY",
               "description": "No local issue is linked to this remote issue yet"
             },
             {
-              "jsonPath": "$.remoteLinkFieldValue",
+              "jsonPath": "$.issue.fields.customfield_10200",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "Loop guard: only create when the remote link field is empty, otherwise the remote issue is already a mirror"
-            },
-            {
-              "jsonPath": "$.remoteAuthorAccountId",
-              "type": "DATA_CONDITION",
-              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
-              "expectedValueSource": "MUSTACHE",
-              "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip issues created by the remote iHub integration user"
             }
           ]
         }
@@ -265,7 +218,7 @@
       "body": "{\n  \"fields\": {\n    \"customfield_10200\": \"{{_flow.issueKey}}\"\n  }\n}",
       "logConditionsNotMet": false,
       "enabled": true,
-      "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{remoteIssueKey}}",
+      "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.key}}",
       "parentId": "template:action:5d0b8f27-4a61-4e39-8c14-7b2f9e6d0a35",
       "flowVariables": [],
       "name": "Store Local Issue Key on Remote Issue",
@@ -275,16 +228,39 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteEventType",
+              "jsonPath": "$.webhookEvent",
               "type": "DATA_CONDITION",
               "value": "jira:issue_created",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "Only write back the local key after a remote create event"
+            },
+            {
+              "jsonPath": "$._flow.issueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "The local issue was created and returned a key"
             }
           ]
         }
       ],
-      "order": 250
+      "order": 250,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
     },
     {
       "headers": [
@@ -321,7 +297,7 @@
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"fields\": {\n    \"summary\": \"{{remoteSummary}}\",\n    \"description\": {{{toJSON remoteDescription}}}\n  }\n}",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{{issue.fields.summary}}}\",\n    \"description\": {{{remoteDescription}}}\n  }\n}",
       "logConditionsNotMet": false,
       "enabled": true,
       "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}",
@@ -334,29 +310,34 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteEventType",
+              "jsonPath": "$.webhookEvent",
               "type": "DATA_CONDITION",
               "value": "jira:issue_updated",
-              "operator": "EQUALS"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only update on remote issue updated events"
             },
             {
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A local issue is linked to this remote issue"
             },
             {
-              "jsonPath": "$.remoteAuthorAccountId",
+              "jsonPath": "$.changelog.items",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
-              "expectedValueSource": "MUSTACHE",
-              "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip updates made by the remote iHub integration user, including the local key write back"
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Skip updates without field changes, such as the jira:issue_updated that accompanies every new comment"
             },
             {
               "jsonPath": "$.remoteLinkFieldOnlyChange",
               "type": "DATA_CONDITION",
               "value": "true",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip updates whose changelog only contains the remote link field"
             }
@@ -402,7 +383,7 @@
       "body": "",
       "logConditionsNotMet": true,
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteCommentId}}",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-remote-{{comment.id}}",
       "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
       "name": "Get Remote Comment ID Property",
       "id": "template:action:7f2d9b64-1c53-48e0-a726-9b4e0d6c3a17",
@@ -411,15 +392,18 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteEventType",
+              "jsonPath": "$.webhookEvent",
               "type": "DATA_CONDITION",
               "value": "comment_created",
-              "operator": "EQUALS"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only sync on remote comment created events"
             },
             {
-              "jsonPath": "$.remoteCommentId",
+              "jsonPath": "$.comment.id",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "The incoming comment payload must contain a comment id"
             },
@@ -427,15 +411,17 @@
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A local issue is linked to this remote issue"
             },
             {
-              "jsonPath": "$.remoteCommentAuthorAccountId",
+              "jsonPath": "$.comment.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.REMOTE_JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip comments written by the remote iHub integration user"
+              "description": "Loop guard: skip comments written by the remote integration user"
             }
           ]
         }
@@ -477,7 +463,7 @@
         "value": "ATLASSIAN_AUTH_TOKEN"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"body\": {{{toJSON remoteCommentBody}}}\n}",
+      "body": "{\n  \"body\": {{{remoteCommentBody}}}\n}",
       "logConditionsNotMet": true,
       "parentId": "template:action:7f2d9b64-1c53-48e0-a726-9b4e0d6c3a17",
       "enabled": true,
@@ -493,12 +479,6 @@
               "type": "HTTP_STATUS_CODE_CONDITION",
               "value": "404",
               "description": "Only add the comment when it has not been synced yet"
-            },
-            {
-              "jsonPath": "$.remoteCommentId",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS"
             }
           ]
         }
@@ -541,11 +521,12 @@
       },
       "id": "template:action:4a9e1d35-7b80-42f6-9c25-8d3f6b0e4a19",
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"externalId\": \"{{remoteCommentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
+      "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteCommentId}}",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-remote-{{comment.id}}",
       "parentId": "template:action:0b5a3e78-9f26-4c17-8d43-2e6b1a9f7c50",
-      "order": 550
+      "order": 550,
+      "logConditionsNotMet": false
     },
     {
       "headers": [
@@ -576,28 +557,6 @@
       ],
       "variables": [],
       "method": "GET",
-      "scriptedVariables": [
-        {
-          "name": "remoteAttachmentId",
-          "uuid": "1787643422101",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.id != null ? String(item.id) : '';"
-        },
-        {
-          "name": "remoteAttachmentFileName",
-          "uuid": "1787643422102",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.filename || item?.fileName || 'remote-jira-file';"
-        },
-        {
-          "name": "remoteAttachmentContentUrl",
-          "uuid": "1787643422103",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.content || '';"
-        },
-        {
-          "name": "remoteAttachmentAuthorAccountId",
-          "uuid": "1787643422104",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.author?.accountId || '';"
-        }
-      ],
       "description": "Check whether this remote attachment has already been copied to the local issue. Jira has no attachment webhook event, so attachments are detected from a jira:issue_updated changelog entry for the Attachment field.",
       "credentialsReference": {
         "type": "ATLASSIAN_TOKEN",
@@ -609,8 +568,8 @@
       "logConditionsNotMet": true,
       "parentId": "template:action:1a4e7c93-6b28-4d05-9f71-3e8c5b0a2d64",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteAttachmentId}}",
-      "iterator": "$.remoteAttachments",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-remote-{{id}}",
+      "iterator": "$.issue.fields.attachment",
       "name": "Get Remote Attachment ID Property",
       "id": "template:action:8d3b6f02-5a94-4e71-b0c8-6f1d9a2e7b53",
       "conditions": [
@@ -618,15 +577,18 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.remoteEventType",
+              "jsonPath": "$.webhookEvent",
               "type": "DATA_CONDITION",
               "value": "jira:issue_updated",
-              "operator": "EQUALS"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Attachments arrive as remote issue updated events"
             },
             {
               "jsonPath": "$.remoteHasAttachmentChange",
               "type": "DATA_CONDITION",
               "value": "true",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "The changelog must contain an Attachment field change"
             },
@@ -634,21 +596,23 @@
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
-              "operator": "NOT_EMPTY_ARRAY"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "A local issue is linked to this remote issue"
             },
             {
-              "jsonPath": "$.remoteAuthorAccountId",
+              "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.REMOTE_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.REMOTE_JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip attachments added by the remote iHub integration user"
+              "description": "Loop guard: skip attachments uploaded by the remote integration user, which are copies of local attachments"
             }
           ]
         }
       ],
       "order": 600,
-      "contextLogAppender": "{{remoteEventType}}"
+      "contextLogAppender": "{{webhookEvent}}"
     },
     {
       "headers": [
@@ -674,7 +638,7 @@
         }
       ],
       "responseFileConfig": {
-        "fileNameTemplate": "{{remoteAttachmentFileName}}",
+        "fileNameTemplate": "{{filename}}",
         "enabled": true,
         "target": "INPUT_FILES"
       },
@@ -688,7 +652,7 @@
       "body": "",
       "logConditionsNotMet": false,
       "enabled": true,
-      "url": "{{remoteAttachmentContentUrl}}",
+      "url": "{{{content}}}",
       "parentId": "template:action:8d3b6f02-5a94-4e71-b0c8-6f1d9a2e7b53",
       "name": "Download Remote Attachment",
       "id": "template:action:2e7c4a19-3d68-45b0-8f92-0a5e7c1b6d38",
@@ -700,18 +664,25 @@
               "type": "HTTP_STATUS_CODE_CONDITION",
               "value": "404",
               "description": "Only download when the attachment has not been synced yet"
-            },
-            {
-              "jsonPath": "$.remoteAttachmentContentUrl",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS",
-              "description": "The attachment must expose a content URL"
             }
           ]
         }
       ],
-      "order": 700
+      "order": 700,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
     },
     {
       "headers": [
@@ -801,11 +772,12 @@
       },
       "id": "template:action:0c4e7b96-8a12-43d5-9e70-1b6f3d8c5a24",
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"externalId\": \"{{remoteAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"remote-jira\"\n}",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-{{remoteAttachmentId}}",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{_flow.issueKey}}/properties/ihub-remote-{{id}}",
       "parentId": "template:action:6f1a8d40-0e35-4927-b6d1-4c8b2f5a9e07",
-      "order": 900
+      "order": 900,
+      "logConditionsNotMet": false
     }
   ],
   "description": "Sync remote Jira Cloud webhook events to local Jira issues",
@@ -830,28 +802,10 @@
       "instruction": "Base URL of the remote Jira Cloud instance, for example https://acme.atlassian.net"
     },
     {
-      "name": "REMOTE_PROJECT",
+      "name": "REMOTE_JIRA_INTEGRATION_ACCOUNT_ID",
       "behavior": "SET",
-      "value": "REMOTE",
-      "instruction": "Jira project key in the remote instance that holds the synced issues"
-    },
-    {
-      "name": "REMOTE_ISSUE_TYPE",
-      "behavior": "SET",
-      "value": "Task",
-      "instruction": "Issue type name used when creating issues in the remote instance. Issue type names differ per instance, so this is separate from ISSUE_TYPE"
-    },
-    {
-      "name": "LOCAL_IHUB_ACCOUNT_ID",
-      "behavior": "SET",
-      "value": "replace-with-your-instance-of-integration-user",
-      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped."
-    },
-    {
-      "name": "REMOTE_IHUB_ACCOUNT_ID",
-      "behavior": "SET",
-      "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
-      "instruction": "Atlassian accountId of the iHub integration user in the REMOTE instance. This is a different account from LOCAL_IHUB_ACCOUNT_ID."
+      "value": "replace-with-the-remote-integration-user",
+      "instruction": "Atlassian accountId of the integration user in the REMOTE instance (the account behind the Remote Jira credential). Loop prevention: remote events authored by this account are skipped."
     }
   ],
   "groupName": "Jira",

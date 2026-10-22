@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "key": "personio-absence-from-jira",
+  "name": "Jira Service Management - Create Personio Absence After Approval",
+  "description": "Create a Personio absence period when a Jira Service Management leave request is approved",
+  "category": "Personio",
+  "flows": [
+    "personio_absence_from_jira.json"
+  ],
+  "icon": "personio.svg",
+  "author": "Rixter AB",
+  "tags": [
+    "personio",
+    "hr",
+    "absence",
+    "leave",
+    "time-off",
+    "jira-service-management",
+    "approval"
+  ],
+  "createdAt": "2026-10-22",
+  "credentialDefinitions": [
+    {
+      "key": "oauth2-personio",
+      "name": "Personio API",
+      "type": "OAUTH2",
+      "data": {
+        "config": {
+          "url": {
+            "accessTokenUrl": "https://api.personio.de/v2/auth/token"
+          },
+          "grantType": "client_credentials",
+          "headerPrefix": "Bearer",
+          "includeState": false,
+          "includeScopeInAccessTokenReq": false,
+          "sendParamsAs": "x-www-form-urlencoded",
+          "urlEncode": false
+        }
+      }
+    }
+  ]
+}

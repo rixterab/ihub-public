@@ -57,6 +57,7 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "Only look for an existing mirror on local issue created events"
             },
@@ -64,13 +65,14 @@
               "jsonPath": "$.issue.fields.customfield_10153",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "Only look when the local issue is not already linked to a remote issue"
             },
             {
               "jsonPath": "$.issue.fields.creator.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.LOCAL_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip issues created by the local iHub integration user"
@@ -78,7 +80,22 @@
           ]
         }
       ],
-      "order": 100
+      "order": 100,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "logConditionsNotMet": false
     },
     {
       "headers": [
@@ -115,7 +132,7 @@
         "value": "template:basic-auth-remote-jira"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.REMOTE_PROJECT}}\"\n    },\n    \"summary\": \"{{issue.fields.summary}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.REMOTE_ISSUE_TYPE}}\"\n    },\n    \"customfield_10200\": \"{{issue.key}}\",\n    \"description\": {{{toJSON issue.fields.description}}}\n  }\n}",
+      "body": "{\n  \"fields\": {\n    \"project\": {\n      \"key\": \"{{_flow.REMOTE_PROJECT}}\"\n    },\n    \"summary\": \"{{{issue.fields.summary}}}\",\n    \"issuetype\": {\n      \"name\": \"{{_flow.REMOTE_ISSUE_TYPE}}\"\n    },\n    \"customfield_10200\": \"{{issue.key}}\",\n    \"description\": {{{toJSON issue.fields.description}}}\n  }\n}",
       "logConditionsNotMet": false,
       "enabled": true,
       "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue",
@@ -141,38 +158,31 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.issue.fields.customfield_10153",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "EQUALS",
-              "description": "Only create when the local issue is not already linked to a remote issue"
-            },
-            {
-              "jsonPath": "$.eventType",
-              "type": "DATA_CONDITION",
-              "value": "avi:jira:created:issue",
-              "operator": "EQUALS",
-              "description": "Only create remote issues for local issue created events"
-            },
-            {
-              "jsonPath": "$.issue.fields.creator.accountId",
-              "type": "DATA_CONDITION",
-              "value": "{{_flow.LOCAL_IHUB_ACCOUNT_ID}}",
-              "expectedValueSource": "MUSTACHE",
-              "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip issues created by the local iHub integration user"
-            },
-            {
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EMPTY_ARRAY",
               "description": "Loop guard: no remote issue is linked to this local issue yet"
             }
           ]
         }
       ],
-      "order": 200
+      "order": 200,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
     },
     {
       "headers": [
@@ -225,8 +235,17 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:created:issue",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "EQUALS",
               "description": "Only write back the remote key after a local create event"
+            },
+            {
+              "jsonPath": "$._flow.remoteIssueKey",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "The remote issue was created and returned a key"
             }
           ]
         }
@@ -284,6 +303,7 @@
               "jsonPath": "$.response.data.issues",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EMPTY_ARRAY",
               "description": "A remote issue already holds this local issue key"
             }
@@ -325,7 +345,7 @@
         {
           "name": "localLinkFieldOnlyChange",
           "uuid": "1787643421001",
-          "script": "const root = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nconst items = root?.changelog?.items;\nif (!Array.isArray(items) || items.length === 0) return 'false';\nconst linkFields = ['customfield_10153'];\nconst onlyLink = items.every((entry) => linkFields.includes(String(entry?.fieldId || entry?.field || '')));\nreturn onlyLink ? 'true' : 'false';"
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// True when every changelog entry is the link field, i.e. the event is only an iHub write-back.\nconst items = root && root.changelog && root.changelog.items;\nif (!Array.isArray(items) || items.length === 0) return 'false';\nreturn items.every((entry) => String(entry.fieldId || entry.field || '') === 'customfield_10153') ? 'true' : 'false';"
         }
       ],
       "description": "Update the summary and description of the linked remote issue when the local issue is updated.",
@@ -334,7 +354,7 @@
         "value": "template:basic-auth-remote-jira"
       },
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"fields\": {\n    \"summary\": \"{{issue.fields.summary}}\",\n    \"description\": {{{toJSON issue.fields.description}}}\n  }\n}",
+      "body": "{\n  \"fields\": {\n    \"summary\": \"{{{issue.fields.summary}}}\",\n    \"description\": {{{toJSON issue.fields.description}}}\n  }\n}",
       "logConditionsNotMet": false,
       "enabled": true,
       "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}",
@@ -357,6 +377,7 @@
               "jsonPath": "$.issue.fields.customfield_10153",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "Only update when the local issue is linked to a remote issue"
             },
@@ -364,12 +385,14 @@
               "jsonPath": "$.eventType",
               "type": "DATA_CONDITION",
               "value": "avi:jira:updated:issue",
-              "operator": "EQUALS"
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only update on local issue updated events"
             },
             {
               "jsonPath": "$.user.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.LOCAL_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip updates made by the local iHub integration user, including the remote key write back"
@@ -378,13 +401,103 @@
               "jsonPath": "$.localLinkFieldOnlyChange",
               "type": "DATA_CONDITION",
               "value": "true",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "Loop guard: skip updates whose changelog only contains the link field"
             }
           ]
         }
       ],
-      "order": 400
+      "order": 400,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "description": "Check whether this local comment has already been copied to the remote issue, so a redelivered webhook does not post it twice.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-local-{{comment.id}}",
+      "parentId": "",
+      "flowVariables": [],
+      "name": "Get Local Comment ID Property",
+      "id": "template:action:74f66b72-ff8c-4182-9986-475c432f22d4",
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.issue.fields.customfield_10153",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Only comment when the local issue is linked to a remote issue"
+            },
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:commented:issue",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only sync on local comment events"
+            },
+            {
+              "jsonPath": "$.comment.author.accountId",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "NOT_EQUALS",
+              "description": "Loop guard: skip comments written by the local iHub integration user"
+            }
+          ]
+        }
+      ],
+      "order": 450
     },
     {
       "headers": [
@@ -425,7 +538,7 @@
       "logConditionsNotMet": false,
       "enabled": true,
       "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}/comment",
-      "parentId": "",
+      "parentId": "template:action:74f66b72-ff8c-4182-9986-475c432f22d4",
       "flowVariables": [
         {
           "name": "remoteCommentId",
@@ -441,30 +554,28 @@
           "type": "COMBINED_CONDITION",
           "conditions": [
             {
-              "jsonPath": "$.issue.fields.customfield_10153",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS",
-              "description": "Only comment when the local issue is linked to a remote issue"
-            },
-            {
-              "jsonPath": "$.eventType",
-              "type": "DATA_CONDITION",
-              "value": "avi:jira:commented:issue",
-              "operator": "EQUALS"
-            },
-            {
-              "jsonPath": "$.comment.author.accountId",
-              "type": "DATA_CONDITION",
-              "value": "{{_flow.LOCAL_IHUB_ACCOUNT_ID}}",
-              "expectedValueSource": "MUSTACHE",
-              "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip comments written by the local iHub integration user"
+              "type": "HTTP_STATUS_CODE_CONDITION",
+              "value": "404",
+              "description": "Only post the comment when it has not been synced yet"
             }
           ]
         }
       ],
-      "order": 500
+      "order": 500,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
     },
     {
       "headers": [
@@ -505,8 +616,9 @@
       "body": "{\n  \"externalId\": \"{{comment.id}}\",\n  \"status\": \"synced\",\n  \"source\": \"local-jira\"\n}",
       "parentId": "template:action:3f9a5d18-6e42-4c81-b7d5-2a8c0f4b9e63",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{comment.id}}",
-      "order": 550
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-local-{{comment.id}}",
+      "order": 550,
+      "logConditionsNotMet": false
     },
     {
       "headers": [
@@ -536,23 +648,6 @@
         }
       ],
       "method": "GET",
-      "scriptedVariables": [
-        {
-          "name": "localAttachmentId",
-          "uuid": "1787643422001",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.id != null ? String(item.id) : '';"
-        },
-        {
-          "name": "localAttachmentFileName",
-          "uuid": "1787643422002",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.filename || item?.fileName || 'jira-file';"
-        },
-        {
-          "name": "localAttachmentContentUrl",
-          "uuid": "1787643422003",
-          "script": "const item = scope?.payload && typeof scope.payload === 'object' ? scope.payload : scope;\nreturn item?.content || '';"
-        }
-      ],
       "description": "Check whether this local attachment has already been synced to the remote issue.",
       "credentialsReference": {
         "type": "ATLASSIAN_TOKEN",
@@ -563,7 +658,7 @@
       "body": "",
       "logConditionsNotMet": true,
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{localAttachmentId}}",
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-local-{{id}}",
       "parentId": "",
       "iterator": "$.payload.issue.fields.attachment",
       "name": "Get Local Attachment ID Property",
@@ -576,16 +671,17 @@
               "jsonPath": "$.issue.fields.customfield_10153",
               "type": "DATA_CONDITION",
               "value": "",
+              "expectedValueSource": "FIXED_VALUE",
               "operator": "NOT_EQUALS",
               "description": "Only sync attachments when the local issue is linked to a remote issue"
             },
             {
               "jsonPath": "$.payload.author.accountId",
               "type": "DATA_CONDITION",
-              "value": "{{_flow.LOCAL_IHUB_ACCOUNT_ID}}",
+              "value": "{{_flow.JIRA_INTEGRATION_ACCOUNT_ID}}",
               "expectedValueSource": "MUSTACHE",
               "operator": "NOT_EQUALS",
-              "description": "Loop guard: skip attachments added by the local iHub integration user"
+              "description": "Loop guard: skip attachments uploaded by the local iHub integration user, which are copies of remote attachments"
             }
           ]
         }
@@ -617,7 +713,7 @@
         }
       ],
       "responseFileConfig": {
-        "fileNameTemplate": "{{localAttachmentFileName}}",
+        "fileNameTemplate": "{{filename}}",
         "enabled": true,
         "target": "INPUT_FILES"
       },
@@ -631,7 +727,7 @@
       "body": "",
       "logConditionsNotMet": false,
       "enabled": true,
-      "url": "{{localAttachmentContentUrl}}",
+      "url": "{{{content}}}",
       "parentId": "template:action:2d8f4b73-5c91-40e6-a3b8-6f7d9c1e5a02",
       "name": "Download Local Attachment",
       "id": "template:action:6a0e9c52-3b78-4d14-9f26-8b5c1d7e4a93",
@@ -643,13 +739,6 @@
               "type": "HTTP_STATUS_CODE_CONDITION",
               "value": "404",
               "description": "Only download when the attachment has not been synced yet"
-            },
-            {
-              "jsonPath": "$.localAttachmentContentUrl",
-              "type": "DATA_CONDITION",
-              "value": "",
-              "operator": "NOT_EQUALS",
-              "description": "The attachment must expose a content URL"
             }
           ]
         }
@@ -706,7 +795,21 @@
       "url": "{{_flow.REMOTE_URL}}/rest/api/3/issue/{{issue.fields.customfield_10153}}/attachments",
       "name": "Upload Attachment to Remote Issue",
       "id": "template:action:9c5b1f80-2e64-4a37-b8d1-0a3e6c9f7b25",
-      "order": 800
+      "order": 800,
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 0,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      }
     },
     {
       "headers": [
@@ -744,28 +847,17 @@
       },
       "id": "template:action:4e7d2a95-8f13-46c0-9a54-7b2c8e0d3f61",
       "type": "WEB_REQUEST_ACTION_TYPE",
-      "body": "{\n  \"externalId\": \"{{localAttachmentId}}\",\n  \"status\": \"synced\",\n  \"source\": \"local-jira\"\n}",
+      "body": "{\n  \"externalId\": \"{{id}}\",\n  \"status\": \"synced\",\n  \"source\": \"local-jira\"\n}",
       "parentId": "template:action:9c5b1f80-2e64-4a37-b8d1-0a3e6c9f7b25",
       "enabled": true,
-      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-{{localAttachmentId}}",
-      "order": 900
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/properties/ihub-local-{{id}}",
+      "order": 900,
+      "logConditionsNotMet": false
     }
   ],
   "description": "Sync local Jira issues to a remote Jira Cloud instance",
   "enabled": false,
   "flowVariables": [
-    {
-      "name": "SPACE",
-      "behavior": "SET",
-      "value": "LOCAL",
-      "instruction": "Jira project key in the local instance (the instance where iHub is installed) that holds the synced issues"
-    },
-    {
-      "name": "ISSUE_TYPE",
-      "behavior": "SET",
-      "value": "Task",
-      "instruction": "Issue type name used when creating issues in the local instance, for example Task or Bug"
-    },
     {
       "name": "REMOTE_URL",
       "behavior": "SET",
@@ -782,19 +874,13 @@
       "name": "REMOTE_ISSUE_TYPE",
       "behavior": "SET",
       "value": "Task",
-      "instruction": "Issue type name used when creating issues in the remote instance. Issue type names differ per instance, so this is separate from ISSUE_TYPE"
+      "instruction": "Issue type name used when creating issues in the remote instance. Issue type names differ per instance, so this is separate from the local issue type"
     },
     {
-      "name": "LOCAL_IHUB_ACCOUNT_ID",
+      "name": "JIRA_INTEGRATION_ACCOUNT_ID",
       "behavior": "SET",
       "value": "replace-with-your-instance-of-integration-user",
-      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: events authored by this account are skipped."
-    },
-    {
-      "name": "REMOTE_IHUB_ACCOUNT_ID",
-      "behavior": "SET",
-      "value": "712020:1f4c8d90-5b73-42ae-9c61-08d7e3b5a2f4",
-      "instruction": "Atlassian accountId of the iHub integration user in the REMOTE instance. This is a different account from LOCAL_IHUB_ACCOUNT_ID."
+      "instruction": "Atlassian accountId of the iHub integration user in the LOCAL instance. Loop prevention: local events authored by this account are skipped."
     }
   ],
   "groupName": "Jira",
