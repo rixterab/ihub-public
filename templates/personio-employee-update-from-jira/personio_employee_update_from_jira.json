@@ -1,0 +1,1340 @@
+{
+  "actions": [
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Confirm Change Request Is Approved",
+      "description": "Re-read the work item status and evaluate the field mappings once the change request is approved.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5de8c85b-e8a0-4a28-92cd-3b115d9fb4b3",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}?fields=status",
+      "parentId": "",
+      "scriptedVariables": [
+        {
+          "name": "approvalTransition",
+          "uuid": "cd19004d-e13d-4198-a30f-0b915ab38c05",
+          "script": "const root = scope && scope.payload && typeof scope.payload === 'object' ? scope.payload : scope;\n// True only for the update that moved the work item into the approved status, never for later edits of an\n// approved work item and never for iHub's own field write-back.\nconst items = root && root.changelog && root.changelog.items;\nif (!Array.isArray(items)) return 'false';\nconst approved = \"{{{_flow.APPROVED_STATUS_NAME}}}\".trim().toLowerCase();\nreturn items.some((entry) => String(entry.field || entry.fieldId || '').toLowerCase() === 'status'\n  && String(typeof entry.toString === 'string' ? entry.toString : '').trim().toLowerCase() === approved) ? 'true' : 'false';"
+        },
+        {
+          "name": "requestTypeMatches",
+          "uuid": "80d9719e-bb93-49cd-a0af-434abf60e84b",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\n// With REQUEST_TYPE_NAME empty every request of the configured work item type qualifies.\nconst wanted = \"{{{_flow.REQUEST_TYPE_NAME}}}\".trim().toLowerCase();\nif (!wanted) return 'true';\nreturn field('{{{_flow.JIRA_REQUEST_TYPE_FIELD}}}').toLowerCase() === wanted ? 'true' : 'false';"
+        },
+        {
+          "name": "existingPersonioPersonId",
+          "uuid": "313747e5-041f-4bbf-8d2f-486f03250644",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\n// Personio employee ID already stored on the work item, if any.\nreturn json(field('{{{_flow.JIRA_PERSONIO_PERSON_ID_FIELD}}}'));"
+        },
+        {
+          "name": "validationErrors",
+          "uuid": "345d9cb5-9e42-4595-8ec4-a747a7fe7edb",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\nconst hours = (v) => v.replace(',', '.');\n\nconst mapTo = (map, value) => {\n  if (!value || !map.trim()) return value;\n  const hit = map.split(';').filter((pair) => pair.includes('='))\n    .map((pair) => [pair.slice(0, pair.indexOf('=')).trim(), pair.slice(pair.indexOf('=') + 1).trim()])\n    .find((pair) => pair[0].toLowerCase() === value.toLowerCase());\n  return hit ? hit[1] : '';\n};\n\n// Every problem with the request, joined into one sentence for the Jira comment. Empty means valid.\nconst errors = [];\nconst personId = field('{{{_flow.JIRA_PERSONIO_PERSON_ID_FIELD}}}');\nconst email = field('{{{_flow.JIRA_EMPLOYEE_EMAIL_FIELD}}}');\nif (!personId && !email) errors.push('Neither a Personio employee ID nor an employee email is set (Jira field {{{_flow.JIRA_EMPLOYEE_EMAIL_FIELD}}})');\nconst values = ['{{{_flow.JIRA_POSITION_FIELD}}}', '{{{_flow.JIRA_DEPARTMENT_FIELD}}}', '{{{_flow.JIRA_OFFICE_FIELD}}}',\n  '{{{_flow.JIRA_LEGAL_ENTITY_FIELD}}}', '{{{_flow.JIRA_WEEKLY_HOURS_FIELD}}}', '{{{_flow.JIRA_SUPERVISOR_FIELD}}}'].map(field);\nif (!values.some(Boolean)) errors.push('The request does not change any employment attribute');\nconst weekly = hours(field('{{{_flow.JIRA_WEEKLY_HOURS_FIELD}}}'));\nif (weekly && !/^\\d+(\\.\\d+)?$/.test(weekly)) errors.push('Weekly working hours \"' + weekly + '\" is not a number');\nconst mapped = (label, value, map, name) => { if (value && !mapTo(map, value)) errors.push(label + ' \"' + value + '\" has no entry in ' + name); };\nmapped('Department', field('{{{_flow.JIRA_DEPARTMENT_FIELD}}}'), \"{{{_flow.DEPARTMENT_ID_MAP}}}\", 'DEPARTMENT_ID_MAP');\nmapped('Office', field('{{{_flow.JIRA_OFFICE_FIELD}}}'), \"{{{_flow.OFFICE_ID_MAP}}}\", 'OFFICE_ID_MAP');\nmapped('Legal entity', field('{{{_flow.JIRA_LEGAL_ENTITY_FIELD}}}'), \"{{{_flow.LEGAL_ENTITY_ID_MAP}}}\", 'LEGAL_ENTITY_ID_MAP');\nreturn json(errors.join('; '));"
+        },
+        {
+          "name": "personLookupQuery",
+          "uuid": "151b3e8b-5737-4d70-a429-58e1f00c5583",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\n// The Personio employee ID stored on the work item wins; the employee email is the fallback.\nconst personId = field('{{{_flow.JIRA_PERSONIO_PERSON_ID_FIELD}}}');\nif (personId) return 'id=' + encodeURIComponent(personId);\nconst email = field('{{{_flow.JIRA_EMPLOYEE_EMAIL_FIELD}}}');\nreturn email ? 'email=' + encodeURIComponent(email) : '';"
+        },
+        {
+          "name": "employeeLookupLabel",
+          "uuid": "41bb1283-ac0f-45db-a96e-dd76107323c9",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\n// Human readable form of the lookup, for Jira comments.\nconst personId = field('{{{_flow.JIRA_PERSONIO_PERSON_ID_FIELD}}}');\nif (personId) return json('Personio employee ID ' + personId);\nreturn json('email ' + field('{{{_flow.JIRA_EMPLOYEE_EMAIL_FIELD}}}'));"
+        },
+        {
+          "name": "employmentChanges",
+          "uuid": "2eecb976-9fe0-4223-b2f3-9b9d6cb047a5",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\nconst hours = (v) => v.replace(',', '.');\n\nconst mapTo = (map, value) => {\n  if (!value || !map.trim()) return value;\n  const hit = map.split(';').filter((pair) => pair.includes('='))\n    .map((pair) => [pair.slice(0, pair.indexOf('=')).trim(), pair.slice(pair.indexOf('=') + 1).trim()])\n    .find((pair) => pair[0].toLowerCase() === value.toLowerCase());\n  return hit ? hit[1] : '';\n};\n\n// The employment attributes this request changes, as JSON members without braces. Attributes the request leaves\n// empty are not included, so Personio keeps their current values. The supervisor is added by the update action.\nconst out = {};\nconst position = field('{{{_flow.JIRA_POSITION_FIELD}}}');\nif (position) out.position = { title: position };\nconst department = mapTo(\"{{{_flow.DEPARTMENT_ID_MAP}}}\", field('{{{_flow.JIRA_DEPARTMENT_FIELD}}}'));\nif (department) out.org_units = [{ type: 'department', id: department }];\nconst office = mapTo(\"{{{_flow.OFFICE_ID_MAP}}}\", field('{{{_flow.JIRA_OFFICE_FIELD}}}'));\nif (office) out.office = { id: office };\nconst legalEntity = mapTo(\"{{{_flow.LEGAL_ENTITY_ID_MAP}}}\", field('{{{_flow.JIRA_LEGAL_ENTITY_FIELD}}}'));\nif (legalEntity) out.legal_entity = { id: legalEntity };\nconst weekly = hours(field('{{{_flow.JIRA_WEEKLY_HOURS_FIELD}}}'));\nif (/^\\d+(\\.\\d+)?$/.test(weekly)) out.weekly_working_hours = Number(weekly);\nreturn JSON.stringify(out).slice(1, -1);"
+        },
+        {
+          "name": "changeSummary",
+          "uuid": "a4e3d18a-0706-4d75-ae4d-8251cd710677",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\nconst hours = (v) => v.replace(',', '.');\n\n// The requested changes in words, for the Jira comments.\nconst parts = [];\nconst add = (label, value) => { if (value) parts.push(label + ': ' + value); };\nadd('position', field('{{{_flow.JIRA_POSITION_FIELD}}}'));\nadd('department', field('{{{_flow.JIRA_DEPARTMENT_FIELD}}}'));\nadd('office', field('{{{_flow.JIRA_OFFICE_FIELD}}}'));\nadd('legal entity', field('{{{_flow.JIRA_LEGAL_ENTITY_FIELD}}}'));\nadd('weekly working hours', hours(field('{{{_flow.JIRA_WEEKLY_HOURS_FIELD}}}')));\nadd('supervisor', field('{{{_flow.JIRA_SUPERVISOR_FIELD}}}'));\nreturn json(parts.join(', '));"
+        },
+        {
+          "name": "changeSupervisorEmail",
+          "uuid": "ee4dbff4-24eb-4775-a083-8b8ac0c16ab5",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\nconst v = field('{{{_flow.JIRA_SUPERVISOR_FIELD}}}');\nreturn json(v);"
+        },
+        {
+          "name": "supervisorLookupQuery",
+          "uuid": "d1c080a9-6749-40de-b053-c13ab8614038",
+          "script": "const issue = (scope && scope.issue) || (scope && scope.payload && scope.payload.issue) || {};\nconst fields = issue.fields || {};\n// Option -> value, user -> emailAddress, request type -> name, list -> first entry.\nconst flat = (v) => {\n  if (v === null || v === undefined) return '';\n  if (Array.isArray(v)) return v.length ? flat(v[0]) : '';\n  if (typeof v === 'object') return flat(v.value !== undefined ? v.value : v.emailAddress !== undefined ? v.emailAddress : v.requestType ? v.requestType.name : v.name);\n  return String(v).trim();\n};\nconst field = (id) => (id ? flat(fields[id]) : '');\nconst json = (s) => String(s).replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"').replace(/\\r?\\n/g, '\\\\n').replace(/\\t/g, '\\\\t');\n\n// The next action must find exactly one person to continue. With a supervisor requested that is the supervisor;\n// without one the query is unfiltered and returns any person, and the body leaves the supervisor out.\nconst email = field('{{{_flow.JIRA_SUPERVISOR_FIELD}}}');\nreturn email ? 'email=' + encodeURIComponent(email) + '&' : '';"
+        }
+      ],
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.eventType",
+              "type": "DATA_CONDITION",
+              "value": "avi:jira:updated:issue",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only run for Jira work item updated events"
+            },
+            {
+              "jsonPath": "$.issue.fields.project.key",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.SPACE}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "EQUALS",
+              "description": "Only run for the configured Jira project"
+            },
+            {
+              "jsonPath": "$.issue.fields.issuetype.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.REQUEST_ISSUE_TYPE}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "EQUALS",
+              "description": "Only run for the configured work item type"
+            },
+            {
+              "jsonPath": "$.issue.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS_NAME}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "EQUALS",
+              "description": "Only run once the request is in the approved status"
+            },
+            {
+              "jsonPath": "$.approvalTransition",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only run for the update that moved the request into the approved status, not for later edits"
+            },
+            {
+              "jsonPath": "$.requestTypeMatches",
+              "type": "DATA_CONDITION",
+              "value": "true",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only run for the configured JSM request type, or for every request when none is configured"
+            }
+          ]
+        }
+      ],
+      "order": 100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Invalid Change Request on Jira",
+      "description": "Explain on the work item what is missing or invalid, instead of calling Personio.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:8136d4e1-624a-4879-80c2-e5bc92a5778a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub did not update Personio: {{{validationErrors}}}.\"}\n        ]\n      },\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"Correct the request, then move it out of {{_flow.APPROVED_STATUS_NAME}} and back to run it again.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:5de8c85b-e8a0-4a28-92cd-3b115d9fb4b3",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS_NAME}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "EQUALS",
+              "description": "The work item is still approved when re-read, so a late redelivery of an old event is ignored"
+            },
+            {
+              "jsonPath": "$.validationErrors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Only comment when the request failed validation"
+            }
+          ]
+        }
+      ],
+      "order": 200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IHUB_JIRA_INTEGRATION",
+          "key": "X-Personio-App-ID"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Find Personio Employee",
+      "description": "Find the employee in Personio by the Personio employee ID on the work item, or by email when no ID is stored. Two results are requested so an ambiguous match can be detected.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-personio"
+      },
+      "id": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PERSONIO_API_URL}}/persons?{{{personLookupQuery}}}&limit=2",
+      "parentId": "template:action:5de8c85b-e8a0-4a28-92cd-3b115d9fb4b3",
+      "flowVariables": [
+        {
+          "name": "personioPersonId",
+          "behavior": "SET",
+          "value": "$.response.data._data[0].id",
+          "instruction": "Personio ID of the employee."
+        },
+        {
+          "name": "personioPersonName",
+          "behavior": "SET",
+          "value": "$.response.data._data[0].first_name",
+          "instruction": "First name of the employee in Personio."
+        },
+        {
+          "name": "personioPersonLastName",
+          "behavior": "SET",
+          "value": "$.response.data._data[0].last_name",
+          "instruction": "Last name of the employee in Personio."
+        },
+        {
+          "name": "personioLookupErrorTitle",
+          "behavior": "SET",
+          "value": "$.response.data.errors[0].title",
+          "instruction": "Error title when the Personio lookup failed."
+        },
+        {
+          "name": "personioLookupErrorDetail",
+          "behavior": "SET",
+          "value": "$.response.data.errors[0].detail",
+          "instruction": "Error detail when the Personio lookup failed."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.fields.status.name",
+              "type": "DATA_CONDITION",
+              "value": "{{_flow.APPROVED_STATUS_NAME}}",
+              "expectedValueSource": "MUSTACHE",
+              "operator": "EQUALS",
+              "description": "The work item is still approved when re-read, so a late redelivery of an old event is ignored"
+            },
+            {
+              "jsonPath": "$.validationErrors",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only call Personio when the request passed validation"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Personio Lookup Failure on Jira",
+      "description": "Report a failed Personio lookup, typically a missing permission, on the work item.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:5d1d310d-6f64-45a2-90ce-84e9ca15aa22",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub could not search Personio for {{{employeeLookupLabel}}}, so nothing was changed. Personio answered:\"}{{#if _flow.personioLookupErrorTitle}},\n          {\"type\": \"text\", \"text\": \" \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioLookupErrorTitle}}} }{{/if}}{{#if _flow.personioLookupErrorDetail}},\n          {\"type\": \"text\", \"text\": \" - \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioLookupErrorDetail}}} }{{/if}}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].title",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Personio returned an error for the lookup"
+            }
+          ]
+        }
+      ],
+      "order": 400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Personio Employee Not Found on Jira",
+      "description": "Report that no Personio employee matches the request.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:9e0cd77a-8b35-43db-8a6d-943d9cd66e1d",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub did not update Personio: no employee matches {{{employeeLookupLabel}}}. Correct the request, then move it out of {{_flow.APPROVED_STATUS_NAME}} and back to run it again.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].title",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Personio did not return an error for the lookup"
+            },
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EMPTY_ARRAY",
+              "description": "Personio returned no matching employee"
+            }
+          ]
+        }
+      ],
+      "order": 500
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Ambiguous Personio Match on Jira",
+      "description": "Stop and report when more than one Personio employee matches, instead of guessing.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:73827d3f-12fc-42ed-aff0-693110d2e5d2",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub did not update Personio: more than one employee matches {{{employeeLookupLabel}}}. Put the Personio employee ID on the request, then move it out of {{_flow.APPROVED_STATUS_NAME}} and back.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data[1].id",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "More than one employee matched"
+            }
+          ]
+        }
+      ],
+      "order": 600
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PUT",
+      "name": "Store Personio Employee ID on Jira Issue",
+      "description": "Remember the Personio employee ID found by email on the work item, so later steps and re-runs look the employee up by ID.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:d8dd6926-b1f5-4272-a026-00fb18ecac0a",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"fields\": {\n    \"{{_flow.JIRA_PERSONIO_PERSON_ID_FIELD}}\": \"{{_flow.personioPersonId}}\"\n  }\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}",
+      "parentId": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$._flow.JIRA_PERSONIO_PERSON_ID_FIELD",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Only write back when a Jira field is configured for it"
+            },
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Personio returned a matching employee"
+            },
+            {
+              "jsonPath": "$.response.data._data[1].id",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Exactly one employee matched"
+            },
+            {
+              "jsonPath": "$.existingPersonioPersonId",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Only when the work item does not hold a Personio employee ID yet"
+            }
+          ]
+        }
+      ],
+      "order": 700
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IHUB_JIRA_INTEGRATION",
+          "key": "X-Personio-App-ID"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Find Current Personio Employment",
+      "description": "Read the employee's most recent employment; department, office, position, hours and supervisor live on the employment, not on the person.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-personio"
+      },
+      "id": "template:action:f9fe578b-25bb-4afe-b20b-e24c672e407e",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PERSONIO_API_URL}}/persons/{{_flow.personioPersonId}}/employments?limit=1",
+      "parentId": "template:action:873b3ebc-e381-4c6b-85d8-40dafc5d7c97",
+      "flowVariables": [
+        {
+          "name": "personioEmploymentId",
+          "behavior": "SET",
+          "value": "$.response.data._data[0].id",
+          "instruction": "Personio ID of the employment being changed."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Personio returned a matching employee"
+            },
+            {
+              "jsonPath": "$.response.data._data[1].id",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Exactly one employee matched"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 800
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment No Personio Employment on Jira",
+      "description": "Report when the employee has no employment in Personio to change.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:7fd9eff7-1109-46af-bc87-478b5d954c85",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub did not update Personio: employee {{_flow.personioPersonId}} has no employment in Personio.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:f9fe578b-25bb-4afe-b20b-e24c672e407e",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EMPTY_ARRAY",
+              "description": "Personio returned no employment"
+            }
+          ]
+        }
+      ],
+      "order": 900
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IHUB_JIRA_INTEGRATION",
+          "key": "X-Personio-App-ID"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Find Personio Supervisor",
+      "description": "Resolve the requested supervisor's email to a Personio person ID. Without a supervisor change the query is unfiltered, so the update step always has one result to continue from.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-personio"
+      },
+      "id": "template:action:31fb02f2-c387-455d-8c92-3bf0ef6e42aa",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PERSONIO_API_URL}}/persons?{{{supervisorLookupQuery}}}limit=1",
+      "parentId": "template:action:f9fe578b-25bb-4afe-b20b-e24c672e407e",
+      "flowVariables": [
+        {
+          "name": "personioSupervisorId",
+          "behavior": "SET",
+          "value": "$.response.data._data[0].id",
+          "instruction": "Personio person ID of the new supervisor."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Personio returned an employment"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 1000
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Personio Supervisor Not Found on Jira",
+      "description": "Stop and report when the requested supervisor does not exist in Personio. Nothing is changed.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:70cb360d-3f01-4fad-8713-cd3a679635d9",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"iHub did not update Personio: the new supervisor {{{changeSupervisorEmail}}} was not found in Personio. Nothing was changed.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:31fb02f2-c387-455d-8c92-3bf0ef6e42aa",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EMPTY_ARRAY",
+              "description": "Personio returned no matching employee"
+            }
+          ]
+        }
+      ],
+      "order": 1100
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IHUB_JIRA_INTEGRATION",
+          "key": "X-Personio-App-ID"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "PATCH",
+      "name": "Update Personio Employment",
+      "description": "Apply only the attributes supplied on the request to the employment. Attributes left empty in Jira are not sent and keep their Personio value.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-personio"
+      },
+      "id": "template:action:90cb8744-4a51-40a8-959e-b06e0ee67d52",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{ {{{employmentChanges}}}{{#if changeSupervisorEmail}}{{#if employmentChanges}},{{/if}}\"supervisor\": { \"id\": \"{{_flow.personioSupervisorId}}\" }{{/if}} }",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PERSONIO_API_URL}}/persons/{{_flow.personioPersonId}}/employments/{{_flow.personioEmploymentId}}",
+      "parentId": "template:action:31fb02f2-c387-455d-8c92-3bf0ef6e42aa",
+      "flowVariables": [
+        {
+          "name": "personioUpdateErrorTitle",
+          "behavior": "SET",
+          "value": "$.response.data.errors[0].title",
+          "instruction": "Error title when Personio rejected the change."
+        },
+        {
+          "name": "personioUpdateErrorDetail",
+          "behavior": "SET",
+          "value": "$.response.data.errors[0].detail",
+          "instruction": "Error detail when Personio rejected the change."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data._data",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EMPTY_ARRAY",
+              "description": "Personio returned a matching employee"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 1200
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Personio Update Failure on Jira",
+      "description": "Report why Personio rejected the change, so the request can be corrected and re-run.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:cb7148d3-59cf-4c65-80c6-283dc9a5f0dd",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"Personio rejected the change for employee {{_flow.personioPersonId}} ({{{changeSummary}}}):\"}{{#if _flow.personioUpdateErrorTitle}},\n          {\"type\": \"text\", \"text\": \" \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioUpdateErrorTitle}}} }{{/if}}{{#if _flow.personioUpdateErrorDetail}},\n          {\"type\": \"text\", \"text\": \" - \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioUpdateErrorDetail}}} }{{/if}}\n        ]\n      },\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"Correct the request, then move it out of {{_flow.APPROVED_STATUS_NAME}} and back to run it again.\"}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:90cb8744-4a51-40a8-959e-b06e0ee67d52",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].title",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Personio rejected the change"
+            }
+          ]
+        }
+      ],
+      "order": 1300
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "IHUB_JIRA_INTEGRATION",
+          "key": "X-Personio-App-ID"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "GET",
+      "name": "Read Back Personio Employment",
+      "description": "Re-read the employment after the change. Personio answers the update with 204 and no body, so the read-back is what the confirmation comment reports.",
+      "credentialsReference": {
+        "type": "DATABASE_REF",
+        "value": "template:oauth2-personio"
+      },
+      "id": "template:action:1c60e779-f03a-4682-836a-473d6dc136de",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{_flow.PERSONIO_API_URL}}/persons/{{_flow.personioPersonId}}/employments/{{_flow.personioEmploymentId}}",
+      "parentId": "template:action:90cb8744-4a51-40a8-959e-b06e0ee67d52",
+      "flowVariables": [
+        {
+          "name": "personioPositionTitle",
+          "behavior": "SET",
+          "value": "$.response.data.position.title",
+          "instruction": "Position title now stored in Personio."
+        },
+        {
+          "name": "personioWeeklyHours",
+          "behavior": "SET",
+          "value": "$.response.data.weekly_working_hours",
+          "instruction": "Weekly working hours now stored in Personio."
+        },
+        {
+          "name": "personioOfficeId",
+          "behavior": "SET",
+          "value": "$.response.data.office.id",
+          "instruction": "Office ID now stored in Personio."
+        },
+        {
+          "name": "personioLegalEntityId",
+          "behavior": "SET",
+          "value": "$.response.data.legal_entity.id",
+          "instruction": "Legal entity ID now stored in Personio."
+        },
+        {
+          "name": "personioCurrentSupervisorId",
+          "behavior": "SET",
+          "value": "$.response.data.supervisor.id",
+          "instruction": "Supervisor person ID now stored in Personio."
+        }
+      ],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.errors[0].title",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "EQUALS",
+              "description": "Personio accepted the change"
+            }
+          ]
+        }
+      ],
+      "ratelimit": {
+        "sleepTime": 500,
+        "initialSleepTime": 5000,
+        "maxRetries": 3,
+        "burst": 20,
+        "retryStatusCodes": [
+          408,
+          429,
+          500,
+          502,
+          503,
+          504
+        ]
+      },
+      "order": 1400
+    },
+    {
+      "headers": [
+        {
+          "value": "application/json",
+          "key": "Accept"
+        },
+        {
+          "value": "application/json",
+          "key": "Content-Type"
+        },
+        {
+          "value": "keep-alive",
+          "key": "Connection"
+        },
+        {
+          "value": "gzip, deflate, br",
+          "key": "Accept-Encoding"
+        },
+        {
+          "value": "IntegrationsHub/Cloud",
+          "key": "User-Agent"
+        },
+        {
+          "value": "no-cache",
+          "key": "Cache-Control"
+        }
+      ],
+      "method": "POST",
+      "name": "Comment Personio Employee Updated on Jira",
+      "description": "Confirm the change on the work item with the values Personio now holds.",
+      "credentialsReference": {
+        "type": "ATLASSIAN_TOKEN",
+        "value": "ATLASSIAN_AUTH_TOKEN"
+      },
+      "id": "template:action:0a316fdf-4515-4403-ac5b-c81a2838a80b",
+      "type": "WEB_REQUEST_ACTION_TYPE",
+      "body": "{\n  \"body\": {\n    \"type\": \"doc\",\n    \"version\": 1,\n    \"content\": [\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"Updated Personio employee {{_flow.personioPersonId}}\"}{{#if _flow.personioPersonName}},\n          {\"type\": \"text\", \"text\": \" \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioPersonName}}} }{{/if}}{{#if _flow.personioPersonLastName}},\n          {\"type\": \"text\", \"text\": \" \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioPersonLastName}}} }{{/if}},\n          {\"type\": \"text\", \"text\": \". Requested: {{{changeSummary}}}.\"}\n        ]\n      },\n      {\n        \"type\": \"paragraph\",\n        \"content\": [\n          {\"type\": \"text\", \"text\": \"Personio now holds:{{#if _flow.personioWeeklyHours}} weekly working hours {{_flow.personioWeeklyHours}};{{/if}}{{#if _flow.personioOfficeId}} office ID {{_flow.personioOfficeId}};{{/if}}{{#if _flow.personioLegalEntityId}} legal entity ID {{_flow.personioLegalEntityId}};{{/if}}{{#if _flow.personioCurrentSupervisorId}} supervisor ID {{_flow.personioCurrentSupervisorId}};{{/if}}\"}{{#if _flow.personioPositionTitle}},\n          {\"type\": \"text\", \"text\": \" position \"}, {\"type\": \"text\", \"text\": {{{toJSON _flow.personioPositionTitle}}} }{{/if}}\n        ]\n      }\n    ]\n  },\n  \"properties\": [\n    {\n      \"key\": \"sd.public.comment\",\n      \"value\": {\n        \"internal\": {{_flow.JIRA_COMMENTS_INTERNAL}}\n      }\n    }\n  ]\n}",
+      "logConditionsNotMet": false,
+      "enabled": true,
+      "url": "{{baseUrl}}/rest/api/3/issue/{{issue.key}}/comment",
+      "parentId": "template:action:1c60e779-f03a-4682-836a-473d6dc136de",
+      "flowVariables": [],
+      "conditions": [
+        {
+          "type": "COMBINED_CONDITION",
+          "conditions": [
+            {
+              "jsonPath": "$.response.data.id",
+              "type": "DATA_CONDITION",
+              "value": "",
+              "expectedValueSource": "FIXED_VALUE",
+              "operator": "NOT_EQUALS",
+              "description": "Personio returned the employment"
+            }
+          ]
+        }
+      ],
+      "order": 1500
+    }
+  ],
+  "description": "Update a Personio employee's employment when a Jira Service Management HR change request is approved",
+  "enabled": false,
+  "flowVariables": [
+    {
+      "name": "SPACE",
+      "behavior": "SET",
+      "value": "HR",
+      "instruction": "Jira project key of the HR service project this flow watches."
+    },
+    {
+      "name": "REQUEST_ISSUE_TYPE",
+      "behavior": "SET",
+      "value": "Service Request",
+      "instruction": "Jira work item type name of the request."
+    },
+    {
+      "name": "REQUEST_TYPE_NAME",
+      "behavior": "SET",
+      "value": "Change employee details",
+      "instruction": "JSM request type name for employee change requests. Leave empty to accept every request of REQUEST_ISSUE_TYPE in the project; only do that if no other request type uses the same work item type and approved status."
+    },
+    {
+      "name": "JIRA_REQUEST_TYPE_FIELD",
+      "behavior": "SET",
+      "value": "replace-with-request-type-field-id",
+      "instruction": "Field ID of the JSM Customer Request Type field (Settings > Issues > Custom fields), for example customfield_10010. Only read when REQUEST_TYPE_NAME is set."
+    },
+    {
+      "name": "APPROVED_STATUS_NAME",
+      "behavior": "SET",
+      "value": "Approved",
+      "instruction": "Jira status name the request moves to when its approval completes. The flow runs once, on the transition into this status."
+    },
+    {
+      "name": "JIRA_PERSONIO_PERSON_ID_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the Personio employee ID. Optional but preferred: when it holds a value the employee is looked up by ID, and when it is empty the ID found by email is written into it."
+    },
+    {
+      "name": "JIRA_EMPLOYEE_EMAIL_FIELD",
+      "behavior": "SET",
+      "value": "replace-with-jira-field-id",
+      "instruction": "Jira field ID holding the email of the employee being changed. Required. Used when the Personio employee ID field is empty."
+    },
+    {
+      "name": "JIRA_POSITION_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new position / job title. Optional; leave empty to never send this value."
+    },
+    {
+      "name": "JIRA_DEPARTMENT_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new department. Optional; leave empty to never send this value. Mapped through DEPARTMENT_ID_MAP."
+    },
+    {
+      "name": "JIRA_OFFICE_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new office. Optional; leave empty to never send this value. Mapped through OFFICE_ID_MAP."
+    },
+    {
+      "name": "JIRA_WEEKLY_HOURS_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new weekly working hours. Optional; leave empty to never send this value. A Jira number field."
+    },
+    {
+      "name": "JIRA_SUPERVISOR_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new supervisor. Optional; leave empty to never send this value. A user picker or a text field holding the supervisor's Personio email."
+    },
+    {
+      "name": "JIRA_LEGAL_ENTITY_FIELD",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira field ID holding the new legal entity (subcompany). Optional; leave empty to never send this value. Mapped through LEGAL_ENTITY_ID_MAP."
+    },
+    {
+      "name": "DEPARTMENT_ID_MAP",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira department value to Personio department org unit ID, as Label=ID pairs separated by ;, for example Engineering=943;Sales=944. Empty sends the Jira value unchanged as the ID."
+    },
+    {
+      "name": "OFFICE_ID_MAP",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira office value to Personio office ID, as Label=ID pairs separated by ;. Empty sends the Jira value unchanged as the ID."
+    },
+    {
+      "name": "LEGAL_ENTITY_ID_MAP",
+      "behavior": "SET",
+      "value": "",
+      "instruction": "Jira legal entity value to Personio legal entity ID, as Label=ID pairs separated by ;. Empty sends the Jira value unchanged as the ID."
+    },
+    {
+      "name": "PERSONIO_API_URL",
+      "behavior": "SET",
+      "value": "https://api.personio.de/v2",
+      "instruction": "Personio API v2 base URL. No trailing slash."
+    },
+    {
+      "name": "JIRA_COMMENTS_INTERNAL",
+      "behavior": "SET",
+      "value": "true",
+      "instruction": "true posts the result comments as JSM internal notes; false makes them visible to the requester. Must be true or false."
+    }
+  ],
+  "groupName": "Personio",
+  "logLevel": "OFF",
+  "logRetention": 3,
+  "metadata": {
+    "createdBy": "",
+    "updatedBy": ""
+  },
+  "name": "Jira Service Management - Update Employee in Personio",
+  "trigger": {
+    "type": "ATLASSIAN_WEBHOOK_TRIGGER_TYPE"
+  },
+  "useStaticIP": false
+}

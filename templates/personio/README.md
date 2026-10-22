@@ -71,6 +71,16 @@ Recommended mover payload:
 }
 ```
 
+## Related Templates
+
+This template is Personio -> Jira only and never calls the Personio API, so it needs no Personio credential. Three separate templates cover the opposite direction, Jira Service Management -> Personio, after a request is approved in Jira:
+
+- `personio-employee-from-jira` (`Jira Service Management - Create Employee in Personio`): creates the person and their first employment.
+- `personio-employee-update-from-jira` (`Jira Service Management - Update Employee in Personio`): changes department, office, position, weekly hours, supervisor or legal entity.
+- `personio-absence-from-jira` (`Jira Service Management - Create Personio Absence After Approval`): records approved leave as a Personio absence period.
+
+They use a Personio API v2 `OAUTH2` client-credentials credential. If you install them next to this template, read their "Loops Across Templates" sections: a Personio new-employee or mover event caused by those templates would otherwise come back as a second JSM request here.
+
 ## Notes
 
 - All flows are disabled by default.
